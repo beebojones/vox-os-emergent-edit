@@ -126,7 +126,7 @@ export async function chatResponse(req, res) {
 
     if (!message || typeof message !== "string") {
       return res.status(400).json({ error: "Invalid or missing 'message' field." });
-    }\r
+    }
 
     // Seed server-side history with client-provided context (e.g., after reload)
     if (Array.isArray(history)){
