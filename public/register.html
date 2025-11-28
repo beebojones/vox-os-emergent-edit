@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/theme.js"></script>
+    <title>Register | Vox Assistant</title>
+
+    <!-- Tier 2 Chrome -->
+    <link rel="stylesheet" href="/os/chrome.css">
+    <link rel="stylesheet" href="/os/layout.css">
+    <link rel="stylesheet" href="/css/vox-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, sans-serif;
+            overflow: hidden;
+            color: white;
+        }
+
+        .auth-box {
+            width: min(92vw, 520px);
+            margin: 120px auto;
+            padding: 28px;
+            border-radius: 16px;
+            border: 1px solid transparent;
+            background: linear-gradient(145deg, rgba(5,5,12,.95), rgba(10,10,22,.98)) padding-box,
+                        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 240% 240%;
+            animation: voxBorderShift 18s linear infinite;
+            box-shadow: 0 0 22px rgba(154,77,255,.12), 0 0 10px rgba(0,246,255,.12);
+            transition: transform .2s ease, box-shadow .3s ease;
+        }
+
+        .auth-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 50px rgba(180,130,255,0.55);
+        }
+
+        .auth-title {
+            font-size: 34px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+            text-shadow: 0 0 18px rgba(150,100,255,0.9);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(15,15,28,0.85);
+            color: var(--text-main);
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .light-mode input { background:#fff !important; border:1px solid #c7cfdd !important; color:var(--text-main) !important; }
+
+        button {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            font-size: 18px;
+            cursor: pointer;
+            color: white;
+            background: linear-gradient(145deg, rgba(5,5,12,.9), rgba(15,15,28,.96)) padding-box,
+                        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            backdrop-filter: blur(10px);
+            transition: 0.25s;
+        }
+
+        button:hover {
+            box-shadow: 0 0 15px rgba(150,90,255,0.5), 0 0 12px rgba(0,246,255,0.35);
+        }
+
+        .bottom-text {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .bottom-text a {
+            color: #d4b8ff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-box">
+        <div class="auth-title">Create Account</div>
+
+        <form id="registerForm">
+            <input type="text" placeholder="Display Name" id="displayName">
+            <input type="text" placeholder="Username" id="username">
+            <input type="password" placeholder="Password" id="password">
+            <input type="password" placeholder="Confirm Password" id="confirmPassword">
+            <button type="submit">Register</button>
+        </form>
+
+        <div class="bottom-text">
+            Already have an account? <a href="login.html">Login</a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const displayName = document.getElementById('displayName').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
+
+      if (!displayName || !username || !password) return alert('Please fill required fields.');
+      if (password !== confirm) return alert('Passwords do not match.');
+
+      try {
+        const res = await fetch('/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ displayName, username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) return alert(data.error || 'Registration failed');
+        alert('Registration successful. You can now log in.');
+        window.location.href = '/login.html';
+      } catch {
+        alert('Registration failed.');
+      }
+    });
+    </script>
+
+    <!-- Tier 2 Glow Engine -->
+    <script src="/os/glow_engine.js"></script>
+
+</body>
+</html>

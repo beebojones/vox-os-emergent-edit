@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/theme.js"></script>
+    <title>Notifications</title>
+
+    <!-- Tier 2 Chrome -->
+    <link rel="stylesheet" href="/os/chrome.css">
+    <link rel="stylesheet" href="/os/layout.css">
+    <link rel="stylesheet" href="/css/vox-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            font-family: system-ui, sans-serif;
+            overflow: hidden;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Main layout */
+        #notif-wrapper {
+            padding: 20px 30px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .notif-card {
+            backdrop-filter: blur(20px) brightness(1.2);
+            background: rgba(255,255,255,0.12);
+            border: 3px solid rgba(255,255,255,0.22);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(150,110,255,0.4);
+            animation: fadeIn 0.35s ease;
+        }
+
+        .notif-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(180,130,255,0.8);
+        }
+
+        .notif-time {
+            font-size: 14px;
+            opacity: 0.75;
+            margin-bottom: 10px;
+        }
+
+        .notif-body {
+            font-size: 17px;
+            line-height: 1.42;
+        }
+
+        .btn-clear {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.25);
+            transition: 0.25s;
+        }
+
+        .btn-clear:hover {
+            background: rgba(255,255,255,0.35);
+            box-shadow: 0 0 20px rgba(160,110,255,0.5);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <button class="btn-clear" onclick="clearAll()">Clear All</button>
+
+    <div id="notif-wrapper">
+        <!-- Notifications will load here -->
+    </div>
+
+    <script src="/os/glow_engine.js"></script>
+    <script src="/os/notif_history.js"></script>
+    <script src="/js/user.js"></script>
+
+    <script>
+        const wrapper = document.getElementById("notif-wrapper");
+
+        function renderNotifications() {
+            wrapper.innerHTML = "";
+
+            const history = JSON.parse(localStorage.getItem("vox_notifications") || "[]")
+                .reverse();
+
+            if (!history.length) {
+                wrapper.innerHTML = "<div class='notif-card'><div class='notif-title'>No Notifications</div><div class='notif-body'>You're all caught up.</div></div>";
+                return;
+            }
+
+            for (const item of history) {
+                const div = document.createElement("div");
+                div.className = "notif-card";
+
+                div.innerHTML = `
+                    <div class="notif-title">${item.title}</div>
+                    <div class="notif-time">${new Date(item.time).toLocaleString()}</div>
+                    <div class="notif-body">${item.body}</div>
+                `;
+
+                wrapper.appendChild(div);
+            }
+        }
+
+        function clearAll() {
+            localStorage.removeItem("vox_notifications");
+            renderNotifications();
+        }
+
+        renderNotifications();
+    </script>
+
+</body>
+</html>

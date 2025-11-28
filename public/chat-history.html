@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script src="/js/theme.js"></script>
+  <title>Chat History • Vox</title>
+  <link rel="stylesheet" href="/css/vox-theme.css" />
+  <style>
+    body { margin:0; font-family: system-ui, sans-serif; color: var(--text-main); }
+    .wrap { width: 92%; max-width: 1200px; margin: 0 auto; padding: 110px 0 40px; }
+    .title { font-size: clamp(28px, 5vw, 44px); text-align:center; margin-bottom: 20px; background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 18px rgba(160,110,255,.9); }
+    .grid { display:grid; grid-template-columns: 320px 1fr; gap: 20px; }
+    .panel { border: 1px solid transparent; border-radius: 14px; padding: 16px; background: linear-gradient(145deg, rgba(5,5,12,.95), rgba(10,10,22,.98)) padding-box, linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box; background-size:100% 100%, 240% 240%; animation: voxBorderShift 18s linear infinite; }
+    .session { padding: 10px 12px; border-radius: 10px; cursor: pointer; border:1px solid transparent; margin-bottom:8px; background: rgba(255,255,255,0.08); }
+    .session.active { background: rgba(255,255,255,0.16); box-shadow: 0 0 12px rgba(160,110,255,0.35); }
+    .msg { margin-bottom: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.08); }
+    .role { font-size:12px; opacity:.8; margin-bottom:4px; }
+    .controls { display:flex; gap:8px; margin-bottom:10px; }
+    .btn { padding:8px 12px; border-radius:10px; border:1px solid transparent; cursor:pointer; color:#fff; background: linear-gradient(145deg, rgba(5,5,12,.9), rgba(15,15,28,.96)) padding-box, linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box; background-size:100% 100%, 220% 220%; animation: voxBorderShift 14s linear infinite; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">Chat History</div>
+    <div class="grid">
+      <div class="panel">
+        <div class="controls">
+          <button id="new" class="btn">New Session</button>
+          <button id="delete" class="btn">Delete Session</button>
+        </div>
+        <div id="sessions"></div>
+      </div>
+      <div class="panel">
+        <div id="messages"></div>
+      </div>
+    </div>
+  </div>
+  <script src="/js/user.js"></script>
+  <script>
+    let currentId = null;
+    async function loadSessions(){
+      const r = await fetch('/chat/sessions');
+      const data = await r.json();
+      const box = document.getElementById('sessions');
+      box.innerHTML = '';
+      for (const s of data){
+        const d = document.createElement('div');
+        d.className = 'session' + (s.id===currentId?' active':'');
+        d.textContent = s.title + ' — ' + new Date(s.updated_at||s.created_at).toLocaleString();
+        d.onclick = () => { currentId = s.id; localStorage.setItem('vox_chat_session', currentId); highlight(); loadMessages(); };
+        box.appendChild(d);
+      }
+    }
+    function highlight(){
+      document.querySelectorAll('.session').forEach(n => n.classList.remove('active'));
+      const nodes = Array.from(document.querySelectorAll('.session'));
+      const idx = nodes.findIndex(n => (n.onclick+'').includes(`currentId = ${currentId}`));
+      if (idx>=0) nodes[idx].classList.add('active');
+    }
+    async function loadMessages(){
+      if (!currentId) return;
+      const r = await fetch('/chat/sessions/'+currentId+'/messages');
+      const data = await r.json();
+      const box = document.getElementById('messages');
+      box.innerHTML='';
+      for (const m of data){
+        const d = document.createElement('div');
+        d.className = 'msg';
+        const role = document.createElement('div'); role.className='role'; role.textContent = m.role + ' • ' + new Date(m.created_at).toLocaleString();
+        const body = document.createElement('div'); body.textContent = m.content;
+        d.appendChild(role); d.appendChild(body); box.appendChild(d);
+      }
+    }
+    document.getElementById('new').onclick = async () => {
+      const title = prompt('Session title:', new Date().toLocaleString()) || new Date().toLocaleString();
+      const r = await fetch('/chat/start', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title }) });
+      const s = await r.json(); currentId = s.id; localStorage.setItem('vox_chat_session', currentId); loadSessions(); loadMessages();
+    };
+    document.getElementById('delete').onclick = async () => {
+      if (!currentId) return; if (!confirm('Delete this session?')) return;
+      await fetch('/chat/sessions/'+currentId, { method:'DELETE' }); currentId = null; localStorage.removeItem('vox_chat_session'); loadSessions(); document.getElementById('messages').innerHTML='';
+    };
+    (async () => { currentId = Number(localStorage.getItem('vox_chat_session')) || null; await loadSessions(); if (currentId) await loadMessages(); })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+/* ============================
+   Deep Glass Memory OS Styles
+   ============================ */
+
+body {
+  background: #0d0d0d;
+  color: #f5f5f5;
+  font-family: "Inter", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Toolbar --- */
+.toolbar {
+  display: flex;
+  gap: 14px;
+  padding: 20px;
+  justify-content: center;
+}
+
+.toolbar-button {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  color: #eaeaea;
+  backdrop-filter: blur(6px);
+}
+
+.toolbar-button:hover {
+  background: rgba(0, 119, 255, 0.12);
+  border-color: rgba(0, 119, 255, 0.35);
+  box-shadow: 0 0 12px rgba(0, 119, 255, 0.4);
+}
+
+/* --- Title --- */
+.title {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 48px;
+  font-weight: 700;
+}
+
+/* --- Search --- */
+.search-box {
+  width: 60%;
+  margin: 25px auto 10px auto;
+  display: block;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #ddd;
+  padding: 12px 18px;
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
+  transition: 0.2s;
+}
+
+.search-box:focus {
+  outline: none;
+  border-color: rgba(0,119,255,0.4);
+  box-shadow: 0 0 10px rgba(0,119,255,0.4);
+}
+
+/* --- Memory List --- */
+.container {
+  padding: 25px;
+}
+
+.memory-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 18px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  backdrop-filter: blur(14px);
+  transition: 0.2s ease;
+  box-shadow: 0 0 0 transparent;
+  animation-delay: .4s;
+}
+
+.memory-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0,119,255,0.35);
+  box-shadow: 0 0 14px rgba(0,119,255,0.35);
+}
+
+/* --- Header row --- */
+.memory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timestamp {
+  font-size: 14px;
+  opacity: 0.85;
+  background: rgba(0,0,0,0.25);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* --- Icons --- */
+.action-icon {
+  font-size: 20px;
+  margin-left: 12px;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: 0.15s;
+}
+
+.action-icon:hover {
+  opacity: 1;
+  text-shadow: 0 0 10px rgba(0,119,255,0.8);
+}
+
+/* --- Tags --- */
+.tags {
+  margin-top: 6px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+/* Embeddings block */
+.embedding {
+  margin-top: 10px;
+  font-family: monospace;
+  font-size: 12px;
+  color: #aaa;
+  background: rgba(0,0,0,0.3);
+  padding: 10px;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  display: none;
+}
+
+.user-menu {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 150px;
+}
+
+.dropdown button {
+  background: rgba(255,255,255,0.12);
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+.dropdown button:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.hidden {
+  display: none;
+}
+
+body.dark-mode {
+  background: #0e0e0e;
+  color: white;
+}
+
+body.dark-mode .glass-card,
+body.dark-mode .messages {
+  background: rgba(30, 30, 30, 0.5);
+}
+
+/* ==========================================================
+   VOX THEME SYSTEM (Light + Dark)
+   ========================================================== */
+
+/* Smooth transitions */
+html, body, .card, .user-menu, .user-dropdown {
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* ----------------------------------------------------------
+   DARK MODE
+   ---------------------------------------------------------- */
+.dark-mode body {
+  background: rgba(0,0,0,0.85);
+  color: #ffffff;
+}
+
+.dark-mode .card {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.12);
+  color: #ffffff;
+}
+
+.dark-mode input,
+.dark-mode textarea,
+.dark-mode select {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+.dark-mode .user-menu,
+.dark-mode .user-dropdown {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+
+.dark-mode button {
+  background: rgba(255,255,255,0.25);
+  color: white;
+}
+
+.dark-mode button:hover {
+  background: rgba(255,255,255,0.4);
+}
+
+
+/* ----------------------------------------------------------
+   LIGHT MODE
+   ---------------------------------------------------------- */
+.light-mode body {
+  background: rgba(255,255,255,0.75);
+  color: #000000;
+}
+
+.light-mode .card {
+  background: rgba(255,255,255,0.55);
+  border-color: rgba(0,0,0,0.15);
+  color: #000000;
+}
+
+.light-mode input,
+.light-mode textarea,
+.light-mode select {
+  background: rgba(0,0,0,0.08);
+  color: black;
+}
+
+.light-mode .user-menu,
+.light-mode .user-dropdown {
+  background: rgba(255,255,255,0.6);
+  color: #000;
+}
+
+.light-mode button {
+  background: rgba(0,0,0,0.12);
+  color: black;
+}
+
+.light-mode button:hover {
+  background: rgba(0,0,0,0.25);
+}
+
+
+/* ----------------------------------------------------------
+   GLOW BUTTONS (Theme Settings Pills)
+   ---------------------------------------------------------- */
+.theme-pill-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.theme-pill {
+  flex: 1;
+  padding: 10px;
+  border-radius: 30px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.12);
+  transition: background 0.25s, border-color 0.25s;
+}
+
+/* Active pill */
+.theme-pill.active {
+  background: rgba(255,255,255,0.35);
+  border-color: rgba(255,255,255,0.55);
+}
+
+/* Hover */
+.theme-pill:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* Light mode adjustments */
+.light-mode .theme-pill {
+  background: rgba(0,0,0,0.1);
+  border-color: rgba(0,0,0,0.2);
+}
+
+.light-mode .theme-pill.active {
+  background: rgba(0,0,0,0.2);
+  border-color: rgba(0,0,0,0.35);
+}
+
+.light-mode .theme-pill:hover {
+  background: rgba(0,0,0,0.15);
+}

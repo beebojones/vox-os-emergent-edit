@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/theme.js"></script>
+    <title>About Vox OS</title>
+
+    <!-- Tier 2 Chrome -->
+    <link rel="stylesheet" href="/os/chrome.css">
+    <link rel="stylesheet" href="/os/layout.css">
+    <link rel="stylesheet" href="/css/vox-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            font-family: system-ui, sans-serif;
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .about-box {
+            width: 90%;
+            max-width: 800px;
+            padding: 40px 50px;
+            border-radius: 20px;
+            backdrop-filter: blur(28px) brightness(1.15);
+            background: rgba(255,255,255,0.12);
+            border: 3px solid rgba(255,255,255,0.22);
+            text-align: center;
+            box-shadow: 0 0 50px rgba(150,110,255,0.45);
+            animation: floatIn 0.45s ease-out;
+        }
+
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(14px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .title {
+            font-size: 46px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-shadow: 0 0 35px rgba(170,120,255,0.75);
+        }
+
+        .subtitle {
+            font-size: 20px;
+            opacity: 0.85;
+            margin-bottom: 35px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            line-height: 1.55;
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        .btn {
+            margin-top: 25px;
+            padding: 14px 24px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.26);
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: white;
+            backdrop-filter: blur(12px);
+            transition: 0.25s;
+        }
+
+        .btn:hover {
+            background: rgba(255,255,255,0.38);
+            box-shadow: 0 0 22px rgba(170,120,255,0.55);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="about-box">
+
+        <div class="title">Vox OS</div>
+        <div class="subtitle">Holographic Computing Environment</div>
+
+        <div class="section">
+            Vox OS is a simulated desktop environment designed to feel alive.  
+            It combines neon-glass visuals, dynamic glow fields, and soft system chrome  
+            to create an intuitive, atmospheric, futuristic workspace.
+        </div>
+
+        <div class="section">
+            <strong>Version:</strong> 2.0 Tier-2 Chrome  
+            <br>
+            <strong>Author:</strong> John (you), with AI-assisted engineering  
+            <br>
+            <strong>Engine:</strong> Vox Assistant
+        </div>
+
+        <div class="section">
+            Every component — from the dashboard to the file explorer to the chat console —  
+            is built to create a seamless, glowing, immersive interface  
+            that feels like you're using a real operating system.
+        </div>
+
+        <button class="btn" onclick="location.href='os-launcher.html'">
+            Back to Launcher
+        </button>
+
+    </div>
+
+    <script src="/os/glow_engine.js"></script>
+    <script src="/js/user.js"></script>
+
+</body>
+</html>

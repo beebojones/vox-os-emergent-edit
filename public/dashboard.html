@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/theme.js"></script>
+    <title>Vox Dashboard</title>
+
+    <!-- Base Styles -->
+    <link rel="stylesheet" href="/os/chrome.css">
+    <link rel="stylesheet" href="/os/layout.css">
+    <link rel="stylesheet" href="/css/vox-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            color: var(--text-main);
+            font-family: system-ui, sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;         /* enable vertical scrolling */
+            min-height: 100vh;        /* allow page to grow */
+            display: block;
+        }
+
+        /* Page container */
+        .dashboard-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 110px 0 60px; /* headroom for user pill */
+        }
+
+        /* Header */
+        .dash-header {
+            font-size: clamp(28px, 6vw, 52px);
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            white-space: nowrap;          /* keep to one line */
+            overflow: hidden;             /* prevent overflow */
+            text-overflow: ellipsis;      /* safe truncation if needed */
+            text-align: center;           /* center page title */
+            background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));\r
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 18px rgba(160,110,255,0.9);
+        }
+
+        .dash-subheader {
+            font-size: 22px;
+            opacity: 0.8;
+            margin-bottom: 50px;
+            text-align: center; /* center subtitle */
+        }
+
+        /* Glass cards */
+        .card {
+            border: 1px solid transparent;
+            border-radius: 16px;
+            padding: 28px;
+            background: 
+              linear-gradient(145deg, rgba(5, 5, 12, 0.95), rgba(10, 10, 22, 0.98)) padding-box,
+              linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 240% 240%;
+            box-shadow: 0 0 35px rgba(160,110,255,0.25), 0 0 18px rgba(0,246,255,0.10);
+            animation: voxBorderShift 18s linear infinite;
+            transition: 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 220px;
+        }
+        .card.compact { min-height: auto; padding: 20px; }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 55px rgba(180,130,255,0.45), 0 0 24px rgba(0,246,255,0.2);
+        }
+
+        .card-title {
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            text-shadow: 0 0 14px rgba(160,110,255,0.8);
+            text-align: center; /* center card titles */
+        }
+
+        /* Quick actions */
+        .action-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: nowrap;           /* keep on one line */
+            align-items: stretch;
+            overflow: visible;
+        }
+
+.action-btn {
+            flex: 1 1 0;                 /* shrink-to-fit and share space */
+            min-width: 0;                /* allow shrinking below content width */
+            padding: clamp(10px, 1.2vw, 14px) clamp(12px, 2vw, 18px);
+            font-size: clamp(12px, 1.1vw, 16px);
+            white-space: nowrap;         /* never wrap labels */
+            border: 1px solid transparent;
+            cursor: pointer;
+            border-radius: 12px;
+            color: white;
+            background:
+              linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.96)) padding-box,
+              linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            backdrop-filter: blur(12px);
+            transition: 0.25s;
+        }
+
+        .action-btn:hover {
+            box-shadow: 0 0 18px rgba(160,110,255,0.55), 0 0 14px rgba(0,246,255,0.35);
+        }
+
+        /* Layout grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 35px;
+        }
+        @media (max-width: 950px) { .grid { grid-template-columns: 1fr; } }
+
+        .stat {
+            font-size: 38px;
+            font-weight: 700;
+            margin-top: 10px;
+            text-shadow: 0 0 16px rgba(160,110,255,0.8);
+        }
+
+        .stat-label {
+            font-size: 18px;
+            opacity: 0.65;
+        }
+
+        /* Last memory preview */
+        .memory-preview {
+            font-size: 18px;
+            opacity: 0.85;
+            line-height: 1.6;
+            margin-top: 6px;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="dashboard-container">
+
+        <div class="dash-header">Vox AI Personal Assistant</div>
+        <div class="dash-subheader">Your personalized Vox environment is ready.</div>
+
+        <!-- Symmetric 2x2 Grid -->
+        <div class="grid">
+
+            <!-- Quick Actions -->
+            <div class="card compact">
+                <div class="action-row">
+                    <button class="action-btn" onclick="window.location='chat.html'">Open Chat</button>
+                    <button class="action-btn" onclick="window.location='memory.html'">View Memories</button>
+                    <button class="action-btn" onclick="window.location='account-settings.html'">Settings</button>
+                    <button class="action-btn" onclick="window.location='profile.html'">Profile</button>
+                </div>
+            </div>
+
+            <!-- Memory Stats -->
+            <div class="card">
+                <div class="card-title">Memory Stats</div>
+                <div class="stat" id="mem-count">--</div>
+                <div class="stat-label">Total Memories Stored</div>
+            </div>
+
+            <!-- Last Memory -->
+            <div class="card">
+                <div class="card-title">Last Memory Added</div>
+                <div class="memory-preview" id="last-mem-preview">Loading...</div>
+            </div>
+
+            <!-- Profile Snapshot -->
+            <div class="card">
+                <div class="card-title">Profile</div>
+                <div class="stat" id="user-name">—</div>
+                <div class="stat-label" id="user-role">—</div>
+                <div style="margin-top:auto;">
+                    <button class="action-btn" onclick="window.location='profile.html'">Open Profile</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Dashboard Script -->
+    <script>
+        // Fetch memory summary
+        fetch("/api/memories", { method: "GET" })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("mem-count").innerText = data.length;
+
+                if (data.length > 0) {
+                    const last = data[0]; // newest first from API
+                    document.getElementById("last-mem-preview").innerText =
+                        last.text.length > 200 ? last.text.substring(0, 200) + "..." : last.text;
+                } else {
+                    document.getElementById("last-mem-preview").innerText = "No memories stored yet.";
+                }
+            })
+            .catch(() => {
+                document.getElementById("last-mem-preview").innerText = "Unable to load memories.";
+            });
+
+        // Fetch user snapshot
+        fetch('/auth/validate')
+          .then(r => r.json())
+          .then(({ user }) => {
+            if (!user) return;
+            const name = user.display_name || user.displayName || user.username || 'User';
+            document.getElementById('user-name').innerText = name;
+            document.getElementById('user-role').innerText = (user.role || 'user').toUpperCase();
+          }).catch(()=>{});
+    </script>
+
+    <!-- Glow Engine -->
+    <script src="/os/glow_engine.js"></script>
+    <script src="/js/user.js"></script>
+
+</body>
+</html>

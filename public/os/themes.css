@@ -1,0 +1,124 @@
+/* ---------------------------------------------------
+   Vox OS – Theme Definitions
+   Package 6
+--------------------------------------------------- */
+
+/* Default theme (Dark Glass) is defined in os.css root variables */
+
+/* ---------------------------------------------------
+   LIGHT THEME
+--------------------------------------------------- */
+
+.light {
+    --os-bg: rgba(250, 250, 255, 0.7);
+    --os-glass: rgba(255, 255, 255, 0.65);
+    --os-border: rgba(0, 0, 0, 0.25);
+    --os-focus: rgba(0, 0, 0, 0.35);
+    --os-text: #000000;
+
+    --panel-bg: rgba(255, 255, 255, 0.75);
+    --panel-border: rgba(0, 0, 0, 0.2);
+
+    --launcher-bg: rgba(255, 255, 255, 0.85);
+    --launcher-border: rgba(0, 0, 0, 0.25);
+}
+
+/* ---------------------------------------------------
+   AMOLED THEME
+--------------------------------------------------- */
+
+.amoled {
+    --os-bg: rgba(0, 0, 0, 0.85);
+    --os-glass: rgba(255, 255, 255, 0.05);
+    --os-border: rgba(255, 255, 255, 0.1);
+    --os-focus: rgba(0, 180, 255, 0.5);
+    --os-text: #ffffff;
+
+    --panel-bg: rgba(0, 0, 0, 0.85);
+    --panel-border: rgba(255, 255, 255, 0.15);
+
+    --launcher-bg: rgba(0, 0, 0, 0.85);
+    --launcher-border: rgba(255, 255, 255, 0.15);
+
+    --accent-color: #00c0ff;
+    --accent-glow: rgba(0, 192, 255, 0.55);
+}
+
+/* ---------------------------------------------------
+   SYNTHWAVE THEME
+--------------------------------------------------- */
+
+.synthwave {
+    --os-bg: rgba(30, 4, 42, 0.65);
+    --os-glass: rgba(255, 150, 255, 0.12);
+    --os-border: rgba(255, 120, 255, 0.3);
+    --os-focus: rgba(255, 0, 180, 0.55);
+    --os-text: #ffe4ff;
+
+    --panel-bg: rgba(40, 6, 60, 0.75);
+    --panel-border: rgba(255, 140, 255, 0.35);
+
+    --launcher-bg: rgba(30, 8, 50, 0.75);
+    --launcher-border: rgba(255, 140, 255, 0.3);
+
+    --accent-color: #ff3cdc;
+    --accent-glow: rgba(255, 60, 220, 0.5);
+}
+
+/* ---------------------------------------------------
+   DARK THEME (ALT)
+--------------------------------------------------- */
+
+.dark {
+    --os-bg: rgba(10, 12, 15, 0.6);
+    --os-glass: rgba(255, 255, 255, 0.08);
+    --os-border: rgba(255, 255, 255, 0.20);
+    --os-focus: rgba(255, 255, 255, 0.45);
+    --os-text: #ffffff;
+
+    --panel-bg: rgba(20, 22, 30, 0.65);
+    --panel-border: rgba(255, 255, 255, 0.22);
+
+    --launcher-bg: rgba(15, 16, 22, 0.65);
+    --launcher-border: rgba(255, 255, 255, 0.25);
+}
+
+/* ---------------------------------------------------
+   ACCENT VARIANTS
+   (can be applied via class or via JS override)
+--------------------------------------------------- */
+
+.accent-red {
+    --accent-color: #ff5656;
+    --accent-glow: rgba(255, 86, 86, 0.6);
+}
+
+.accent-blue {
+    --accent-color: #4f8bff;
+    --accent-glow: rgba(79, 139, 255, 0.5);
+}
+
+.accent-green {
+    --accent-color: #48e08a;
+    --accent-glow: rgba(72, 224, 138, 0.5);
+}
+
+.accent-gold {
+    --accent-color: #e9b64a;
+    --accent-glow: rgba(233, 182, 74, 0.5);
+}
+
+.accent-pink {
+    --accent-color: #ff7ad9;
+    --accent-glow: rgba(255, 122, 217, 0.5);
+}
+
+/* ---------------------------------------------------
+   CUSTOM ACCENT (JS WRITES DIRECTLY TO VARIABLES)
+--------------------------------------------------- */
+
+.custom-accent {
+    /* JS fills these at runtime */
+    --accent-color: var(--accent-color);
+    --accent-glow: var(--accent-glow);
+}

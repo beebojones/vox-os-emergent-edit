@@ -1,0 +1,223 @@
+/* ---------------------------------------------------
+   Vox OS – Notifications Center Styles
+   Package 13 (FULL FILE)
+--------------------------------------------------- */
+
+#notifications-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+
+    width: 340px;
+    height: 100%;
+
+    background: var(--os-glass);
+    backdrop-filter: blur(20px);
+
+    border-left: 1px solid var(--os-border);
+    box-shadow: -6px 0 18px rgba(0,0,0,0.45);
+
+    transform: translateX(100%);
+    transition: transform 260ms ease;
+
+    z-index: 99998;
+    display: flex;
+    flex-direction: column;
+}
+
+#notifications-panel.open {
+    transform: translateX(0%);
+}
+
+/* HEADER */
+
+#notif-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--os-border);
+    background: rgba(255,255,255,0.07);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#notif-header-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--os-text);
+}
+
+#notif-clear {
+    padding: 6px 10px;
+    font-size: 12px;
+
+    border: 1px solid var(--os-border);
+    border-radius: 6px;
+
+    background: rgba(255,255,255,0.1);
+    color: var(--os-text);
+    cursor: pointer;
+
+    transition: background 140ms ease, box-shadow 140ms ease;
+}
+
+#notif-clear:hover {
+    background: rgba(255,255,255,0.18);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* NOTIFICATIONS LIST */
+
+#notif-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notif-item {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--os-border);
+
+    border-radius: 10px;
+    padding: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    cursor: pointer;
+
+    transition:
+        background 150ms ease,
+        box-shadow 150ms ease,
+        transform 150ms ease;
+}
+
+.notif-item:hover {
+    background: rgba(255,255,255,0.13);
+    transform: translateX(-4px);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+/* TITLE + ICON */
+
+.notif-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notif-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.9;
+}
+
+.notif-title {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* CATEGORY TAG */
+
+.notif-category {
+    font-size: 11px;
+    opacity: 0.6;
+}
+
+/* TIMESTAMP */
+
+.notif-time {
+    font-size: 11px;
+    opacity: 0.45;
+    margin-top: 2px;
+}
+
+/* DETAILS (hidden until expanded) */
+
+.notif-details {
+    font-size: 13px;
+    line-height: 1.4;
+    opacity: 0.8;
+    margin-top: 6px;
+    display: none;
+}
+
+.notif-item.expanded .notif-details {
+    display: block;
+}
+
+/* SCROLLBAR */
+
+#notif-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+#notif-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.25);
+    border-radius: 8px;
+}
+
+#notif-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.35);
+}
+
+/* TASKBAR BELL ICON */
+
+#taskbar-bell {
+    width: 34px;
+    height: 34px;
+
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+
+    cursor: pointer;
+
+    position: relative;
+
+    transition:
+        background 150ms ease,
+        transform 140ms ease,
+        box-shadow 150ms ease;
+}
+
+#taskbar-bell:hover {
+    background: rgba(255,255,255,0.16);
+    transform: scale(1.08);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* UNREAD BADGE */
+
+#notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+
+    min-width: 18px;
+    height: 18px;
+
+    background: var(--accent-color);
+    color: white;
+
+    border-radius: 9px;
+
+    display: grid;
+    place-items: center;
+
+    font-size: 11px;
+    font-weight: bold;
+
+    padding: 0 5px;
+    box-shadow: 0 0 6px var(--accent-glow);
+
+    display: none;
+}
+
+#notif-badge.show {
+    display: grid;
+}

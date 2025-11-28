@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/theme.js"></script>
+    <title>Vox OS Launcher</title>
+
+    <!-- Tier 2 Chrome -->
+    <link rel="stylesheet" href="/os/chrome.css">
+    <link rel="stylesheet" href="/os/layout.css">
+    <link rel="stylesheet" href="/css/vox-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            color: white;
+            font-family: system-ui, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Center container */
+        .launcher-wrapper {
+            width: 90%;
+            max-width: 900px;
+            text-align: center;
+            backdrop-filter: blur(28px) brightness(1.22);
+            background: rgba(255,255,255,0.15);
+            border: 3px solid rgba(255,255,255,0.22);
+            border-radius: 20px;
+            padding: 50px 50px 60px 50px;
+            box-shadow: 0 0 45px rgba(160,110,255,0.45);
+            animation: softGlow 14s ease-in-out infinite alternate;
+        }
+
+        @keyframes softGlow {
+            0% { box-shadow: 0 0 45px rgba(160,110,255,0.45); }
+            100% { box-shadow: 0 0 60px rgba(120,180,255,0.6); }
+        }
+
+        .launcher-title {
+            font-size: 58px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 35px rgba(160,110,255,0.8);
+        }
+
+        .launcher-subtitle {
+            font-size: 22px;
+            opacity: 0.85;
+            margin-bottom: 50px;
+        }
+
+        /* Buttons grid */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 22px;
+            margin-bottom: 40px;
+        }
+
+        .launcher-btn {
+            padding: 20px;
+            font-size: 20px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            background: rgba(255,255,255,0.22);
+            backdrop-filter: blur(12px);
+            transition: 0.25s;
+        }
+
+        .launcher-btn:hover {
+            background: rgba(255,255,255,0.38);
+            box-shadow: 0 0 22px rgba(160,110,255,0.55);
+        }
+
+        .launch-desktop {
+            margin-top: 32px;
+            padding: 20px 30px;
+            font-size: 22px;
+            font-weight: 600;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            background: rgba(255,255,255,0.28);
+            backdrop-filter: blur(14px);
+            transition: 0.3s;
+        }
+
+        .launch-desktop:hover {
+            background: rgba(255,255,255,0.42);
+            box-shadow: 0 0 28px rgba(160,110,255,0.65);
+        }
+    </style>
+
+</head>
+<body>
+  <script>
+    // Consolidated into dashboard — redirect
+    window.location.replace('/dashboard.html');
+  </script>
+</body>
+</html>

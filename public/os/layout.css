@@ -1,0 +1,14 @@
+
+/* Tier 2 Layout & Layering Fixes */
+
+#desktop {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: 1;
+}
+
+#taskbar { z-index: 5000; }
+.window { z-index: 3000; }
+.panel { z-index: 4000; }
+#spotlight-overlay { z-index: 6000; }

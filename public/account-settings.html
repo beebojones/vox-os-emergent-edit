@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Account Settings • Vox</title>
+
+  <!-- Load theme before page renders -->
+  <script src="js/theme.js"></script>
+
+  <link rel="stylesheet" href="css/deep-glass.css" />
+  <link rel="stylesheet" href="css/vox-theme.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      backdrop-filter: blur(10px);
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 80px auto;
+      padding: 20px;
+      color: inherit;
+    }
+
+    .card {
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 26px;
+      border: 1px solid transparent;
+      background:
+        linear-gradient(145deg, rgba(5, 5, 12, 0.95), rgba(10, 10, 22, 0.98)) padding-box,
+        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+      background-size: 100% 100%, 240% 240%;
+      animation: voxBorderShift 18s linear infinite;
+      box-shadow: 0 0 22px rgba(154,77,255,0.12), 0 0 10px rgba(0,246,255,0.12);
+      backdrop-filter: blur(14px);
+      overflow: hidden; /* ensure children don’t spill */
+    }
+    h1.page-title {
+      margin-bottom: 24px;
+      font-size: 42px;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 18px rgba(160,110,255,.9);
+    }
+
+    .input-row {
+      margin-bottom: 14px;
+    }
+
+    .input-row label {
+      display: block;
+      opacity: 0.8;
+      margin-bottom: 5px;
+    }
+
+    .input-row input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      outline: none;
+      background: rgba(15,15,28,0.85);
+      color: var(--text-main);
+      transition: border-color .2s ease, box-shadow .2s ease;
+      box-sizing: border-box; /* prevent overflow */
+      display:block;
+    }
+    .input-row input:focus {
+      border-color: rgba(0,246,255,0.6);
+      box-shadow:
+        0 0 10px rgba(0,246,255,0.45),
+        0 0 16px rgba(255,0,212,0.35);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      cursor: pointer;
+      font-size: 16px;
+      background-image: linear-gradient(120deg, rgba(0,246,255,0.12), rgba(255,0,212,0.12), rgba(154,77,255,0.12));
+      background-size: 200% 200%;
+      animation: voxGlowShift 16s linear infinite;
+      transition: 0.2s;
+      margin-top: 10px;
+    }
+    button.edge-btn {
+      border: 1px solid transparent;
+      background:
+        linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.96)) padding-box,
+        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+      background-size: 100% 100%, 220% 220%;
+      animation: voxBorderShift 14s linear infinite;
+      color: #fff;
+    }
+    /* High-contrast light mode for edge buttons */
+.light-mode button.edge-btn {
+      color: var(--text-main);
+      background:
+        linear-gradient(145deg, #ffffff, #f2f6ff) padding-box,
+        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+      background-size: 100% 100%, 220% 220%;
+    }
+/* Light-mode input within this page (override inline dark rule) */
+    .light-mode .input-row input {
+      background: #ffffff !important;
+      border: 1px solid #c7cfdd !important;
+      color: var(--text-main) !important;
+    }
+    button:hover {
+      box-shadow: 0 0 18px rgba(160,110,255,0.45), 0 0 14px rgba(0,246,255,0.35);
+    }
+
+    .danger {
+      border-color: rgba(255, 60, 120, 0.6);
+      color: #ffb3b3;
+    }
+
+    .danger:hover {
+      box-shadow: 0 0 18px rgba(255,60,120,0.45), 0 0 14px rgba(255,0,150,0.35);
+    }
+
+    /* User Menu */
+    .user-menu {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 30px;
+      backdrop-filter: blur(10px);
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: 54px;
+      right: 16px;
+      width: 180px;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .user-dropdown a,
+    .user-dropdown button {
+      padding: 12px;
+      text-align: left;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      background: transparent;
+    }
+
+    .user-dropdown a:hover,
+    .user-dropdown button:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    /* Theme pills */
+    .theme-pill-buttons { display:flex; gap:10px; flex-wrap:wrap; }
+    .theme-pill {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 8px 16px;
+      cursor: pointer;
+      background:
+        radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.10), rgba(10, 10, 22, 0.96)) padding-box,
+        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+      background-size: 100% 100%, 200% 200%;
+      animation: voxBorderShift 14s linear infinite;
+    }
+    .theme-pill.active {
+      background:
+        radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.22), rgba(10, 10, 22, 0.98)) padding-box,
+        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+      background-size: 100% 100%, 220% 220%;
+      box-shadow: 0 0 12px rgba(0,246,255,0.35), 0 0 16px rgba(255,0,212,0.25);
+    }
+    </style>
+</head>
+
+<body>
+
+  <!-- Top-right user pill -->
+  <script src="/js/user.js"></script>
+
+  <div class="container" style="padding-top: 110px;">
+    <h1 class="page-title">Account Settings</h1>
+
+    <!-- DISPLAY NAME -->
+    <div class="card">
+      <h2>Display Name</h2>
+      <div class="input-row">
+        <label>New Display Name</label>
+        <input id="displayName" />
+      </div>
+      <button class="edge-btn" onclick="updateDisplayName()">Update Display Name</button>
+    </div>
+
+    <!-- USERNAME -->
+    <div class="card">
+      <h2>Username</h2>
+      <div class="input-row">
+        <label>New Username</label>
+        <input id="username" />
+      </div>
+      <button class="edge-btn" onclick="updateUsername()">Update Username</button>
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="card">
+      <h2>Password</h2>
+
+      <div class="input-row">
+        <label>Current Password</label>
+        <input type="password" id="currentPassword" />
+      </div>
+
+      <div class="input-row">
+        <label>New Password</label>
+        <input type="password" id="newPassword" />
+      </div>
+
+      <button class="edge-btn" onclick="updatePassword()">Change Password</button>
+    </div>
+
+    <!-- THEME SETTINGS -->
+    <div class="card">
+      <h2>Theme</h2>
+      <p style="opacity:0.8; margin-top:-6px;">Choose how Vox looks across all pages.</p>
+
+      <div class="theme-pill-buttons">
+        <div class="theme-pill" id="pill-light" onclick="setThemePill('light')">Light</div>
+        <div class="theme-pill" id="pill-dark" onclick="setThemePill('dark')">Dark</div>
+        <div class="theme-pill" id="pill-auto" onclick="setThemePill('auto')">Auto</div>
+      </div>
+    </div>
+
+    <!-- Admin tools (visible when current user is admin) -->
+    <div class="card" id="adminTools" style="display:none;">
+      <h2>Admin Tools</h2>
+      <p style="opacity:.8; margin-top:-6px;">Promote a user to admin. Leave blank to promote yourself.</p>
+      <div class="input-row">
+        <label>Username to promote (optional)</label>
+        <input id="promoteUsername" />
+      </div>
+      <button class="edge-btn" onclick="makeAdmin()">Make Admin</button>
+    </div>
+
+  </div>
+
+<script>
+/* ------------------------ USER ------------------------ */
+async function fetchUser() {
+  const res = await fetch("/auth/validate");
+  if (!res.ok) return;
+  const data = await res.json();
+  const u = data?.user || {};
+  const name = u.display_name || u.displayName || u.name || u.full_name || u.fullName || u.nickname || u.username || 'User';
+  document.getElementById("menuName").textContent = name;
+  document.getElementById("displayName").value = (u.display_name || u.displayName || '');
+  document.getElementById("username").value = u.username || "";
+  if (u.role === 'admin') {
+    document.getElementById('adminTools').style.display = 'block';
+  }
+}
+fetchUser = (function(orig){ return async function(){
+  const res = await fetch("/auth/validate");
+  if (!res.ok) return;
+  const data = await res.json();
+  const u = data?.user || {};
+  window.__voxPrefs = u.preferences || {};
+  const name = u.display_name || u.displayName || u.name || u.full_name || u.fullName || u.nickname || u.username || 'User';
+  document.getElementById("menuName").textContent = name;
+  document.getElementById("displayName").value = (u.display_name || u.displayName || '');
+  document.getElementById("username").value = u.username || "";
+  if (u.role === 'admin') {
+    document.getElementById('adminTools').style.display = 'block';
+  }
+};})(fetchUser);
+fetchUser();
+
+
+
+/* ------------------------ ACCOUNT UPDATES ------------------------ */
+async function updateDisplayName() {
+  const displayName = document.getElementById("displayName").value.trim();
+  await savePrefs({ displayName }); // preference mirror (optional)
+  try {
+    const res = await fetch("/auth/update-display-name", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ displayName })
+    });
+    const data = await res.json().catch(()=>({}));
+    if (res.ok && (data.success || data.message)) {
+      alert(data.message || 'Display name updated.');
+      // Refresh header with authoritative backend data
+      fetchUser();
+    } else {
+      alert(data.error || 'Server update failed.');
+    }
+  } catch {
+    alert('Network error updating server.');
+  }
+}
+
+async function updateUsername() {
+  const username = document.getElementById("username").value.trim();
+  const password = prompt("Enter your password to confirm:");
+
+  await savePrefs({ username });
+  try {
+    const res = await fetch("/auth/update-username", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json().catch(()=>({}));
+    if (res.ok && (data.success || data.message)) {
+      alert(data.message || 'Username updated.');
+      fetchUser();
+    } else alert(data.error || 'Server update failed.');
+  } catch { alert('Network error updating server.'); }
+}
+
+async function updatePassword() {
+  const currentPassword = document.getElementById("currentPassword").value;
+  const newPassword = document.getElementById("newPassword").value;
+
+  await savePrefs({ lastPasswordChange: new Date().toISOString() });
+  const res = await fetch("/auth/update-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ currentPassword, newPassword })
+  });
+
+  const data = await res.json();
+  alert(data.message || data.error);
+}
+
+
+/* ------------------------ THEME SETTINGS ------------------------ */
+async function makeAdmin() {
+  const username = document.getElementById('promoteUsername').value.trim();
+  const res = await fetch('/auth/make-admin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(username ? { username } : {})
+  });
+  const data = await res.json();
+  alert(data.success ? 'Promoted.' : (data.error || 'Failed'));
+}
+
+async function savePrefs(partial){
+  try{
+    // Merge with current prefs (from fetchUser) if available
+    const merged = Object.assign({}, window.__voxPrefs || {}, partial);
+    const res = await fetch('/auth/preferences', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ preferences: merged })});
+    if (res.ok) window.__voxPrefs = merged;
+  } catch {}
+}
+
+function setThemePill(mode) {
+  if (window.voxSetTheme) voxSetTheme(mode);
+  else if (typeof applyTheme === 'function') applyTheme(mode); // fallback if needed
+  localStorage.setItem('vox-theme', mode);
+  savePrefs({ theme: mode });
+
+  document.getElementById("pill-light").classList.remove("active");
+  document.getElementById("pill-dark").classList.remove("active");
+  document.getElementById("pill-auto").classList.remove("active");
+
+  document.getElementById("pill-" + mode).classList.add("active");
+}
+
+function loadCurrentTheme() {
+  const serverPref = (window.__voxPrefs && window.__voxPrefs.theme) || null;
+  const saved = serverPref || localStorage.getItem("vox-theme") || "auto";
+  try {
+    if (typeof applyTheme === 'function') applyTheme(saved);
+    else if (window.voxSetTheme) voxSetTheme(saved);
+  } catch {}
+  setThemePill(saved);
+}
+loadCurrentTheme();
+</script>
+
+</body>
+</html>

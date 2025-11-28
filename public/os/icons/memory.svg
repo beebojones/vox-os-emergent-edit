@@ -1,0 +1,20 @@
+<svg width="48" height="48" viewBox="0 0 48 48" 
+xmlns="http://www.w3.org/2000/svg">
+<defs>
+<filter id="neon">
+<feGaussianBlur stdDeviation="2" result="glow"/>
+<feMerge>
+<feMergeNode in="glow"/>
+<feMergeNode in="SourceGraphic"/>
+</feMerge>
+</filter>
+<linearGradient id="holo" x1="0%" y1="0%" x2="100%" y2="100%">
+<stop offset="0%" stop-color="#ff66ff"/>
+<stop offset="50%" stop-color="#9966ff"/>
+<stop offset="100%" stop-color="#66ccff"/>
+</linearGradient>
+</defs>
+<g stroke="url(#holo)" stroke-width="2.5" fill="none" filter="url(#neon)">
+<circle cx="24" cy="24" r="14"/>
+</g>
+</svg>

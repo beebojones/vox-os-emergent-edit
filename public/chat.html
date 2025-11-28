@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/theme.js"></script>
+    <title>Vox Chat</title>
+
+    <!-- Tier 2 Chrome -->
+    <link rel="stylesheet" href="/os/chrome.css">
+    <link rel="stylesheet" href="/os/layout.css">
+    <link rel="stylesheet" href="/css/vox-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: var(--bg-main);
+            font-family: system-ui, sans-serif;
+            overflow-x: hidden;      /* keep horizontal hidden */
+            overflow-y: auto;        /* allow vertical scroll and glow breathing room */
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* Container */
+        #chat-wrapper {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 28px;            /* extra side space to avoid glow cut-off */
+            overflow: visible;             /* allow glow to extend */
+        }
+
+        /* Chat area */
+        #chat-log {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 28px;             /* symmetric side gutters for glow */
+            overflow-x: visible;          /* allow side glow */
+        }
+
+        /* Messages */
+        .msg {
+            max-width: min(800px, 80%);
+            margin-bottom: 18px;
+            padding: 18px 22px;
+            border-radius: 18px;
+            font-size: 18px;
+            line-height: 1.45;
+            backdrop-filter: blur(18px) brightness(1.22);
+            border: 1px solid transparent;
+            background:
+              linear-gradient(145deg, rgba(5,5,12,0.85), rgba(15,15,28,0.95)) padding-box,
+              linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            box-shadow: 0 0 18px rgba(180,130,255,0.25), 0 0 10px rgba(0,246,255,0.12);
+            animation: voxBorderShift 16s linear infinite, fadeIn 0.35s ease forwards;
+            overflow-wrap: anywhere; /* prevent overflow */
+        }
+
+        .user {
+            margin-left: auto;
+            background: rgba(255,255,255,0.22);
+        }
+        .msg { margin-left: 10px; margin-right: 10px; }
+
+        .assistant {
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* Input area */
+        #chat-input-bar {
+            display: flex;
+            gap: 10px;
+            padding-top: 12px;
+        }
+
+        #chat-text {
+            flex: 1;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            font-size: 18px;
+            color: white;
+            background: rgba(255,255,255,0.14);
+            backdrop-filter: blur(18px);
+            border: 2px solid rgba(255,255,255,0.25);
+            min-height: 48px;
+            line-height: 1.4;
+        }
+
+        #chat-text::placeholder {
+            color: rgba(255,255,255,0.55);
+        }
+
+#send-btn {
+            padding: 16px 26px;
+            font-size: 18px;
+            color: white;
+            border: 1px solid transparent;
+            border-radius: 14px;
+            cursor: pointer;
+            background:
+              linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.96)) padding-box,
+              linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            backdrop-filter: blur(14px);
+            transition: 0.25s;
+        }
+
+        #send-btn:hover {
+            background: rgba(255,255,255,0.38);
+            box-shadow: 0 0 22px rgba(170,110,255,0.5);
+        }
+
+        /* Typing indicator */
+        .typing { display:inline-flex; gap:6px; align-items:center; }
+        .typing .dot { width:6px; height:6px; border-radius:999px; background: rgba(255,255,255,0.8); animation: blink 1s infinite; }
+        .typing .dot:nth-child(2){ animation-delay: .15s; }
+        .typing .dot:nth-child(3){ animation-delay: .3s; }
+        @keyframes blink { 0%{opacity:.2; transform: translateY(0);} 50%{opacity:1; transform: translateY(-2px);} 100%{opacity:.2; transform: translateY(0);} }
+
+        /* Rich text inside assistant bubble */
+        .msg.assistant .rich p { margin: 0 0 10px 0; }
+        .msg.assistant .rich ul, .msg.assistant .rich ol { margin: 0 0 10px 22px; padding: 0; }
+        .msg.assistant .rich code { background: rgba(255,255,255,0.15); padding: 0 4px; border-radius: 6px; }
+        .msg.assistant .rich pre { background: rgba(0,0,0,0.35); padding: 10px; border-radius: 10px; overflow-x: auto; }
+        .msg.assistant .rich pre code { background: transparent; }
+        .msg.assistant .rich h1, .msg.assistant .rich h2, .msg.assistant .rich h3 { margin: 6px 0 8px; font-weight:700; }
+
+        /* Soft entrance */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="chat-wrapper">
+
+        <!-- Toolbar -->
+        <div class="toolbar" style="display:flex; gap:10px; margin-bottom:10px;">
+            <button id="new-chat" class="btn" style="padding:10px 14px; border-radius:10px; border:1px solid transparent; background: linear-gradient(145deg, rgba(5,5,12,.9), rgba(15,15,28,.96)) padding-box, linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box; background-size:100% 100%,220% 220%; animation: voxBorderShift 14s linear infinite; color:#fff;">New Chat</button>
+            <button id="clear-chat" class="btn" style="padding:10px 14px; border-radius:10px; border:1px solid transparent; background: linear-gradient(145deg, rgba(5,5,12,.9), rgba(15,15,28,.96)) padding-box, linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box; background-size:100% 100%,220% 220%; animation: voxBorderShift 14s linear infinite; color:#fff;">Clear</button>
+        </div>
+
+        <!-- Messages -->
+        <div id="chat-log"></div>
+
+        <!-- Input -->
+        <div id="chat-input-bar">
+            <textarea id="chat-text" placeholder="Say something to Vox... (Shift+Enter to send)" rows="2" style="resize: vertical;"></textarea>
+            <button id="send-btn">Send</button>
+        </div>
+
+    </div>
+
+    <!-- Glow Engine -->
+    <script src="/os/glow_engine.js"></script>
+    <script src="/js/user.js"></script>
+
+    <!-- Chat Logic -->
+    <script>
+        const log = document.getElementById("chat-log");
+        const input = document.getElementById("chat-text");
+        const sendBtn = document.getElementById("send-btn");
+
+        let typingNode = null;
+        let history = JSON.parse(localStorage.getItem('vox_chat_history')||'[]');
+        let sessionId = localStorage.getItem('vox_chat_session');
+
+        function saveHistory(){
+            try { localStorage.setItem('vox_chat_history', JSON.stringify(history.slice(-40))); } catch {}
+        }
+        function renderHistory(){
+            log.innerHTML = '';
+            for (const m of history){
+                if (m.role === 'assistant') addAssistantRich(m.content);
+                else addMessage(m.content, 'user');
+            }
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function addMessage(text, sender) {
+            const div = document.createElement("div");
+            div.className = "msg " + sender;
+            div.textContent = text;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function showTyping(){
+            if (typingNode) return;
+            const div = document.createElement('div');
+            div.className = 'msg assistant';
+            div.innerHTML = '<span class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+            typingNode = div;
+        }
+        function hideTyping(){
+            if (typingNode && typingNode.parentNode){ typingNode.parentNode.removeChild(typingNode); }
+            typingNode = null;
+        }
+
+        function escapeHtml(s){
+            return s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+        }
+
+        function renderMarkdown(text){
+            if (!text || typeof text !== 'string') return '';
+            // Code blocks ```...```
+            let blocks = [];
+            text = text.replace(/```([\s\S]*?)```/g, (_, code) => {
+                const idx = blocks.push(`<pre><code>${escapeHtml(code.trim())}</code></pre>`) - 1;
+                return `@@BLOCK${idx}@@`;
+            });
+            // Inline code `code`
+            text = text.replace(/`([^`]+)`/g, (_, code) => `<code>${escapeHtml(code)}</code>`);
+            // Basic formatting: bold/italic
+            text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+            // Lists
+            const lines = text.split(/\r?\n/);
+            let out = '';
+            let inUl = false, inOl = false;
+            for (const line of lines){
+                const b = /^\s*[-*]\s+(.+)$/.exec(line);
+                const n = /^\s*\d+\.\s+(.+)$/.exec(line);
+                if (b){
+                    if (!inUl){ out += '<ul>'; inUl = true; }
+                    out += `<li>${b[1]}</li>`;
+                    continue;
+                }
+                if (n){
+                    if (!inOl){ out += '<ol>'; inOl = true; }
+                    out += `<li>${n[1]}</li>`;
+                    continue;
+                }
+                if (inUl){ out += '</ul>'; inUl = false; }
+                if (inOl){ out += '</ol>'; inOl = false; }
+                out += line + '\n';
+            }
+            if (inUl) out += '</ul>';
+            if (inOl) out += '</ol>';
+            // Headings: lines starting with ###, ##, #
+            out = out.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>')
+                     .replace(/^##\s+(.+)$/gm, '<h2>$1</h2>')
+                     .replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+
+            // Paragraphs: split on blank lines (skip if already block-level)
+            const blockStart = /^(<ul>|<ol>|<h1>|<h2>|<h3>|<pre>)/;
+            const paras = out.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+            const html = paras.map(p => blockStart.test(p) ? p : `<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+            // Restore code blocks
+            return html.replace(/@@BLOCK(\d+)@@/g, (_, i) => blocks[Number(i)] || '');
+        }
+        function addAssistantRich(text){
+            const div = document.createElement('div');
+            div.className = 'msg assistant';
+            const inner = document.createElement('div');
+            inner.className = 'rich';
+            inner.innerHTML = renderMarkdown(text);
+            div.appendChild(inner);
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, "user");
+            history.push({ role:'user', content:text });
+            saveHistory();
+            input.value = "";
+            showTyping();
+
+            try {
+                const res = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: text, history: history.slice(-20), sessionId })
+                });
+
+                const data = await res.json();
+                hideTyping();
+                addAssistantRich(data.reply || "(no response)");
+                history.push({ role:'assistant', content: data.reply || "(no response)" });
+                saveHistory();
+
+            } catch (e) {
+                hideTyping();
+                addMessage("Error contacting server.", "assistant");
+            }
+        }
+
+        sendBtn.onclick = sendMessage;
+        input.addEventListener("keydown", e => {
+            if (e.key === "Enter" && e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        // New chat
+        document.getElementById('new-chat').onclick = async () => {
+            try {
+                const title = prompt('Title for new chat:', new Date().toLocaleString()) || new Date().toLocaleString();
+                const r = await fetch('/chat/start', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title }) });
+                const s = await r.json();
+                sessionId = s.id; localStorage.setItem('vox_chat_session', sessionId);
+                history = []; saveHistory(); renderHistory();
+            } catch {}
+        };
+        // Clear chat
+        document.getElementById('clear-chat').onclick = async () => {
+            try { await fetch('/chat/clear', { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ sessionId }) }); } catch {}
+            history = []; saveHistory(); renderHistory();
+        };
+
+        // Ensure a session exists on load
+        (async () => {
+            if (!sessionId) {
+                try {
+                    const r = await fetch('/chat/start', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title: 'Default' }) });
+                    const s = await r.json(); sessionId = s.id; localStorage.setItem('vox_chat_session', sessionId);
+                } catch {}
+            }
+            // Render previous chat on load
+            renderHistory();
+        })();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+
+/* Tier 2 Chrome – Neon Glass Aesthetic */
+
+:root {
+    --glass-alpha: 0.22;
+    --glass-radius: 14px;
+    --glow-speed-bg: 90s;
+    --glow-speed-fg: 22s;
+    --accent: #8f5bff;
+}
+
+/* Desktop Background */
+body {
+    background: radial-gradient(circle at 45% 40%, #4b1d80, #12061f 60%);
+    animation: bgGlow var(--glow-speed-bg) ease-in-out infinite alternate;
+    overflow: hidden;
+}
+
+@keyframes bgGlow {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(90deg); }
+}
+
+/* Window Glass Chrome */
+.window {
+    backdrop-filter: blur(24px) brightness(1.25);
+    background: rgba(255,255,255,var(--glass-alpha));
+    border-radius: var(--glass-radius);
+    border: 4px solid rgba(255,255,255,0.2);
+    animation: fgGlow var(--glow-speed-fg) linear infinite;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
+}
+
+/* Focused Window Lift */
+.window:focus-within {
+    transform: translateY(-6px);
+    border: 6px solid rgba(255,255,255,0.38);
+    box-shadow: 0 0 40px rgba(160,110,255,0.6);
+}
+
+@keyframes fgGlow {
+    0% { border-color: rgba(255,80,255,0.4); }
+    50% { border-color: rgba(80,160,255,0.5); }
+    100% { border-color: rgba(255,120,220,0.4); }
+}
+
+/* Taskbar Glass */
+#taskbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    backdrop-filter: blur(22px) brightness(1.12);
+    border-top: 2px solid rgba(255,255,255,0.18);
+    background: rgba(0,0,0,0.18);
+    animation: fgGlow var(--glow-speed-fg) linear infinite;
+}
+
+/* Panels */
+.panel {
+    backdrop-filter: blur(24px) brightness(1.18);
+    border-radius: var(--glass-radius);
+    border: 2px solid rgba(255,255,255,0.18);
+}

@@ -1,0 +1,134 @@
+/* ---------------------------------------------------
+   Vox OS – Spotlight Search Styles
+   Package 12 (FULL FILE)
+--------------------------------------------------- */
+
+#spotlight {
+    position: fixed;
+    left: 50%;
+    top: 20%;
+    transform: translateX(-50%);
+
+    width: 560px;
+    background: var(--os-glass);
+    backdrop-filter: blur(22px);
+
+    border: 1px solid var(--os-border);
+    border-radius: 16px;
+
+    box-shadow: 0 12px 24px rgba(0,0,0,0.45);
+
+    padding: 16px;
+    display: none;
+
+    z-index: 999999;
+
+    animation: spotlightFade 180ms ease;
+}
+
+@keyframes spotlightFade {
+    from { opacity: 0; transform: translate(-50%, -10%) scale(0.96); }
+    to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+/* ---------------------------------------------------
+   INPUT BAR
+--------------------------------------------------- */
+
+#spotlight-search {
+    width: 100%;
+    padding: 12px 16px;
+
+    font-size: 16px;
+    color: var(--os-text);
+
+    background: rgba(255,255,255,0.10);
+    border: 1px solid var(--os-border);
+
+    border-radius: 12px;
+
+    transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+#spotlight-search:focus {
+    background: rgba(255,255,255,0.18);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 12px var(--accent-glow);
+    outline: none;
+}
+
+/* ---------------------------------------------------
+   RESULTS LIST
+--------------------------------------------------- */
+
+#spotlight-results {
+    margin-top: 14px;
+    max-height: 380px;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.spotlight-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 10px 14px;
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.06);
+
+    cursor: pointer;
+    user-select: none;
+
+    transition:
+        background 150ms ease,
+        transform 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.spotlight-item:hover,
+.spotlight-item.active {
+    background: rgba(255,255,255,0.14);
+    transform: translateX(4px);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.spotlight-item-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.spotlight-item-title {
+    font-size: 15px;
+    color: var(--os-text);
+    flex: 1;
+}
+
+.spotlight-item-desc {
+    font-size: 12px;
+    opacity: 0.6;
+    margin-top: 2px;
+}
+
+/* ---------------------------------------------------
+   SCROLLBAR
+--------------------------------------------------- */
+
+#spotlight-results::-webkit-scrollbar {
+    width: 8px;
+}
+#spotlight-results::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.25);
+    border-radius: 8px;
+}
+#spotlight-results::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.35);
+}

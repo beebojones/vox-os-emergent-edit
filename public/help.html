@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/theme.js"></script>
+    <title>Help Center</title>
+
+    <!-- Tier 2 Chrome -->
+    <link rel="stylesheet" href="/os/chrome.css">
+    <link rel="stylesheet" href="/os/layout.css">
+    <link rel="stylesheet" href="/css/vox-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, sans-serif;
+            min-height: 100vh;
+            overflow-y: auto;
+            display: block;
+        }
+
+        .help-box {
+            width: 90%;
+            max-width: 900px;
+            padding: 110px 50px 40px; /* headroom for user pill */
+            border-radius: 20px;
+            border: none; /* remove edge border */
+            text-align: left;
+            background: linear-gradient(145deg, rgba(5, 5, 12, 0.95), rgba(10, 10, 22, 0.98));
+            background-size: 100% 100%;
+            box-shadow: 0 0 50px rgba(150,110,255,0.25), 0 0 20px rgba(0,246,255,0.10);
+            animation: fadeIn 0.45s ease-out;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(14px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .title {
+            font-size: clamp(28px, 6vw, 48px);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            text-shadow: 0 0 18px rgba(160,110,255,.9);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            text-shadow: 0 0 20px rgba(170,120,255,0.65);
+        }
+
+        .text {
+            font-size: 18px;
+            line-height: 1.55;
+            opacity: 0.92;
+        }
+
+        .link-list {
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        .link-list a {
+            display: block;
+            color: inherit;
+            font-size: 18px;
+            margin: 6px 0;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 12px;
+            transition: 0.25s;
+            border: 1px solid transparent;
+            background: linear-gradient(145deg, rgba(5,5,12,.9), rgba(15,15,28,.96)) padding-box,
+                       linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            backdrop-filter: blur(8px);
+        }
+
+        .link-list a:hover {
+            background: rgba(255,255,255,0.26);
+            box-shadow: 0 0 16px rgba(170,120,255,0.55);
+        }
+
+        .btn-back {
+            display: block;
+            margin: 30px auto 10px auto;
+            padding: 14px 24px;
+            font-size: 18px;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.26);
+            backdrop-filter: blur(12px);
+            transition: 0.25s;
+            text-align: center;
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.38);
+            box-shadow: 0 0 22px rgba(170,120,255,0.55);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="help-box">
+
+        <div class="title">Help Center</div>
+
+        <div class="section-title">Getting Started</div>
+        <div class="text">
+            Use Vox OS as your immersive digital workspace.  
+            You can chat, explore files, view memories, and customize your entire environment.
+        </div>
+
+        <div class="section-title">Common Tasks</div>
+        <div class="link-list">
+            <a href="dashboard.html">Open Dashboard</a>
+            <a href="chat.html">Start a Conversation</a>
+            <a href="settings.html">Adjust Settings</a>
+            <a href="memory.html">View Memory Console</a>
+            <a href="notifications.html">View Notifications</a>
+            <a href="tools.html">Developer Tools</a>
+        </div>
+
+        <div class="section-title">FAQ</div>
+        <div class="text">
+            <strong>Why is everything glowing?</strong><br>
+            Because it's beautiful.<br><br>
+
+            <strong>Is Vox OS a real operating system?</strong><br>
+            It's a simulated OS running in your browser — but it feels real.<br><br>
+
+            <strong>Where does data live?</strong><br>
+            Memory and user data are stored in your PostgreSQL backend.<br><br>
+
+            <strong>Why does the UI look like deep space neon?</strong><br>
+            Because that’s your aesthetic, John.  
+        </div>
+
+        <div class="section-title">Need More?</div>
+        <div class="link-list">
+            <a href="support.html">Support</a>
+            <a href="about.html">About Vox OS</a>
+        </div>
+
+        <button class="btn-back" onclick="location.href='dashboard.html'">
+            Back to Dashboard
+        </button>
+
+    </div>
+
+    <script src="/os/glow_engine.js"></script>
+    <script src="/js/user.js"></script>
+</body>
+</html>

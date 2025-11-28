@@ -1,0 +1,150 @@
+/* Vox Global Neon Theme (matches memory.html aesthetics) */
+:root {
+  --bg-main: #050509;
+  --text-main: #f5f5f5;
+  --text-soft: #a8b0d0;
+  --cyan: #00f6ff;
+  --magenta: #ff00d4;
+  --purple: #9a4dff;
+}
+
+/*****************************************
+ Base backdrop (applies gently to all pages)
+******************************************/
+body {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(0, 246, 255, 0.05), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(255, 0, 212, 0.06), transparent 55%),
+    radial-gradient(circle at 100% 0%, rgba(154, 77, 255, 0.07), transparent 55%),
+    radial-gradient(circle at 0% 100%, rgba(255, 122, 0, 0.04), transparent 55%),
+    var(--bg-main) !important;
+  color: var(--text-main);
+  animation: voxBgShift 25s linear infinite alternate;
+}
+
+@keyframes voxBgShift {
+  0%   { background-position: 0 0, 100% 100%, 100% 0, 0 100%; }
+  50%  { background-position: 10% -5%, 95% 110%, 110% 10%, -10% 95%; }
+  100% { background-position: -5% 10%, 105% 90%, 90% -10%, 5% 105%; }
+}
+
+/*****************************************
+ Animated glow accents for common buttons
+******************************************/
+button,
+.nav-button,
+.action-btn,
+.launcher-btn,
+.btn,
+.toolbar-button {
+  position: relative;
+  background-image: linear-gradient(120deg, rgba(0,246,255,0.12), rgba(255,0,212,0.12), rgba(154,77,255,0.12));
+  background-size: 200% 200%;
+  animation: voxGlowShift 16s linear infinite; /* always-on soft glow */
+}
+
+button:hover,
+.nav-button:hover,
+.action-btn:hover,
+.launcher-btn:hover,
+.btn:hover,
+.toolbar-button:hover {
+  animation-duration: 6s; /* speed up on hover */
+  box-shadow: 0 0 14px rgba(0, 246, 255, 0.35), 0 0 18px rgba(255, 0, 212, 0.25);
+}
+
+@keyframes voxGlowShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animated neon border helper (use when element sets two backgrounds with padding-box/border-box) */
+@keyframes voxBorderShift {
+  0%   { background-position: center,   0% 50%; }
+  50%  { background-position: center, 100% 50%; }
+  100% { background-position: center,   0% 50%; }
+}
+
+/* Generic card styling to mimic memory.html */
+.card, .glass-card {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(145deg, rgba(5, 5, 12, 0.95), rgba(10, 10, 22, 0.98)) padding-box,
+    linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+  background-size: 100% 100%, 240% 240%;
+  animation: voxBorderShift 18s linear infinite;
+  box-shadow: 0 0 22px rgba(154,77,255,0.12), 0 0 10px rgba(0,246,255,0.12);
+}
+
+/*****************************************
+ Light mode high-contrast overrides
+******************************************/
+.light-mode {
+  --bg-main: #f7f9fc;
+  --text-main: #0e1220;
+  --text-soft: #3d4456;
+}
+.light-mode body { color: var(--text-main); }
+/* Force light backdrop across pages (overrides inline dark styles) */
+.light-mode body {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(13, 185, 197, 0.10), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(255, 0, 212, 0.10), transparent 55%),
+    radial-gradient(circle at 100% 0%, rgba(154, 77, 255, 0.10), transparent 55%),
+    radial-gradient(circle at 0% 100%, rgba(255, 122, 0, 0.08), transparent 55%),
+    var(--bg-main) !important;
+}
+.light-mode .card, .light-mode .glass-card {
+  background:
+    linear-gradient(145deg, #ffffff, #f2f6ff) padding-box,
+    linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+  box-shadow: 0 6px 24px rgba(16,19,32,0.08), 0 0 1px rgba(16,19,32,0.15);
+}
+.light-mode input, .light-mode textarea, .light-mode select, .light-mode .search-box, .light-mode #chat-text {
+  background: #ffffff;
+  border: 1px solid #c7cfdd !important;
+  color: var(--text-main) !important;
+}
+.light-mode input:focus, .light-mode textarea:focus, .light-mode select:focus, .light-mode .search-box:focus, .light-mode #chat-text:focus {
+  border-color: #0db9c5 !important;
+  box-shadow: 0 0 0 3px rgba(13,185,197,0.2) !important;
+}
+.light-mode button,
+.light-mode .action-btn,
+.light-mode .btn,
+.light-mode .toolbar-button {
+  color: var(--text-main);
+  background:
+    linear-gradient(145deg, #f8fbff, #eef3ff) padding-box,
+    linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+  border: 1px solid transparent;
+  animation: voxBorderShift 14s linear infinite;
+}
+.light-mode button:hover,
+.light-mode .action-btn:hover,
+.light-mode .btn:hover,
+.light-mode .toolbar-button:hover {
+  box-shadow: 0 8px 22px rgba(16,19,32,0.12), 0 0 0 1px rgba(16,19,32,0.1);
+}
+
+/*****************************************
+ Badges
+******************************************/
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.12);
+}
+.badge-admin {
+  color: var(--cyan);
+  border-color: rgba(0,246,255,0.45);
+  background: rgba(0,246,255,0.12);
+  box-shadow: 0 0 8px rgba(0,246,255,0.35);
+}
