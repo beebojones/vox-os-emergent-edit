@@ -2,16 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <!-- Theme Loader -->
-    <script src="js/theme.js"></script>
-
+    <script src="/js/theme.js"></script>
     <title>Register | Vox Assistant</title>
 
-    <!-- Corrected stylesheet paths (no leading slash) -->
-    <link rel="stylesheet" href="os/chrome.css">
-    <link rel="stylesheet" href="os/layout.css">
-    <link rel="stylesheet" href="css/vox-theme.css">
+    <!-- Tier 2 Chrome -->
+    <link rel="stylesheet" href="/os/chrome.css">
+    <link rel="stylesheet" href="/os/layout.css">
+    <link rel="stylesheet" href="/css/vox-theme.css">
 
     <style>
         body {
@@ -19,6 +16,7 @@
             font-family: system-ui, sans-serif;
             overflow: hidden;
             color: white;
+            background: var(--background-main);
         }
 
         .auth-box {
@@ -59,10 +57,11 @@
             font-size: 16px;
             box-sizing: border-box;
         }
-        .light-mode input { 
-            background:#fff !important; 
-            border:1px solid #c7cfdd !important; 
-            color:var(--text-main) !important; 
+
+        .light-mode input {
+            background: #fff !important;
+            border: 1px solid #c7cfdd !important;
+            color: var(--text-main) !important;
         }
 
         button {
@@ -100,68 +99,69 @@
 
 <body>
 
-    <div class="auth-box">
-        <div class="auth-title">Create Account</div>
+<!-- Set BASE_URL for production + local -->
+<script>
+const BASE_URL = window.location.origin;
+</script>
 
-        <form id="registerForm">
-            <input type="text" placeholder="Display Name" id="displayName">
-            <input type="text" placeholder="Username" id="username">
-            <input type="password" placeholder="Password" id="password">
-            <input type="password" placeholder="Confirm Password" id="confirmPassword">
-            <button type="submit">Register</button>
-        </form>
+<div class="auth-box">
+    <div class="auth-title">Create Account</div>
 
-        <div class="bottom-text">
-            Already have an account? <a href="login.html">Login</a>
-        </div>
+    <form id="registerForm" autocomplete="off">
+        <input type="text" placeholder="Display Name" id="displayName" autocomplete="name">
+        <input type="text" placeholder="Username" id="username" autocomplete="username">
+        <input type="password" placeholder="Password" id="password" autocomplete="new-password">
+        <input type="password" placeholder="Confirm Password" id="confirmPassword" autocomplete="new-password">
+        <button type="submit">Register</button>
+    </form>
+
+    <div class="bottom-text">
+        Already have an account? <a href="login.html">Login</a>
     </div>
+</div>
 
-    <!-- Register Logic -->
-    <script>
-        const BASE_URL = "https://vox-server-production.up.railway.app";
+<script>
+const form = document.getElementById('registerForm');
 
-        const form = document.getElementById('registerForm');
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-            const displayName = document.getElementById('displayName').value.trim();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const confirm = document.getElementById('confirmPassword').value;
+    const displayName = document.getElementById('displayName').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirmPassword').value;
 
-            if (!displayName || !username || !password) {
-                return alert('Please fill required fields.');
-            }
+    if (!displayName || !username || !password)
+        return alert('Please fill all required fields.');
 
-            if (password !== confirm) {
-                return alert('Passwords do not match.');
-            }
+    if (password !== confirm)
+        return alert('Passwords do not match.');
 
-            try {
-                const res = await fetch(`${BASE_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ displayName, username, password })
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    return alert(data.error || 'Registration failed');
-                }
-
-                alert('Registration successful. You can now log in.');
-                window.location.href = 'login.html';
-
-            } catch (err) {
-                console.error(err);
-                alert('Registration failed.');
-            }
+    try {
+        const res = await fetch(`${BASE_URL}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ displayName, username, password })
         });
-    </script>
 
-    <!-- Glow Engine (correct path) -->
-    <script src="os/glow_engine.js"></script>
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error("Registration error:", data);
+            return alert(data.error || "Registration failed.");
+        }
+
+        alert("Registration successful. You can now log in.");
+        window.location.href = "/login.html";
+
+    } catch (err) {
+        console.error("Network error:", err);
+        alert("Registration failed.");
+    }
+});
+</script>
+
+<script src="/os/glow_engine.js"></script>
 
 </body>
 </html>
