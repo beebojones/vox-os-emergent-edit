@@ -6,14 +6,17 @@ dotenv.config();
 const { Pool } = pg;
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    host: process.env.DB_HOST,
+    port: 5432,
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+
+    // ⭐ Disable SSL for Railway Postgres
+    ssl: false
 });
 
 export default {
     query: (text, params) => pool.query(text, params),
     pool
 };
-
