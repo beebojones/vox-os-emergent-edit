@@ -111,32 +111,47 @@
 
     <!-- Scripts -->
     <script>
-    const form = document.getElementById('registerForm');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const displayName = document.getElementById('displayName').value.trim();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      const confirm = document.getElementById('confirmPassword').value;
+const BASE_URL = "https://vox-server-production.up.railway.app";
 
-      if (!displayName || !username || !password) return alert('Please fill required fields.');
-      if (password !== confirm) return alert('Passwords do not match.');
+const form = document.getElementById('registerForm');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-      try {
-        const res = await fetch('/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ displayName, username, password })
-        });
-        const data = await res.json();
-        if (!res.ok) return alert(data.error || 'Registration failed');
-        alert('Registration successful. You can now log in.');
-        window.location.href = '/login.html';
-      } catch {
-        alert('Registration failed.');
-      }
+  const displayName = document.getElementById('displayName').value.trim();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const confirm = document.getElementById('confirmPassword').value;
+
+  if (!displayName || !username || !password) {
+    return alert('Please fill required fields.');
+  }
+
+  if (password !== confirm) {
+    return alert('Passwords do not match.');
+  }
+
+  try {
+    const res = await fetch(`${BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ displayName, username, password })
     });
-    </script>
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return alert(data.error || 'Registration failed');
+    }
+
+    alert('Registration successful. You can now log in.');
+    window.location.href = '/login.html';
+
+  } catch (err) {
+    console.error(err);
+    alert('Registration failed.');
+  }
+});
+</script>
 
     <!-- Tier 2 Glow Engine -->
     <script src="/os/glow_engine.js"></script>
