@@ -1,211 +1,134 @@
-/* ============================================================
-   Vox OS — Hex Dashboard (Refined)
-   Memory Console v2 Aesthetic
-   ============================================================ */
+/* ============================================
+   Vox OS – Hex Dashboard
+   Style Guide: Matches memory.css glow + feel
+   ============================================ */
 
+/* Global Variables pulled from Memory Console */
 :root {
-    --hex-size: clamp(180px, 19vw, 260px); /* larger autoscale */
-    --hex-gap: clamp(12px, 2.2vw, 20px);   /* closer spacing */
-    --glow-outer-1: rgba(0, 246, 255, 0.35);
-    --glow-outer-2: rgba(255, 0, 212, 0.28);
-
-    --glow-cyan: var(--cyan);
-    --glow-magenta: var(--magenta);
-    --glow-purple: var(--purple);
-
-    --tile-bg: rgba(12, 12, 20, 0.55);
-    --tile-bg-hover: rgba(20, 20, 36, 0.85);
+  --vox-bg: #0a0a0f;
+  --vox-tile-bg: #111;
+  --vox-accent: #ff2f6f;
+  --vox-glow-1: rgba(255, 0, 85, 0.8);
+  --vox-glow-2: rgba(0, 140, 255, 0.8);
+  --vox-border: #8882;
+  --vox-text: #f2f2f2;
+  --vox-hover-text: #fff;
 }
 
-/* ------------------------------------------------------------
-   Body Background
-   ------------------------------------------------------------ */
-
+/* Page background */
 body {
-    margin: 0;
-    /* match memory.html background mood */
-    background:
-      radial-gradient(circle at 0% 0%, rgba(0, 246, 255, 0.06), transparent 55%),
-      radial-gradient(circle at 100% 100%, rgba(255, 0, 212, 0.07), transparent 55%),
-      radial-gradient(circle at 100% 0%, rgba(154, 77, 255, 0.08), transparent 55%),
-      radial-gradient(circle at 0% 100%, rgba(255, 122, 0, 0.05), transparent 55%),
-      var(--bg-main, #050509);
-    color: white;
-    font-family: system-ui, sans-serif;
-    overflow-x: hidden;
+  background: var(--vox-bg);
+  color: var(--vox-text);
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* ------------------------------------------------------------
-   Header
-   ------------------------------------------------------------ */
-
-.vox-header {
-    --header-h: 64px;
-    height: var(--header-h);
-    padding: 0 28px;
-    display: flex;
-    align-items: center;
-    background: rgba(20, 20, 36, 0.55);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+/* Layout container */
+.hex-grid {
+  width: 90%;
+  max-width: 1400px;
+  margin: 60px auto 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 32px;
+  justify-items: center;
 }
 
-.vox-logo {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 12px rgba(154,77,255,0.6);
+/* Core hexagon shape */
+.hex {
+  width: 160px;
+  height: 138.56px; /* Perfect hex proportion (width * 0.866) */
+  background: var(--vox-tile-bg);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+  clip-path: polygon(
+    25% 0%,
+    75% 0%,
+    100% 50%,
+    75% 100%,
+    25% 100%,
+    0% 50%
+  );
+  border: 1px solid var(--vox-border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Profile photo + dropdown unchanged */
-/* Profile pill/dropdown now provided by /js/user.js to match memory.html */
-
-/* ------------------------------------------------------------
-   HEX GRID
-   ------------------------------------------------------------ */
-
-.hex-container {
-    width: 100%;
-    min-height: calc(100vh - var(--header-h, 64px) - 80px);
-    display: grid;
-    justify-content: center;    /* center columns horizontally */
-    align-content: center;      /* center rows vertically */
-    grid-template-columns: repeat(auto-fit, var(--hex-size)); /* fixed-size columns */
-    gap: var(--hex-gap);
-    padding: 40px 28px 60px;
+/* Glow effect copied from memory.css */
+.hex::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+  padding: 2px;
+  background: linear-gradient(130deg, var(--vox-glow-1), var(--vox-glow-2));
+  -webkit-mask: 
+     linear-gradient(#000 0 0) content-box, 
+     linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-/* ------------------------------------------------------------
-   HEX TILE — PERFECT SHAPE + GLOW
-   ------------------------------------------------------------ */
-
-.hex-tile {
-    width: var(--hex-size);
-    /* Regular flat-top hexagon: height = width * sqrt(3)/2 */
-    height: calc(var(--hex-size) * 0.8660254);
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-
-    display: grid;
-    place-items: center;
-
-/* Soft outer aura; no visible border */
-    filter: drop-shadow(0 0 24px var(--glow-outer-1)) drop-shadow(0 0 22px var(--glow-outer-2));
-
-    transition: transform 0.18s ease;
+/* Hover glow */
+.hex:hover::before {
+  opacity: 1;
 }
 
-/* Corona glow handled by ::before; tile itself has no border fill */
-
-/* Border (outer) using animated gradient */
-.hex-tile::before {
-    content: "";
-    position: absolute;
-    inset: -20%;                      /* extend well beyond edges */
-    /* no clip-path — allows true feathered halo, not a border */
-    background: conic-gradient(
-      #ff0044, #ff7a00, #ffd400, #4dff00, #00f6ff, #0066ff, #7a00ff, #ff00d4, #ff0044
-    );
-animation: voxRingSpin 36s linear infinite;
-    filter: blur(48px);               /* soft corona */
-    mix-blend-mode: screen;
-    opacity: 0.5;
-    z-index: 0;
-    pointer-events: none;
-}
-@keyframes voxRingSpin {
-  to { transform: rotate(360deg); }
+.hex:hover {
+  transform: scale(1.07);
 }
 
-/* Inner solid card (no border) */
-.hex-inner {
-    position: absolute;
-    inset: 12px;
-    clip-path: inherit;
-    display: grid;
-    place-items: center;
-background:
-      linear-gradient(120deg, rgba(167, 89, 255, 0.58) 0%, rgba(20, 18, 34, 0.98) 70%) padding-box,
-      radial-gradient(45% 45% at 40% 22%, rgba(0, 246, 255, 0.14), rgba(0,0,0,0)) padding-box;
-    box-shadow:
-      inset 0 0 35px rgba(0,0,0,0.45),
-      0 0 12px rgba(0, 246, 255, 0.18),
-      0 0 22px rgba(154, 77, 255, 0.14);
-    z-index: 1;
+/* Icon styling */
+.hex-icon {
+  width: 64px;
+  height: 64px;
+  opacity: 0.85;
+  transition: opacity 0.25s;
 }
 
-
-/* Hover state */
-.hex-tile:hover {
-    transform: translateY(-4px) scale(1.03);
-}
-.hex-tile:hover .hex-inner {
-    background:
-      radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.22), rgba(10, 10, 22, 0.98)) padding-box;
-    box-shadow:
-      0 0 22px rgba(0, 246, 255, 0.38),
-      0 0 32px rgba(255, 0, 212, 0.28);
+.hex:hover .hex-icon {
+  opacity: 0;
 }
 
-/* ------------------------------------------------------------
-   ICON + LABEL FADE SWAP
-   ------------------------------------------------------------ */
-
-.ico, .hex-tile .label {
-    position: absolute;
-    top: 50%; left: 50%; transform: translate(-50%, -50%);
-    pointer-events: none; /* allow whole tile to be clickable */
+/* Hover text (hidden until hover) */
+.hex-label {
+  position: absolute;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--vox-hover-text);
+  opacity: 0;
+  transition: opacity 0.25s ease;
 }
 
-.ico {
-    display: grid;
-    place-items: center;
-    width: clamp(64px, 7vw, 92px);
-    height: clamp(64px, 7vw, 92px);
-    border-radius: 50%;
-    background:
-      radial-gradient(60% 60% at 50% 45%, rgba(255,255,255,0.10), rgba(0,0,0,0) 60%),
-      radial-gradient(55% 55% at 50% 50%, rgba(0, 246, 255, 0.28), rgba(154, 77, 255, 0.16));
-    box-shadow:
-      0 0 26px rgba(0, 246, 255, 0.55),
-      0 0 34px rgba(154, 77, 255, 0.45);
-}
-.ico i {
-    font-size: clamp(34px, 5vw, 56px);
-    background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    background-size: 200% 200%;
-    animation: voxGlowShift 22s linear infinite;
-    filter: drop-shadow(0 0 6px rgba(154,77,255,0.28)) drop-shadow(0 0 5px rgba(0,246,255,0.2));
+.hex:hover .hex-label {
+  opacity: 1;
 }
 
-.hex-tile .label {
-    display: block;
-    width: 80%;
-    text-align: center;
-    font-size: clamp(16px, 2.2vw, 32px);
-    line-height: 1.1;
-letter-spacing: clamp(0.06em, 0.12em, 0.12em);
-    font-weight: 800;
-    text-transform: uppercase;
-    background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    text-shadow: 0 0 14px rgba(154,77,255,0.55);
-white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    opacity: 0;
-    transition: opacity 0.15s, transform 0.2s;
+/* Perfect alignment for every row */
+.hex-row {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 26px;
 }
 
-.hex-tile:hover .ico { opacity: 0; transform: translate(-50%, calc(-50% - 4px)) scale(0.9); transition: all 0.2s; }
-.hex-tile:hover .label { opacity: 1; transform: translate(-50%, calc(-50% - 2px)); }
+@media (max-width: 600px) {
+  .hex {
+    width: 130px;
+    height: 112.58px;
+  }
+
+  .hex-icon {
+    width: 50px;
+    height: 50px;
+  }
+}

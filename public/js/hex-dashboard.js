@@ -1,112 +1,28 @@
-/* ======================================================
-   Vox OS — Hex Dashboard Logic
-   ====================================================== */
+// ============================================
+// Vox OS – Hex Dashboard Logic
+// Matches memory console simplicity + behavior
+// ============================================
 
-// Base path for API calls
-const BASE_URL = "";
+// Get all hex tiles
+const hexTiles = document.querySelectorAll(".hex");
 
-// ------------------------------------------------------
-// Profile Photo Loader
-// ------------------------------------------------------
-async function loadProfilePhoto() {
-    try {
-        const res = await fetch(`/auth/validate`, {
-            method: "GET",
-            credentials: "include"
-        });
+// Click to navigate
+hexTiles.forEach(tile => {
+  const target = tile.getAttribute("data-link");
 
-        if (res.status === 401) {
-            window.location.href = "/login.html";
-            return;
-        }
+  if (!target) return;
 
-        const data = await res.json();
-        const user = data?.user;
+  tile.addEventListener("click", () => {
+    window.location.href = target;
+  });
 
-        const img = document.getElementById("profilePhoto");
-        if (img && user?.profile_photo) {
-            img.src = user.profile_photo;
-        }
+  // Keyboard support
+  tile.setAttribute("tabindex", "0");
 
-    } catch (err) {
-        console.error("Failed to load profile:", err);
+  tile.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      window.location.href = target;
     }
-}
-
-// ------------------------------------------------------
-// Tile Navigation
-// ------------------------------------------------------
-function setupTileNavigation() {
-    document.querySelectorAll(".hex-tile").forEach(tile => {
-        const link = tile.getAttribute("data-link");
-
-        if (link) {
-            tile.addEventListener("click", () => {
-                window.location.href = link;
-            });
-        }
-    });
-}
-
-// ------------------------------------------------------
-// Logout Handler
-// ------------------------------------------------------
-function setupLogout() {
-    const logoutTile = document.getElementById("logoutTile");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    async function doLogout() {
-        try {
-            await fetch(`${BASE_URL}/auth/logout`, {
-                method: "POST",
-                credentials: "include"
-            });
-        } catch (e) {
-            console.warn("Logout error:", e);
-        }
-        window.location.href = "/login.html";
-    }
-
-    if (logoutTile) logoutTile.addEventListener("click", doLogout);
-    if (logoutBtn) logoutBtn.addEventListener("click", doLogout);
-}
-
-// ------------------------------------------------------
-// Initialize Dashboard
-// ------------------------------------------------------
-function fitLabel(el){
-  const label = el.querySelector('.label');
-  const inner = el.querySelector('.hex-inner');
-  if (!label || !inner) return;
-  const avail = inner.clientWidth * 0.86;
-let size = Math.min(Math.max(14, el.clientWidth / 12), 30);
-  label.style.whiteSpace = 'nowrap';
-  label.style.fontSize = size + 'px';
-  let guard = 24;
-// If still too long, shrink letter-spacing as well
-  while (label.scrollWidth > avail && guard-- > 0) {
-    size -= 1;
-    if (size < 12) break;
-label.style.fontSize = size + 'px';
-    if (label.scrollWidth > avail && size <= 14) {
-      // tighten spacing a bit to fit
-      const currentLS = parseFloat(getComputedStyle(label).letterSpacing) || 0;
-      label.style.letterSpacing = Math.max(0, currentLS - 0.5) + 'px';
-    }
-  }
-}
-
-function initTileFitting(){
-  const tiles = document.querySelectorAll('.hex-tile');
-  const run = () => tiles.forEach(t => fitLabel(t));
-  run();
-  window.addEventListener('resize', run);
-  tiles.forEach(t => t.addEventListener('mouseenter', () => fitLabel(t)));
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    loadProfilePhoto();
-    setupTileNavigation();
-    setupLogout();
-    initTileFitting();
+  });
 });
