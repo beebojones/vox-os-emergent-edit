@@ -61,7 +61,7 @@
         dd.id = 'voxUserDropdown';
         dd.className = 'vox-user-dropdown';
         dd.innerHTML = `
-          <a href="/dashboard.html">Home</a>
+<a href=\"/index.html\">Home</a>
           <a href="/chat.html">Chat</a>
           <a href="/chat-history.html">Chat History</a>
           <a href="/memory.html">Memory Console</a>

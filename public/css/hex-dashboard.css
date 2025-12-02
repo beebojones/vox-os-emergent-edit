@@ -76,9 +76,9 @@ body {
     width: 100%;
     min-height: calc(100vh - var(--header-h, 64px) - 80px);
     display: grid;
-    place-content: center;      /* center grid in viewport */
-    place-items: center;        /* center tiles in their cells */
-    grid-template-columns: repeat(auto-fit, minmax(var(--hex-size), 1fr));
+    justify-content: center;    /* center columns horizontally */
+    align-content: center;      /* center rows vertically */
+    grid-template-columns: repeat(auto-fit, var(--hex-size)); /* fixed-size columns */
     gap: var(--hex-gap);
     padding: 40px 28px 60px;
 }

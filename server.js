@@ -62,9 +62,17 @@ app.use("/", requireAuth, memoryRoutes);
 // -----------------------------------------------------------
 // HOME ROUTE (dashboard) — PROTECTED
 // -----------------------------------------------------------
-app.get("/", requireAuth, (req, res) => {
+app.get(["/", "/index.html"], requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
+
+// Explicit chat endpoints to avoid routing confusion
+app.post('/chat', requireAuth, (req, res, next) => import('./controllers/chatController.js').then(m => m.chatResponse(req,res,next)));
+app.post('/chat/send', requireAuth, (req, res, next) => import('./controllers/chatController.js').then(m => m.chatResponse(req,res,next)));
+app.post('/chat/start', requireAuth, (req, res, next) => import('./controllers/chatController.js').then(m => m.startSession(req,res,next)));
+app.delete('/chat/clear', requireAuth, (req, res, next) => import('./controllers/chatController.js').then(m => m.clearSession(req,res,next)));
+app.get('/chat/sessions', requireAuth, (req, res, next) => import('./controllers/chatController.js').then(m => m.listSessions(req,res,next)));
+app.get('/chat/messages/:sessionId', requireAuth, (req, res, next) => import('./controllers/chatController.js').then(m => m.listMessages(req,res,next)));
 
 
 // -----------------------------------------------------------
