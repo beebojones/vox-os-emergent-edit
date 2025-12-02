@@ -1,31 +1,28 @@
 import express from "express";
-import { requireAuth, requireAdmin } from "../utils/authMiddleware.js";
-
 import {
-  getMemories,
   createMemory,
   updateMemory,
   deleteMemory,
-  deleteAllMemories,
-  debugMemSchema
+  listMemory,
+  getMemory
 } from "../controllers/memoryController.js";
+import { requireAuth } from "../utils/authMiddleware.js";
 
 const router = express.Router();
 
-// Uniform API paths:
-// GET    /api/memories
-// POST   /api/memories
-// PATCH  /api/memories/:id
-// DELETE /api/memories/:id
-// DELETE /api/memories
+// Create a memory (manual memory creation)
+router.post("/memory", requireAuth, createMemory);
 
-router.get("/memories", requireAuth, getMemories);
-router.post("/memories", requireAuth, createMemory);
-router.patch("/memories/:id", requireAuth, updateMemory);
-router.delete("/memories/:id", requireAuth, deleteMemory);
-router.delete("/memories", requireAuth, deleteAllMemories);
+// Update an existing memory
+router.put("/memory/:id", requireAuth, updateMemory);
 
-// Admin debug endpoint
-router.get("/memories/debug-schema", requireAuth, requireAdmin, debugMemSchema);
+// Delete a memory
+router.delete("/memory/:id", requireAuth, deleteMemory);
+
+// List all memories for the authenticated user
+router.get("/memory", requireAuth, listMemory);
+
+// Get a single memory
+router.get("/memory/:id", requireAuth, getMemory);
 
 export default router;
