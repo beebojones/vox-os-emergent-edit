@@ -125,14 +125,7 @@
     <script src="auth.js"></script>
 
     <script>
-    // If already logged in, go to index
-    (async function initLogin(){
-      try {
-        const v = await fetch('/auth/validate');
-        if (v.ok) { window.location.href = '/index.html'; return; }
-      } catch {}
-    })();
-
+    // Keep login visible; do not auto-redirect on load (avoids flicker/loops)
     (function initAdminShortcut(){
       fetch('/auth/admin-enabled')
         .then(r => r.ok ? r.json() : { enabled: false })

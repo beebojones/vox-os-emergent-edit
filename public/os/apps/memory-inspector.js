@@ -4,8 +4,17 @@
 async function fetchMemories() {
     const res = await fetch("/memory", { credentials: 'include' });
     if (res.status === 401) {
-        // Not logged in — send to login, then back here via index
-        window.location.href = "/login.html";
+        // Not logged in — render inline prompt instead of auto-redirect to avoid flicker/loops
+        document.body.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:#e7dbff;background:#0c0c18;">
+            <div style="padding:24px;border-radius:12px;background:rgba(20,20,40,0.6);border:1px solid rgba(255,255,255,0.12);text-align:center;">
+              <h2 style="margin-top:0;margin-bottom:10px;">Login Required</h2>
+              <p style="opacity:.8;margin:0 0 16px 0;">Please sign in to view memories.</p>
+              <button id="mi-login-btn" style="padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:linear-gradient(145deg,#151525,#090910);color:#efeaff;cursor:pointer;">Go to Login</button>
+            </div>
+          </div>`;
+        const b = document.getElementById('mi-login-btn');
+        if (b) b.onclick = () => (window.top ? (window.top.location.href = '/login.html') : (window.location.href = '/login.html'));
         return [];
     }
     if (!res.ok) {
