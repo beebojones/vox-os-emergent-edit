@@ -4,8 +4,8 @@
    ============================================================ */
 
 :root {
-    --hex-size: 180px; /* width across flats */
-    --hex-gap: 26px;
+    --hex-size: clamp(140px, 16vw, 220px); /* autoscale */
+    --hex-gap: clamp(16px, 3vw, 32px);
 
     --glow-cyan: var(--cyan);
     --glow-magenta: var(--magenta);
@@ -38,9 +38,10 @@ body {
    ------------------------------------------------------------ */
 
 .vox-header {
-    padding: 18px 28px;
+    --header-h: 64px;
+    height: var(--header-h);
+    padding: 0 28px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     background: rgba(20, 20, 36, 0.55);
     backdrop-filter: blur(10px);
@@ -51,9 +52,15 @@ body {
 }
 
 .vox-logo {
-    font-size: 24px;
-    font-weight: 600;
-    text-shadow: 0 0 16px rgba(150, 85, 255, 0.85);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 12px rgba(154,77,255,0.6);
 }
 
 /* Profile photo + dropdown unchanged */
@@ -65,12 +72,13 @@ body {
 
 .hex-container {
     width: 100%;
-    margin-top: 70px;
+    min-height: calc(100vh - var(--header-h, 64px) - 80px);
     display: grid;
-    justify-content: center;
+    place-content: center;      /* center grid in viewport */
+    place-items: center;        /* center tiles in their cells */
     grid-template-columns: repeat(auto-fit, minmax(var(--hex-size), 1fr));
     gap: var(--hex-gap);
-    padding-bottom: 100px;
+    padding: 40px 28px 60px;
 }
 
 /* ------------------------------------------------------------
@@ -83,23 +91,19 @@ body {
     height: calc(var(--hex-size) * 0.8660254);
     clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
 
-    background: var(--tile-bg);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    backdrop-filter: blur(12px);
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
     position: relative;
     cursor: pointer;
     overflow: hidden;
 
-    box-shadow:
-      0 0 10px rgba(0, 246, 255, 0.12),
-      0 0 22px rgba(154, 77, 255, 0.12);
+    display: grid;
+    place-items: center;
 
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    /* Neon aura similar to memory cards */
+    box-shadow:
+      0 0 14px rgba(0, 246, 255, 0.16),
+      0 0 26px rgba(154, 77, 255, 0.14);
+
+    transition: transform 0.18s ease;
 }
 
 /* Outer neon border like memory cards */
@@ -109,21 +113,43 @@ body {
     animation: voxBorderShift 18s linear infinite;
 }
 
+/* Border (outer) using animated gradient */
+.hex-tile::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    clip-path: inherit;
+    background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple)) border-box;
+    animation: voxBorderShift 18s linear infinite;
+    filter: blur(0.5px);
+}
+
 /* Inner fill to mimic selected tabs/buttons from memory.html */
 .hex-inner {
     position: absolute;
     inset: 2px; /* reveals a slim glowing border */
     clip-path: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    display: grid;
+    place-items: center;
+    grid-auto-flow: row;
     gap: 8px;
     background:
       radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.14), rgba(10, 10, 22, 0.98)) padding-box;
+    border: 1px solid rgba(255,255,255,0.08);
     box-shadow:
       0 0 10px rgba(0, 246, 255, 0.18),
       0 0 18px rgba(154, 77, 255, 0.14);
+}
+
+/* soft halo on hover */
+.hex-tile::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    clip-path: inherit;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(154,77,255,0.18), rgba(0,0,0,0));
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
 /* Hover state */
@@ -134,27 +160,40 @@ body {
     background:
       radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.22), rgba(10, 10, 22, 0.98)) padding-box;
     box-shadow:
-      0 0 18px rgba(0, 246, 255, 0.35),
-      0 0 26px rgba(255, 0, 212, 0.25);
+      0 0 22px rgba(0, 246, 255, 0.38),
+      0 0 32px rgba(255, 0, 212, 0.28);
 }
+.hex-tile:hover::after { opacity: 1; }
 
 /* ------------------------------------------------------------
    ICON + LABEL FADE SWAP
    ------------------------------------------------------------ */
 
 .hex-tile i {
-    font-size: 40px;
+    font-size: clamp(28px, 4.6vw, 52px);
     opacity: 1;
-    transition: opacity 0.15s;
+    transition: opacity 0.15s, transform 0.2s;
+    background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple));
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: voxGlowShift 16s linear infinite;
+    filter: drop-shadow(0 0 12px rgba(154,77,255,0.35)) drop-shadow(0 0 8px rgba(0,246,255,0.25));
 }
 
 .hex-tile .label {
-    font-size: 16px;
-    letter-spacing: 0.06em;
-    font-weight: 500;
+    font-size: clamp(14px, 1.6vw, 18px);
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 10px rgba(154,77,255,0.35);
     opacity: 0;
-    transition: opacity 0.15s;
+    transition: opacity 0.15s, transform 0.2s;
 }
 
-.hex-tile:hover i { opacity: 0; }
-.hex-tile:hover .label { opacity: 1; }
+.hex-tile:hover i { opacity: 0; transform: translateY(-4px) scale(0.96); }
+.hex-tile:hover .label { opacity: 1; transform: translateY(-2px); }
