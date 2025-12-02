@@ -26,7 +26,7 @@ async function embedText(text) {
 // -----------------------------------------
 // Helper: Summarize user messages into short form
 // -----------------------------------------
-async function summarizeForMemory(text) {
+async function summarizeForMemory(text, displayName = 'User') {
   try {
     const response = await client.chat.completions.create({
       model: "gpt-4o-mini",
@@ -35,7 +35,7 @@ async function summarizeForMemory(text) {
         {
           role: "system",
           content:
-            "Summarize the following user message into a short, factual, objective sentence suitable for long-term memory storage."
+            `Summarize the following user message into a short, factual, objective sentence suitable for long-term memory storage. The user's display name is "${displayName}". When referring to the user, write "${displayName}'s ..." (possessive), not "the user's" or "their". Keep it one short sentence.`
         },
         { role: "user", content: text }
       ]
@@ -230,7 +230,8 @@ ${webBlock}
     // STEP 7: Auto-Memory Extraction (silent)
     // High-signal filtering (user message + summary)
     // --------------------------------------
-    const summary = await summarizeForMemory(message);
+    const displayName = req.user?.display_name || req.user?.username || 'User';
+    const summary = await summarizeForMemory(message, displayName);
     await autoCreateMemory(userId, summary);
 
     // --------------------------------------

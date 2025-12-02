@@ -230,7 +230,7 @@ export async function updateMemory(req, res) {
     const result = await db.query(
       `UPDATE memory_store
        SET text=$1, summary=$2, category=$3, embedding=$4::jsonb,
-           pinned=$5, active=$6, updated_by=$7
+           pinned=$5, active=$6, updated_by=$7, updated_at=NOW()
        WHERE id=$8 AND created_by=$7
        RETURNING *`,
       [
@@ -290,7 +290,11 @@ export async function listMemory(req, res) {
     const userId = req.user.id;
 
     const result = await db.query(
-      `SELECT * FROM memory_store
+      `SELECT id, text, summary, category,
+              created_at AS timestamp,
+              (embedding)::text AS embedding,
+              pinned, active, created_by, updated_by
+       FROM memory_store
        WHERE created_by=$1
        ORDER BY id DESC`,
       [userId]
@@ -312,7 +316,11 @@ export async function getMemory(req, res) {
     const memId = req.params.id;
 
     const result = await db.query(
-      `SELECT * FROM memory_store
+      `SELECT id, text, summary, category,
+              created_at AS timestamp,
+              (embedding)::text AS embedding,
+              pinned, active, created_by, updated_by
+       FROM memory_store
        WHERE id=$1 AND created_by=$2`,
       [memId, userId]
     );
