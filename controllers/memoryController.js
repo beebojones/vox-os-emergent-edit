@@ -145,13 +145,14 @@ export async function createMemory(req, res) {
     }
 
     const embedding = await embedText(cleaned);
+    const embeddingJson = embedding ? JSON.stringify(embedding) : null;
 
     const result = await db.query(
       `INSERT INTO memory_store 
         (text, summary, category, embedding, pinned, active, created_by, updated_by)
-       VALUES ($1, $2, $3, $4, $5, TRUE, $6, $6)
+       VALUES ($1, $2, $3, $4::jsonb, $5, TRUE, $6, $6)
        RETURNING *`,
-      [cleaned, summary, finalCategory, embedding, pinned, userId]
+      [cleaned, summary, finalCategory, embeddingJson, pinned, userId]
     );
 
     res.json(result.rows[0]);
@@ -181,13 +182,14 @@ export async function autoCreateMemory(userId, text) {
     }
 
     const embedding = await embedText(cleaned);
+    const embeddingJson = embedding ? JSON.stringify(embedding) : null;
 
     const result = await db.query(
       `INSERT INTO memory_store
         (text, summary, category, embedding, pinned, active, created_by, updated_by)
-       VALUES ($1, $2, $3, $4, FALSE, TRUE, $5, $5)
+       VALUES ($1, $2, $3, $4::jsonb, FALSE, TRUE, $5, $5)
        RETURNING *`,
-      [cleaned, summary, category, embedding, userId]
+      [cleaned, summary, category, embeddingJson, userId]
     );
 
     return result.rows[0];
@@ -223,10 +225,11 @@ export async function updateMemory(req, res) {
     }
 
     const embedding = await embedText(cleaned);
+    const embeddingJson = embedding ? JSON.stringify(embedding) : null;
 
     const result = await db.query(
       `UPDATE memory_store
-       SET text=$1, summary=$2, category=$3, embedding=$4,
+       SET text=$1, summary=$2, category=$3, embedding=$4::jsonb,
            pinned=$5, active=$6, updated_by=$7
        WHERE id=$8 AND created_by=$7
        RETURNING *`,
@@ -234,7 +237,7 @@ export async function updateMemory(req, res) {
         cleaned,
         summary,
         finalCategory,
-        embedding,
+        embeddingJson,
         pinned ?? false,
         active ?? true,
         userId,

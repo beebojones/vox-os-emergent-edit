@@ -250,3 +250,85 @@ ${webBlock}
     res.status(500).json({ error: msg });
   }
 }
+
+// -----------------------------
+// Additional chat endpoints used by server.js
+// -----------------------------
+export async function startSession(req, res) {
+  try {
+    const userId = req.user.id;
+    const created = await db.query(
+      `INSERT INTO chat_sessions (user_id, title) VALUES ($1, 'Conversation') RETURNING id`,
+      [userId]
+    );
+    // reset rolling history for a fresh session (optional)
+    historyByUser.set(userId, []);
+    res.json({ id: created.rows[0].id });
+  } catch (e) {
+    res.status(500).json({ error: e.message || 'failed to start session' });
+  }
+}
+
+export async function listSessions(req, res) {
+  try {
+    const userId = req.user.id;
+    const { rows } = await db.query(
+      `SELECT id, title, created_at, updated_at FROM chat_sessions WHERE user_id=$1 ORDER BY updated_at DESC LIMIT 100`,
+      [userId]
+    );
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message || 'failed to list sessions' });
+  }
+}
+
+export async function listMessages(req, res) {
+  try {
+    const userId = req.user.id;
+    const sessionId = Number(req.params.sessionId);
+    if (!sessionId) return res.status(400).json({ error: 'sessionId required' });
+
+    // ensure session belongs to user
+    const own = await db.query(`SELECT 1 FROM chat_sessions WHERE id=$1 AND user_id=$2`, [sessionId, userId]);
+    if (!own.rows.length) return res.status(404).json({ error: 'Session not found' });
+
+    const { rows } = await db.query(
+      `SELECT id, role, content, created_at FROM chat_messages WHERE session_id=$1 ORDER BY id ASC`,
+      [sessionId]
+    );
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message || 'failed to list messages' });
+  }
+}
+
+export async function clearSession(req, res) {
+  try {
+    const userId = req.user.id;
+    const sessionId = Number(req.body?.sessionId);
+
+    let targetId = sessionId;
+    if (!targetId) {
+      const { rows } = await db.query(
+        `SELECT id FROM chat_sessions WHERE user_id=$1 ORDER BY updated_at DESC LIMIT 1`,
+        [userId]
+      );
+      targetId = rows[0]?.id;
+    }
+
+    if (!targetId) return res.json({ ok: true });
+
+    await db.query(
+      `DELETE FROM chat_messages WHERE session_id IN (SELECT id FROM chat_sessions WHERE id=$1 AND user_id=$2)`,
+      [targetId, userId]
+    );
+    await db.query(`DELETE FROM chat_sessions WHERE id=$1 AND user_id=$2`, [targetId, userId]);
+
+    // clear RAM history too
+    historyByUser.set(userId, []);
+
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message || 'failed to clear session' });
+  }
+}

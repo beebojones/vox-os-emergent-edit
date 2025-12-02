@@ -3,9 +3,8 @@ import db from "./../utils/db.js";
 
 export async function requireAuth(req, res, next) {
   try {
-    // Diagnostic logging
-    console.log("Incoming cookies:", req.cookies);
-    console.log("JWT_SECRET inside requireAuth:", process.env.JWT_SECRET);
+    // Diagnostic logging (avoid secrets)
+    // console.log("Auth check");
 
     const token = req.cookies.token;
 
