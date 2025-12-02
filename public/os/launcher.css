@@ -1,185 +1,62 @@
-/* ---------------------------------------------------
-   Vox OS – Application Launcher Styles
-   Package 12 (FULL FILE)
---------------------------------------------------- */
-
-#launcher {
+#vox-launchpad {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-
-    width: 720px;
-    height: 520px;
-
-    background: var(--os-glass);
-    backdrop-filter: blur(18px);
-
-    border: 1px solid var(--os-border);
-    border-radius: 16px;
-
-    box-shadow: 0 14px 32px rgba(0,0,0,0.45);
-
-    display: none;
-    z-index: 99999;
-    overflow: hidden;
-
-    animation: launcherFade 180ms ease;
-}
-
-@keyframes launcherFade {
-    from { opacity: 0; transform: translate(-50%, -52%) scale(0.97); }
-    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-
-/* ---------------------------------------------------
-   HEADER: SEARCH BAR
---------------------------------------------------- */
-
-#launcher-header {
-    padding: 16px;
-    border-bottom: 1px solid var(--os-border);
-
-    background: rgba(255,255,255,0.06);
-}
-
-#launcher-search {
-    width: 100%;
-    padding: 10px 14px;
-    font-size: 14px;
-
-    background: rgba(255,255,255,0.1);
-    border: 1px solid var(--os-border);
-
-    border-radius: 10px;
-    color: var(--os-text);
-
-    transition:
-        background 150ms ease,
-        border-color 150ms ease,
-        box-shadow 150ms ease;
-}
-
-#launcher-search:focus {
-    background: rgba(255,255,255,0.16);
-    border-color: var(--accent-color);
-    box-shadow: 0 0 12px var(--accent-glow);
-    outline: none;
-}
-
-/* ---------------------------------------------------
-   BODY SPLIT
---------------------------------------------------- */
-
-#launcher-body {
+    inset: 0;
+    background: rgba(5,5,12,0.84);
+    backdrop-filter: blur(22px);
     display: flex;
-    height: calc(100% - 70px);
+    flex-wrap: wrap;
+    padding: 60px;
+    gap: 40px;
+    justify-content: center;
+    align-content: flex-start;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
 }
 
-/* ---------------------------------------------------
-   LEFT SIDE: CATEGORIES
---------------------------------------------------- */
-
-#launcher-categories {
-    width: 150px;
-    border-right: 1px solid var(--os-border);
-
-    background: rgba(255,255,255,0.04);
-
-    display: flex;
-    flex-direction: column;
-    padding: 16px 8px;
-    gap: 8px;
-
-    overflow-y: auto;
+#vox-launchpad.visible {
+    opacity: 1;
+    pointer-events: auto;
 }
 
-.launcher-category {
-    padding: 8px 10px;
-    font-size: 14px;
-    color: var(--os-text);
+/* Hexagon Icon */
+.vox-app-hex {
+    width: 120px;
+    height: 104px;
+    position: relative;
     cursor: pointer;
-    border-radius: 8px;
-
-    transition:
-        background 150ms ease,
-        transform 150ms ease,
-        box-shadow 150ms ease;
+    transition: transform .15s ease;
 }
 
-.launcher-category:hover {
-    background: rgba(255,255,255,0.12);
-    transform: translateX(4px);
-    box-shadow: 0 0 10px var(--accent-glow);
+.vox-app-hex:hover {
+    transform: scale(1.08);
 }
 
-.launcher-category.active {
-    background: var(--accent-color);
-    color: white;
-    transform: translateX(4px);
+.vox-app-hex:before,
+.vox-app-hex:after {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 60px;
+    background: linear-gradient(145deg, rgba(20,20,40,.9), rgba(40,0,90,.85));
+    border-left: 1px solid rgba(255,255,255,0.12);
+    border-right: 1px solid rgba(255,255,255,0.12);
 }
 
-/* ---------------------------------------------------
-   RIGHT SIDE: APP GRID
---------------------------------------------------- */
-
-#launcher-content {
-    flex: 1;
-    padding: 18px;
-    overflow-y: auto;
-
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 18px;
+.vox-app-hex:before {
+    top: 0;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%);
 }
 
-.launcher-app {
+.vox-app-hex:after {
+    bottom: 0;
+    clip-path: polygon(0% 0%, 100% 0%, 75% 100%, 25% 100%);
+}
+
+.vox-app-label {
     text-align: center;
-    cursor: pointer;
-    padding: 12px 8px;
-
-    border-radius: 10px;
-    transition:
-        background 150ms ease,
-        transform 150ms ease,
-        box-shadow 150ms ease;
-}
-
-.launcher-app:hover {
-    background: rgba(255,255,255,0.10);
-    transform: translateY(-2px);
-    box-shadow: 0 0 12px var(--accent-glow);
-}
-
-.launcher-app-icon {
-    width: 56px;
-    height: 56px;
-    object-fit: contain;
-    margin-bottom: 8px;
-}
-
-.launcher-app-label {
-    font-size: 14px;
-    color: var(--os-text);
-    word-break: break-word;
-}
-
-/* ---------------------------------------------------
-   SCROLLBAR STYLE
---------------------------------------------------- */
-
-#launcher-content::-webkit-scrollbar,
-#launcher-categories::-webkit-scrollbar {
-    width: 8px;
-}
-
-#launcher-content::-webkit-scrollbar-thumb,
-#launcher-categories::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.25);
-    border-radius: 8px;
-}
-
-#launcher-content::-webkit-scrollbar-thumb:hover,
-#launcher-categories::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.35);
+    margin-top: 12px;
+    font-size: 15px;
+    color: #ded7ff;
 }

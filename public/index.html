@@ -1,184 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <title>Vox OS Desktop</title>
 
-  <!-- Load theme.js BEFORE drawing the UI -->
-  <script src="js/theme.js"></script>
+    <!-- Theme + OS Styles -->
+    <link rel="stylesheet" href="/css/vox-theme.css">
+    <link rel="stylesheet" href="/os/chrome.css">
+    <link rel="stylesheet" href="/os/layout.css">
 
-  <title>Vox Assistant</title>
-  <link rel="stylesheet" href="/os/chrome.css" />
-  <link rel="stylesheet" href="/os/layout.css" />
-  <link rel="stylesheet" href="css/deep-glass.css" />
-  <link rel="stylesheet" href="css/vox-theme.css" />
+    <!-- Window System CSS -->
+    <link rel="stylesheet" href="/os/window.css">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      backdrop-filter: blur(10px);
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 20px;
-    }
+    <!-- Launchpad CSS -->
+    <link rel="stylesheet" href="/os/launcher.css">
+    
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: var(--background);
+            font-family: system-ui, sans-serif;
+        }
 
-    h1 {
-      margin-bottom: 8px;
-      font-size: 32px;
-      font-weight: 600;
-    }
+        /* Desktop wallpaper */
+        #vox-desktop {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 40% 30%, rgba(80,0,160,0.25), transparent),
+                        radial-gradient(circle at 70% 60%, rgba(0,200,255,0.22), transparent),
+                        #0b0b14;
+            backdrop-filter: blur(4px);
+        }
 
-    p {
-      margin-top: 0;
-      margin-bottom: 25px;
-      opacity: 0.8;
-      font-size: 16px;
-    }
+        /* Taskbar */
+        #vox-taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 42px;
+            background: rgba(10,10,20,0.6);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 12px;
+            backdrop-filter: blur(14px);
+        }
 
-    .button-row {
-      display: flex;
-      gap: 16px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+        /* Launchpad button */
+        #vox-launcher-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: linear-gradient(145deg, #151525, #090910);
+            box-shadow: 0 0 8px rgba(140,90,255,0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dcd0ff;
+            font-size: 20px;
+            margin-right: 12px;
+        }
 
-.nav-button {
-      padding: 14px 24px;
-      border-radius: 12px;
-      border: 1px solid transparent;
-      font-size: 16px;
-      cursor: pointer;
-      color: inherit;
-      background:
-        linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.96)) padding-box,
-        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
-      background-size: 100% 100%, 220% 220%;
-      animation: voxBorderShift 14s linear infinite;
-    }
-
-    .nav-button:hover {
-      box-shadow: 0 0 18px rgba(160,110,255,0.45), 0 0 14px rgba(0,246,255,0.35);
-    }
-
-    /* User Menu */
-    .user-menu {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      padding: 8px 12px;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      backdrop-filter: blur(12px);
-    }
-
-    .user-dropdown {
-      position: absolute;
-      top: 60px;
-      right: 16px;
-      width: 190px;
-      display: none;
-      flex-direction: column;
-      border-radius: 10px;
-      overflow: hidden;
-      backdrop-filter: blur(12px);
-    }
-
-    .user-dropdown a,
-    .user-dropdown button {
-      padding: 12px;
-      border: none;
-      background: transparent;
-      text-align: left;
-      cursor: pointer;
-      color: inherit;
-    }
-
-    .user-dropdown a:hover,
-    .user-dropdown button:hover {
-      background: rgba(255,255,255,0.15);
-    }
-  </style>
-
+        #vox-launcher-btn:hover {
+            box-shadow: 0 0 14px rgba(180,130,255,0.8);
+        }
+    </style>
 </head>
 
 <body>
-  <script>
-    // Combine index and dashboard: redirect to dashboard if logged in; otherwise to login
-    (async () => {
-      try { const v = await fetch('/auth/validate'); if (v.ok) { location.replace('/dashboard.html'); return; } } catch {}
-      location.replace('/login.html');
-    })();
-  </script>
-  <div class="user-menu" onclick="toggleUserMenu()">
-    <span id="menuUser">User</span>
-    <span id="menuRoleBadge" class="badge badge-admin" style="display:none; margin-left:8px;">ADMIN</span>
-    <span style="margin-left: 8px;">▼</span>
-  </div>
 
-  <div id="userDropdown" class="user-dropdown">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="chat.html">Chat</a>
-    <a href="memory.html">Memory Console</a>
-    <a href="tools.html">Developer Tools</a>
-    <a href="help.html">Help</a>
-    <a href="support.html">Support</a>
-    <a href="profile.html">Profile</a>
-    <a href="account-settings.html">Account Settings</a>
-    <button onclick="logout()">Logout</button>
-  </div>
+    <!-- Desktop Window Layer -->
+    <div id="vox-desktop"></div>
 
-  <!-- MAIN CONTENT -->
-  <h1 style="font-size:42px;letter-spacing:1px;margin-bottom:6px;background:linear-gradient(90deg,#00f6ff,#ff00d4,#9a4dff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px rgba(160,110,255,.9)">Welcome to Vox Assistant</h1>
-  <p style="opacity:.85;margin-bottom:28px">Your personal AI with long-term memory, custom persona, and full control.</p>
+    <!-- Launchpad Overlay -->
+    <div id="vox-launchpad" class="hidden"></div>
 
-  <div class="button-row">
-    <button class="nav-button" onclick="go('chat.html')">Go to Chat</button>
-    <button class="nav-button" onclick="go('memory.html')">Open Memory Console</button>
-    <button class="nav-button" onclick="go('account-settings.html')">Account Settings</button>
-  </div>
+    <!-- Taskbar -->
+    <div id="vox-taskbar">
+        <div id="vox-launcher-btn">◆</div>
+        <span style="color:#d0c9ff;opacity:.8;">Vox OS</span>
+    </div>
 
-<script>
-/* ---------- User data ---------- */
-async function fetchUser() {
-  const res = await fetch("/auth/validate");
-  if (!res.ok) { window.location.href = "/login.html"; return; }
-  const data = await res.json();
-  if (!data?.user) { window.location.href = "/login.html"; return; }
-  const u = data.user;
-  const name = u.display_name || u.displayName || u.name || u.full_name || u.fullName || u.nickname || u.username || 'User';
-  document.getElementById("menuUser").textContent = name;
-  if (u.role === 'admin') {
-    const b = document.getElementById('menuRoleBadge');
-    if (b) b.style.display = 'inline-flex';
-  }
-}
-fetchUser();
+    <!-- Theme engine -->
+    <script src="/js/theme.js"></script>
 
-/* ---------- Navigation ---------- */
-function go(page) {
-  window.location.href = page;
-}
+    <!-- Window Manager -->
+    <script type="module" src="/os/windowManager.js"></script>
 
-/* ---------- Menu ---------- */
-function toggleUserMenu() {
-  const menu = document.getElementById("userDropdown");
-  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
-}
-
-/* ---------- Logout ---------- */
-async function logout() {
-  await fetch("/auth/logout", { method: "POST" });
-  window.location.href = "/login.html";
-}
-</script>
-
+    <!-- Launchpad Logic -->
+    <script type="module" src="/os/launcher.js"></script>
 
 </body>
 </html>
