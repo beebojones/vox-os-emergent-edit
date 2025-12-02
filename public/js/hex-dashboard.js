@@ -74,8 +74,33 @@ function setupLogout() {
 // ------------------------------------------------------
 // Initialize Dashboard
 // ------------------------------------------------------
+function fitLabel(el){
+  const label = el.querySelector('.label');
+  const inner = el.querySelector('.hex-inner');
+  if (!label || !inner) return;
+  const avail = inner.clientWidth * 0.86;
+  let size = Math.min(Math.max(14, el.clientWidth / 10), 30);
+  label.style.whiteSpace = 'nowrap';
+  label.style.fontSize = size + 'px';
+  let guard = 24;
+  while (label.scrollWidth > avail && guard-- > 0) {
+    size -= 1;
+    if (size < 12) break;
+    label.style.fontSize = size + 'px';
+  }
+}
+
+function initTileFitting(){
+  const tiles = document.querySelectorAll('.hex-tile');
+  const run = () => tiles.forEach(t => fitLabel(t));
+  run();
+  window.addEventListener('resize', run);
+  tiles.forEach(t => t.addEventListener('mouseenter', () => fitLabel(t)));
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     loadProfilePhoto();
     setupTileNavigation();
     setupLogout();
+    initTileFitting();
 });

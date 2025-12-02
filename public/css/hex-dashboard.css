@@ -106,12 +106,7 @@ body {
     transition: transform 0.18s ease;
 }
 
-/* Outer neon border like memory cards */
-.hex-tile {
-    background:
-      linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple)) padding-box;
-    animation: voxBorderShift 18s linear infinite;
-}
+/* Corona glow handled by ::before; tile itself has no border fill */
 
 /* Border (outer) using animated gradient */
 .hex-tile::before {
@@ -119,48 +114,38 @@ body {
     position: absolute;
     inset: 0;
     clip-path: inherit;
-    /* Rainbow ring that slowly cycles all hues */
     background: conic-gradient(
       #ff0044, #ff7a00, #ffd400, #4dff00, #00f6ff, #0066ff, #7a00ff, #ff00d4, #ff0044
     );
+    transform: scale(1.10);
     transform-origin: 50% 50%;
     animation: voxRingSpin 28s linear infinite;
-    filter: blur(6px);            /* soft neon edge, not a hard border */
+    filter: blur(26px);
     mix-blend-mode: screen;
-    opacity: 0.85;
+    opacity: 0.55;
+    z-index: 0;
 }
 @keyframes voxRingSpin {
   to { transform: rotate(360deg); }
 }
 
-/* Inner fill to mimic selected tabs/buttons from memory.html */
+/* Inner solid card (no border) */
 .hex-inner {
     position: absolute;
-    inset: 10px; /* thicker visible rainbow ring, no hard border */
+    inset: 12px;
     clip-path: inherit;
     display: grid;
     place-items: center;
     background:
-      linear-gradient(145deg, rgba(150, 50, 255, 0.55), rgba(10, 10, 22, 0.98) 78%) padding-box,
-      radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.16), rgba(5,5,14,0.96)) padding-box;
+      linear-gradient(120deg, rgba(167, 89, 255, 0.60) 0%, rgba(24, 20, 40, 0.98) 68%) padding-box,
+      radial-gradient(40% 40% at 35% 20%, rgba(0, 246, 255, 0.14), rgba(0,0,0,0)) padding-box;
     box-shadow:
-      0 0 14px rgba(0, 246, 255, 0.22),
-      0 0 24px rgba(154, 77, 255, 0.18);
+      inset 0 0 35px rgba(0,0,0,0.45),
+      0 0 12px rgba(0, 246, 255, 0.18),
+      0 0 22px rgba(154, 77, 255, 0.14);
+    z-index: 1;
 }
 
-/* soft halo on hover */
-.hex-tile::after {
-    content: "";
-    position: absolute;
-    inset: -10px;
-    clip-path: inherit;
-    background: radial-gradient(55% 55% at 50% 50%, rgba(154,77,255,0.22), rgba(0,0,0,0)),
-                radial-gradient(60% 60% at 50% 45%, rgba(0,246,255,0.18), rgba(0,0,0,0));
-    filter: blur(18px);
-    opacity: 0.45;
-    transition: opacity 0.25s ease;
-    mix-blend-mode: screen;
-}
 
 /* Hover state */
 .hex-tile:hover {
@@ -173,7 +158,6 @@ body {
       0 0 22px rgba(0, 246, 255, 0.38),
       0 0 32px rgba(255, 0, 212, 0.28);
 }
-.hex-tile:hover::after { opacity: 0.75; }
 
 /* ------------------------------------------------------------
    ICON + LABEL FADE SWAP
@@ -219,7 +203,7 @@ body {
     background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple));
     -webkit-background-clip: text; background-clip: text; color: transparent;
     text-shadow: 0 0 14px rgba(154,77,255,0.55);
-    word-break: break-word; overflow-wrap: anywhere;
+white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     opacity: 0;
     transition: opacity 0.15s, transform 0.2s;
 }
