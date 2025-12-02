@@ -39,8 +39,12 @@ buildGrid();
 
 // Open launchpad on first load (helps new users on blank desktop)
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => launchpad.classList.add('visible'), { once: true });
+  document.addEventListener('DOMContentLoaded', () => {
+    launchpad.classList.remove('hidden');
+    launchpad.classList.add('visible');
+  }, { once: true });
 } else {
+  launchpad.classList.remove('hidden');
   launchpad.classList.add('visible');
 }
 
@@ -48,6 +52,7 @@ if (document.readyState === 'loading') {
 // OPEN / CLOSE LAUNCHPAD
 // ----------------------------------------------------
 launchBtn.addEventListener("click", () => {
+  launchpad.classList.remove('hidden');
   launchpad.classList.add("visible");
 });
 
@@ -59,4 +64,5 @@ launchpad.addEventListener("click", (e) => {
 
 function closeLaunchpad() {
   launchpad.classList.remove("visible");
+  launchpad.classList.add('hidden');
 }

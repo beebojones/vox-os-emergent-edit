@@ -62,6 +62,9 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// Serve a no-content favicon to avoid noisy 404 in logs
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // Fallback route (404)
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
