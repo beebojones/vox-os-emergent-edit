@@ -10,22 +10,22 @@ const BASE_URL = "";
 // ------------------------------------------------------
 async function loadProfilePhoto() {
     try {
-        const res = await fetch(`${BASE_URL}/auth/me`, {
+        const res = await fetch(`/auth/validate`, {
             method: "GET",
             credentials: "include"
         });
 
-        // If not authenticated → send back to login
         if (res.status === 401) {
             window.location.href = "/login.html";
             return;
         }
 
         const data = await res.json();
+        const user = data?.user;
 
         const img = document.getElementById("profilePhoto");
-        if (img && data?.profile_photo) {
-            img.src = data.profile_photo;
+        if (img && user?.profile_photo) {
+            img.src = user.profile_photo;
         }
 
     } catch (err) {

@@ -31,7 +31,7 @@
           return alert(data.error || 'Login failed');
         }
 
-        // forward user into Vox OS
+        // forward user into Dashboard
         window.location.href = '/index.html';
 
       } catch (err) {
