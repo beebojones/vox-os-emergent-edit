@@ -281,15 +281,16 @@
             showTyping();
 
             try {
-                const res = await fetch("/chat", {
+const res = await fetch("/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
+                    credentials: 'include',
                     body: JSON.stringify({ message: text, history: history.slice(-20), sessionId })
                 });
 
-                const data = await res.json();
+const data = await res.json();
                 hideTyping();
-                addAssistantRich(data.reply || "(no response)");
+                addAssistantRich(data.reply || data.error || "(no response)");
                 history.push({ role:'assistant', content: data.reply || "(no response)" });
                 saveHistory();
 
@@ -310,7 +311,7 @@
         document.getElementById('new-chat').onclick = async () => {
             try {
                 const title = prompt('Title for new chat:', new Date().toLocaleString()) || new Date().toLocaleString();
-                const r = await fetch('/chat/start', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title }) });
+const r = await fetch('/chat/start', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ title }) });
                 const s = await r.json();
                 sessionId = s.id; localStorage.setItem('vox_chat_session', sessionId);
                 history = []; saveHistory(); renderHistory();
@@ -318,7 +319,7 @@
         };
         // Clear chat
         document.getElementById('clear-chat').onclick = async () => {
-            try { await fetch('/chat/clear', { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ sessionId }) }); } catch {}
+try { await fetch('/chat/clear', { method:'DELETE', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ sessionId }) }); } catch {}
             history = []; saveHistory(); renderHistory();
         };
 
@@ -326,7 +327,7 @@
         (async () => {
             if (!sessionId) {
                 try {
-                    const r = await fetch('/chat/start', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title: 'Default' }) });
+const r = await fetch('/chat/start', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ title: 'Default' }) });
                     const s = await r.json(); sessionId = s.id; localStorage.setItem('vox_chat_session', sessionId);
                 } catch {}
             }

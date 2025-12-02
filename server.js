@@ -112,6 +112,7 @@ async function runStartupMigrations() {
                 created_at TIMESTAMPTZ DEFAULT NOW(),
                 updated_at TIMESTAMPTZ DEFAULT NOW()
         );`);
+        await db.query(`CREATE INDEX IF NOT EXISTS idx_chat_sessions_user ON chat_sessions(user_id)`);
 
         await db.query(`
             CREATE TABLE IF NOT EXISTS chat_messages (
@@ -121,6 +122,7 @@ async function runStartupMigrations() {
                 content TEXT NOT NULL,
                 created_at TIMESTAMPTZ DEFAULT NOW()
         );`);
+        await db.query(`CREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(session_id)`);
     } catch (e) {
         console.warn("Startup migration warning:", e?.message || e);
     }

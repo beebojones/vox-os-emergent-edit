@@ -227,6 +227,7 @@ Guidelines:
     res.json({ reply: aiMessage });
   } catch (err) {
     console.error("chatResponse error:", err);
-    res.status(500).json({ error: "Chat failed" });
+    const msg = (err && err.message) ? err.message : 'Chat failed';
+    res.status(500).json({ error: msg });
   }
 }
