@@ -131,6 +131,24 @@ async function runStartupMigrations() {
                 created_at TIMESTAMPTZ DEFAULT NOW()
         );`);
         await db.query(`CREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(session_id)`);
+
+        // memory_store (for long-term memories)
+        await db.query(`
+          CREATE TABLE IF NOT EXISTS memory_store (
+            id SERIAL PRIMARY KEY,
+            text TEXT NOT NULL,
+            summary TEXT,
+            category TEXT,
+            embedding JSONB,           -- store embedding as JSON until pgvector is available
+            pinned BOOLEAN DEFAULT FALSE,
+            active BOOLEAN DEFAULT TRUE,
+            created_by INTEGER NOT NULL,
+            updated_by INTEGER,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+          )`);
+        await db.query(`CREATE INDEX IF NOT EXISTS idx_memory_store_user ON memory_store(created_by)`);
+        await db.query(`CREATE INDEX IF NOT EXISTS idx_memory_store_category ON memory_store(category)`);
     } catch (e) {
         console.warn("Startup migration warning:", e?.message || e);
     }

@@ -152,7 +152,7 @@ export async function chatResponse(req, res) {
     // --------------------------------------
     // STEP 3: Retrieve semantic memories
     // --------------------------------------
-    const relevant = await searchRelevantMemories(userId, embedVec);
+    const relevant = await searchRelevantMemories(userId, embedVec, message);
 
     const relevantBlock = relevant.length
       ? relevant

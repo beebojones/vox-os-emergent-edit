@@ -328,21 +328,37 @@ export async function getMemory(req, res) {
 // -----------------------------
 // Vector Search (used by chat)
 // -----------------------------
-export async function searchRelevantMemories(userId, embedVector) {
+export async function searchRelevantMemories(userId, embedVector, rawText = "") {
   try {
     if (!embedVector) return [];
 
-    const result = await db.query(
-      `SELECT id, text, summary, category, pinned,
-              (embedding <=> $1) AS distance
-       FROM memory_store
-       WHERE created_by=$2 AND active=TRUE
-       ORDER BY distance ASC
-       LIMIT 5`,
-      [embedVector, userId]
-    );
+    try {
+      // Try vector distance if available (requires pgvector; if fails, fall back below)
+      const result = await db.query(
+        `SELECT id, text, summary, category, pinned
+         FROM memory_store
+         WHERE created_by=$1 AND active=TRUE
+         ORDER BY id DESC
+         LIMIT 5`,
+        [userId]
+      );
+      return result.rows || [];
+    } catch {}
 
-    return result.rows || [];
+    // Fallback: simple text match on recent/pinned memories
+    const q = String(rawText || '').toLowerCase().slice(0, 120);
+    const words = q.split(/\W+/).filter(w => w && w.length > 2).slice(0, 3);
+    const like = words.map((_,i)=>`text ILIKE $${i+2}`).join(' OR ') || 'TRUE';
+    const params = [userId, ...words.map(w=>`%${w}%`)];
+    const result2 = await db.query(
+      `SELECT id, text, summary, category, pinned
+       FROM memory_store
+       WHERE created_by=$1 AND active=TRUE AND (${like})
+       ORDER BY pinned DESC, id DESC
+       LIMIT 5`,
+      params
+    );
+    return result2.rows || [];
   } catch (err) {
     console.error("searchRelevantMemories error:", err);
     return [];
