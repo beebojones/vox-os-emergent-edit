@@ -15,11 +15,15 @@
     <!-- Launchpad CSS -->
     <link rel="stylesheet" href="os/launcher.css">
     
+    <!-- Load theme early to avoid flash and ensure vars are set -->
+    <script src="js/theme.js"></script>
+
     <style>
         body {
             margin: 0;
             overflow: hidden;
-            background: var(--background);
+            /* Fallback color if CSS vars aren't loaded yet */
+            background: var(--background, #0b0b14);
             font-family: system-ui, sans-serif;
         }
 
@@ -69,10 +73,26 @@
         #vox-launcher-btn:hover {
             box-shadow: 0 0 14px rgba(180,130,255,0.8);
         }
+
+        /* Boot status overlay (hidden once OS initializes) */
+        #boot-status {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.55);
+            color: #cfc9ff;
+            font-size: 13px;
+            border: 1px solid rgba(255,255,255,0.12);
+            z-index: 2000;
+        }
     </style>
 </head>
 
 <body>
+
+    <div id="boot-status">Loading Vox OS…</div>
 
     <!-- Desktop Window Layer -->
     <div id="vox-desktop"></div>
@@ -86,14 +106,17 @@
         <span style="color:#d0c9ff;opacity:.8;">Vox OS</span>
     </div>
 
-    <!-- Theme engine -->
-    <script src="js/theme.js"></script>
-
     <!-- Window Manager -->
     <script type="module" src="os/windowManager.js"></script>
 
     <!-- Launchpad Logic -->
     <script type="module" src="os/launcher.js"></script>
+
+    <noscript>
+      <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;background:#000;z-index:3000;">
+        JavaScript is required to run Vox OS.
+      </div>
+    </noscript>
 
 </body>
 </html>

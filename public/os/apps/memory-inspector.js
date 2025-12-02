@@ -2,7 +2,12 @@
 // Calls backend: GET /memory
 
 async function fetchMemories() {
-    const res = await fetch("/memory");
+    const res = await fetch("/memory", { credentials: 'include' });
+    if (res.status === 401) {
+        // Not logged in — send to login, then back here via index
+        window.location.href = "/login.html";
+        return [];
+    }
     if (!res.ok) {
         console.error("Failed to fetch memories");
         return [];

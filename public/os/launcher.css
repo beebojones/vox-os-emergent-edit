@@ -15,6 +15,9 @@
     transition: opacity .25s ease;
 }
 
+/* Utility */
+.hidden { display: none !important; }
+
 #vox-launchpad.visible {
     opacity: 1;
     pointer-events: auto;

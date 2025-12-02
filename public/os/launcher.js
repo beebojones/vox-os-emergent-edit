@@ -4,67 +4,59 @@ const launchpad = document.getElementById("vox-launchpad");
 const launchBtn = document.getElementById("vox-launcher-btn");
 
 // ----------------------------------------------------
-// APP DEFINITIONS
+// APP DEFINITIONS (only include existing pages)
 // ----------------------------------------------------
 const apps = [
-    {
-        id: "memory-inspector",
-        label: "Memory Inspector",
-        url: "os/apps/memory-inspector.html"
-    },
-    {
-        id: "persona-builder",
-        label: "Persona Builder",
-        url: "os/apps/persona-builder.html"
-    },
-    {
-        id: "memory-debugger",
-        label: "Memory Debugger",
-        url: "os/apps/memory-debugger.html"
-    },
-    {
-        id: "admin-panel",
-        label: "Admin Panel",
-        url: "os/apps/admin-panel.html"
-    }
+  {
+    id: "memory-inspector",
+    label: "Memory Inspector",
+    url: "os/apps/memory-inspector.html",
+  },
 ];
 
 // ----------------------------------------------------
 // BUILD LAUNCHPAD GRID
 // ----------------------------------------------------
 function buildGrid() {
-    apps.forEach(app => {
-        const hex = document.createElement("div");
-        hex.className = "vox-app-hex";
-        hex.onclick = () => {
-            closeLaunchpad();
-            openApp(app.id, app.url, app.label);
-        };
+  apps.forEach((app) => {
+    const hex = document.createElement("div");
+    hex.className = "vox-app-hex";
+    hex.onclick = () => {
+      closeLaunchpad();
+      openApp(app.id, app.url, app.label);
+    };
 
-        const label = document.createElement("div");
-        label.className = "vox-app-label";
-        label.textContent = app.label;
+    const label = document.createElement("div");
+    label.className = "vox-app-label";
+    label.textContent = app.label;
 
-        hex.appendChild(label);
-        launchpad.appendChild(hex);
-    });
+    hex.appendChild(label);
+    launchpad.appendChild(hex);
+  });
 }
 
 buildGrid();
+
+// Open launchpad on first load (helps new users on blank desktop)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => launchpad.classList.add('visible'), { once: true });
+} else {
+  launchpad.classList.add('visible');
+}
 
 // ----------------------------------------------------
 // OPEN / CLOSE LAUNCHPAD
 // ----------------------------------------------------
 launchBtn.addEventListener("click", () => {
-    launchpad.classList.add("visible");
+  launchpad.classList.add("visible");
 });
 
 launchpad.addEventListener("click", (e) => {
-    if (e.target === launchpad) {
-        closeLaunchpad();
-    }
+  if (e.target === launchpad) {
+    closeLaunchpad();
+  }
 });
 
 function closeLaunchpad() {
-    launchpad.classList.remove("visible");
+  launchpad.classList.remove("visible");
 }
