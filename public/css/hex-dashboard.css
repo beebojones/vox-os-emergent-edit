@@ -4,8 +4,8 @@
    ============================================================ */
 
 :root {
-    --hex-size: clamp(140px, 16vw, 220px); /* autoscale */
-    --hex-gap: clamp(16px, 3vw, 32px);
+    --hex-size: clamp(180px, 19vw, 260px); /* larger autoscale */
+    --hex-gap: clamp(12px, 2.2vw, 20px);   /* closer spacing */
 
     --glow-cyan: var(--cyan);
     --glow-magenta: var(--magenta);
@@ -119,26 +119,34 @@ body {
     position: absolute;
     inset: 0;
     clip-path: inherit;
-    background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple)) border-box;
-    animation: voxBorderShift 18s linear infinite;
-    filter: blur(0.5px);
+    /* Rainbow ring that slowly cycles all hues */
+    background: conic-gradient(
+      #ff0044, #ff7a00, #ffd400, #4dff00, #00f6ff, #0066ff, #7a00ff, #ff00d4, #ff0044
+    );
+    transform-origin: 50% 50%;
+    animation: voxRingSpin 28s linear infinite;
+    filter: blur(0.6px);
+}
+@keyframes voxRingSpin {
+  to { transform: rotate(360deg); }
 }
 
 /* Inner fill to mimic selected tabs/buttons from memory.html */
 .hex-inner {
     position: absolute;
-    inset: 2px; /* reveals a slim glowing border */
+    inset: 6px; /* thicker visible rainbow ring */
     clip-path: inherit;
     display: grid;
     place-items: center;
     grid-auto-flow: row;
-    gap: 8px;
+    gap: 10px;
     background:
-      radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.14), rgba(10, 10, 22, 0.98)) padding-box;
-    border: 1px solid rgba(255,255,255,0.08);
+      linear-gradient(145deg, rgba(150, 50, 255, 0.55), rgba(10, 10, 22, 0.98) 78%) padding-box,
+      radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.16), rgba(5,5,14,0.96)) padding-box;
+    border: 1px solid rgba(255,255,255,0.10);
     box-shadow:
-      0 0 10px rgba(0, 246, 255, 0.18),
-      0 0 18px rgba(154, 77, 255, 0.14);
+      0 0 14px rgba(0, 246, 255, 0.22),
+      0 0 24px rgba(154, 77, 255, 0.18);
 }
 
 /* soft halo on hover */
@@ -169,31 +177,39 @@ body {
    ICON + LABEL FADE SWAP
    ------------------------------------------------------------ */
 
-.hex-tile i {
-    font-size: clamp(28px, 4.6vw, 52px);
-    opacity: 1;
-    transition: opacity 0.15s, transform 0.2s;
+.ico {
+    display: grid;
+    place-items: center;
+    width: clamp(58px, 6.5vw, 78px);
+    height: clamp(58px, 6.5vw, 78px);
+    border-radius: 50%;
+    background:
+      radial-gradient(60% 60% at 50% 45%, rgba(255,255,255,0.10), rgba(0,0,0,0) 60%),
+      radial-gradient(55% 55% at 50% 50%, rgba(0, 246, 255, 0.22), rgba(154, 77, 255, 0.10));
+    box-shadow:
+      0 0 22px rgba(0, 246, 255, 0.45),
+      0 0 28px rgba(154, 77, 255, 0.35);
+}
+.ico i {
+    font-size: clamp(28px, 4.6vw, 48px);
     background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
     background-size: 200% 200%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: voxGlowShift 16s linear infinite;
-    filter: drop-shadow(0 0 12px rgba(154,77,255,0.35)) drop-shadow(0 0 8px rgba(0,246,255,0.25));
+    animation: voxGlowShift 14s linear infinite;
+    filter: drop-shadow(0 0 10px rgba(154,77,255,0.45)) drop-shadow(0 0 10px rgba(0,246,255,0.35));
 }
 
 .hex-tile .label {
     font-size: clamp(14px, 1.6vw, 18px);
-    letter-spacing: 0.12em;
-    font-weight: 600;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    text-transform: uppercase;
     background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 10px rgba(154,77,255,0.35);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 0 12px rgba(154,77,255,0.45);
     opacity: 0;
     transition: opacity 0.15s, transform 0.2s;
 }
 
-.hex-tile:hover i { opacity: 0; transform: translateY(-4px) scale(0.96); }
+.hex-tile:hover .ico { opacity: 0; transform: translateY(-4px) scale(0.92); transition: all 0.2s; }
 .hex-tile:hover .label { opacity: 1; transform: translateY(-2px); }
