@@ -10,22 +10,22 @@ const apps = [
     {
         id: "memory-inspector",
         label: "Memory Inspector",
-        url: "/os/apps/memory-inspector.html"
+        url: "os/apps/memory-inspector.html"
     },
     {
         id: "persona-builder",
         label: "Persona Builder",
-        url: "/os/apps/persona-builder.html"
+        url: "os/apps/persona-builder.html"
     },
     {
         id: "memory-debugger",
         label: "Memory Debugger",
-        url: "/os/apps/memory-debugger.html"
+        url: "os/apps/memory-debugger.html"
     },
     {
         id: "admin-panel",
         label: "Admin Panel",
-        url: "/os/apps/admin-panel.html"
+        url: "os/apps/admin-panel.html"
     }
 ];
 
