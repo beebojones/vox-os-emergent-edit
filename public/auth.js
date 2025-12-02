@@ -1,5 +1,5 @@
 // Simple auth client
-(function() {
+(function () {
 
   // Your new live backend URL
   const BASE_URL = "https://vox-server-production.up.railway.app";
@@ -17,11 +17,13 @@
       }
 
       try {
-        const res = await fetch(`${BASE_URL}/auth/login`, {
+        const res = await fetch('/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ username, password })
         });
+
 
         const data = await res.json();
 

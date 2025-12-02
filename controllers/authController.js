@@ -82,10 +82,12 @@ function sendToken(res, payload) {
 
   res.cookie("token", token, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: false, // set to true in production (https)
-    maxAge: 7 * 24 * 60 * 60 * 1000
+    secure: true,            // required for HTTPS
+    sameSite: "None",        // required for cross-site cookie
+    path: "/",               // ensure cookie is valid everywhere
+    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
   });
+
 }
 
 
@@ -137,7 +139,7 @@ export async function loginUser(req, res) {
   try {
     const { username, password } = req.body;
 
-const result = await db.query(
+    const result = await db.query(
       "SELECT id, password_hash FROM users WHERE username = $1",
       [username]
     );
@@ -446,7 +448,7 @@ export async function setRole(req, res) {
   try {
     const actorId = req.user.id;
     const { userId, username, role } = req.body || {};
-    if (!role || !['admin','user'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
+    if (!role || !['admin', 'user'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
 
     let target;
     if (userId) {
