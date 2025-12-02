@@ -25,9 +25,19 @@ app.use(express.json({ limit: "12mb" }));
 app.use(cookieParser());
 
 // -----------------------------------------------------------
-// Serve static front-end
+// Serve static front-end (limited caching to avoid stale assets during updates)
 // -----------------------------------------------------------
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public"), {
+  etag: false,
+  lastModified: false,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-store');
+    } else if (filePath.match(/\.(css|js|svg|png|jpg|jpeg|gif|woff2?)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=60, must-revalidate');
+    }
+  }
+}));
 
 
 // -----------------------------------------------------------
