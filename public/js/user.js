@@ -65,6 +65,7 @@
           <a href="/chat.html">Chat</a>
           <a href="/chat-history.html">Chat History</a>
           <a href="/memory.html">Memory Console</a>
+          <a href="/notifications.html">Notifications</a>
           <a href="/tools.html">Developer Tools</a>
           <a href="/help.html">Help</a>
           <a href="/support.html">Support</a>
