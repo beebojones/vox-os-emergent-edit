@@ -2,7 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
 import dotenv from "dotenv";
-import cors from "cors";          // ⭐ Added CORS
+import cors from "cors";
 import { fileURLToPath } from "url";
 import db from "./utils/db.js";
 
@@ -15,76 +15,88 @@ const __dirname = path.dirname(__filename);
 import authRoutes from "./routes/authRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import memoryRoutes from "./routes/memoryRoutes.js";
+
 import { requireAuth } from "./utils/authMiddleware.js";
 import { updateProfilePhoto } from "./controllers/authController.js";
 
-// --- Express app setup ---
+// ----------------------------------------------
+// EXPRESS APP
+// ----------------------------------------------
 const app = express();
 
-// ⭐ CORS so Vox OS frontend (served from file://) can hit Railway backend
-app.use(
-  cors({
-    origin: "*",   // allows file://, Chrome apps, local files, anything
-    methods: "GET,POST,PUT,DELETE,OPTIONS",
-    allowedHeaders: "Content-Type, Authorization",
-    credentials: true
-  })
-);
+// ⭐ MUST COME FIRST FOR RAILWAY HTTPS COOKIE SUPPORT
+app.set("trust proxy", 1);
 
+// ⭐ CORS CONFIG — ALLOWS COOKIES + AUTH
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+
+// BODY + COOKIE PARSERS
 app.use(express.json({ limit: "12mb" }));
 app.use(cookieParser());
 
-// --- Serve static frontend ---
+// STATIC FILES (Memory OS, login, register, etc.)
 app.use(express.static(path.join(__dirname, "public")));
 
-// --- Routes ---
+// ----------------------------------------------
+// ROUTES
+// ----------------------------------------------
+
+// Auth routes (login, register, validate, logout, etc.)
 app.use("/auth", authRoutes);
+
+// Explicit route for profile photo upload
 app.post("/auth/profile-photo", requireAuth, updateProfilePhoto);
+
+// Chat history and sessions
 app.use("/chat", chatRoutes);
 
-// Allow both /memory/* and /api/memories
+// Memory routes (serves both / and /api automatically)
 app.use("/", memoryRoutes);
 app.use("/api", memoryRoutes);
 
-// --- Default landing page ---
+// Landing page
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// --- Fallback for unknown routes ---
+// Fallback route (404)
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-// --- Error handler ---
+// ----------------------------------------------
+// GLOBAL ERROR HANDLER
+// ----------------------------------------------
 app.use((err, req, res, next) => {
-  if (err && err.type === "entity.too.large") {
+  if (err?.type === "entity.too.large") {
     return res.status(413).json({ error: "Payload too large" });
   }
-  if (err && err.type === "entity.parse.failed") {
+  if (err?.type === "entity.parse.failed") {
     return res.status(400).json({ error: "Invalid JSON" });
   }
   console.error("SERVER ERROR:", err);
   res.status(500).json({ error: "Internal server error" });
 });
 
-// --- Start Server ---
-const PORT = process.env.PORT || 3000;
-
+// ----------------------------------------------
+// STARTUP MIGRATIONS
+// ----------------------------------------------
 async function runStartupMigrations() {
   try {
     // Remove legacy PIN column if present
     await db.query("ALTER TABLE IF EXISTS users DROP COLUMN IF EXISTS pin_hash");
 
-    // Add new fields if missing
-    await db.query(
-      "ALTER TABLE IF EXISTS users ADD COLUMN IF NOT EXISTS profile_photo TEXT"
-    );
-    await db.query(
-      "ALTER TABLE IF EXISTS users ADD COLUMN IF NOT EXISTS preferences JSONB DEFAULT '{}'::jsonb"
-    );
+    // Add profile photo + preferences if missing
+    await db.query(`
+      ALTER TABLE IF EXISTS users
+      ADD COLUMN IF NOT EXISTS profile_photo TEXT,
+      ADD COLUMN IF NOT EXISTS preferences JSONB DEFAULT '{}'::jsonb
+    `);
 
-    // Chat tables (sessions + messages)
+    // Chat sessions table
     await db.query(`
       CREATE TABLE IF NOT EXISTS chat_sessions (
         id SERIAL PRIMARY KEY,
@@ -95,6 +107,7 @@ async function runStartupMigrations() {
       );
     `);
 
+    // Chat message table
     await db.query(`
       CREATE TABLE IF NOT EXISTS chat_messages (
         id SERIAL PRIMARY KEY,
@@ -104,10 +117,16 @@ async function runStartupMigrations() {
         created_at TIMESTAMPTZ DEFAULT NOW()
       );
     `);
+
   } catch (e) {
     console.warn("Startup migration warning:", e?.message || e);
   }
 }
+
+// ----------------------------------------------
+// START SERVER
+// ----------------------------------------------
+const PORT = process.env.PORT || 8080;
 
 (async () => {
   await runStartupMigrations();
