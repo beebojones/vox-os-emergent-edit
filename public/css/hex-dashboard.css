@@ -112,18 +112,17 @@ body {
 .hex-tile::before {
     content: "";
     position: absolute;
-    inset: 0;
-    clip-path: inherit;
+    inset: -20%;                      /* extend well beyond edges */
+    /* no clip-path — allows true feathered halo, not a border */
     background: conic-gradient(
       #ff0044, #ff7a00, #ffd400, #4dff00, #00f6ff, #0066ff, #7a00ff, #ff00d4, #ff0044
     );
-    transform: scale(1.10);
-    transform-origin: 50% 50%;
     animation: voxRingSpin 28s linear infinite;
-    filter: blur(26px);
+    filter: blur(48px);               /* soft corona */
     mix-blend-mode: screen;
-    opacity: 0.55;
+    opacity: 0.5;
     z-index: 0;
+    pointer-events: none;
 }
 @keyframes voxRingSpin {
   to { transform: rotate(360deg); }
@@ -187,8 +186,8 @@ body {
     background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple));
     -webkit-background-clip: text; background-clip: text; color: transparent;
     background-size: 200% 200%;
-    animation: voxGlowShift 14s linear infinite;
-    filter: drop-shadow(0 0 14px rgba(154,77,255,0.55)) drop-shadow(0 0 14px rgba(0,246,255,0.45));
+    animation: voxGlowShift 22s linear infinite;
+    filter: drop-shadow(0 0 6px rgba(154,77,255,0.28)) drop-shadow(0 0 5px rgba(0,246,255,0.2));
 }
 
 .hex-tile .label {
