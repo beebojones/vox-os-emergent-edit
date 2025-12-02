@@ -4,8 +4,8 @@
    ============================================================ */
 
 :root {
-    --hex-size: 170px; /* slightly larger for clean proportion */
-    --hex-gap: 28px;
+    --hex-size: 180px; /* width across flats */
+    --hex-gap: 26px;
 
     --glow-cyan: var(--cyan);
     --glow-magenta: var(--magenta);
@@ -21,7 +21,13 @@
 
 body {
     margin: 0;
-    background: radial-gradient(circle at 25% 25%, #111, #06060d 65%, #000);
+    /* match memory.html background mood */
+    background:
+      radial-gradient(circle at 0% 0%, rgba(0, 246, 255, 0.06), transparent 55%),
+      radial-gradient(circle at 100% 100%, rgba(255, 0, 212, 0.07), transparent 55%),
+      radial-gradient(circle at 100% 0%, rgba(154, 77, 255, 0.08), transparent 55%),
+      radial-gradient(circle at 0% 100%, rgba(255, 122, 0, 0.05), transparent 55%),
+      var(--bg-main, #050509);
     color: white;
     font-family: system-ui, sans-serif;
     overflow-x: hidden;
@@ -51,48 +57,7 @@ body {
 }
 
 /* Profile photo + dropdown unchanged */
-.profile-area {
-    position: relative;
-    cursor: pointer;
-}
-
-.profile-photo {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    border: 2px solid var(--glow-purple);
-    box-shadow: 0 0 16px rgba(160, 60, 255, 0.9);
-    object-fit: cover;
-    transition: 0.25s;
-}
-
-.profile-photo:hover {
-    transform: scale(1.08);
-}
-
-/* Dropdown */
-.profile-area .dropdown {
-    position: absolute;
-    right: 0;
-    top: 60px;
-    width: 175px;
-    background: rgba(10, 10, 18, 0.95);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    backdrop-filter: blur(20px);
-    padding: 6px 0;
-    display: none;
-}
-
-.profile-area:hover .dropdown {
-    display: block;
-}
-
-.profile-area .dropdown a {
-    display: block;
-    padding: 12px 18px;
-    color: #d8c9ff;
-}
+/* Profile pill/dropdown now provided by /js/user.js to match memory.html */
 
 /* ------------------------------------------------------------
    HEX GRID
@@ -114,18 +79,12 @@ body {
 
 .hex-tile {
     width: var(--hex-size);
-    height: calc(var(--hex-size) * 1.155); /* PROPER HEX PROPORTION */
-    clip-path: polygon(
-        25% 0%, 
-        75% 0%, 
-        100% 50%, 
-        75% 100%, 
-        25% 100%, 
-        0% 50%
-    );
+    /* Regular flat-top hexagon: height = width * sqrt(3)/2 */
+    height: calc(var(--hex-size) * 0.8660254);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
 
     background: var(--tile-bg);
-    border: 2px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.10);
     backdrop-filter: blur(12px);
 
     display: flex;
@@ -137,46 +96,37 @@ body {
     overflow: hidden;
 
     box-shadow:
-        inset 0 0 20px rgba(0, 0, 0, 0.45),
-        0 0 22px rgba(154, 77, 255, 0.35);
+      0 0 10px rgba(0, 246, 255, 0.12),
+      0 0 22px rgba(154, 77, 255, 0.12);
 
-    transition: 0.28s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-/* Outer neon border (Memory Console style) */
+/* Outer neon border like memory cards */
 .hex-tile::before {
     content: "";
     position: absolute;
-    inset: -2px;
-    z-index: -1;
-
-    background: linear-gradient(
-        120deg,
-        var(--glow-cyan),
-        var(--glow-magenta),
-        var(--glow-purple),
-        var(--glow-cyan)
-    );
-    background-size: 300% 300%;
-    animation: hexGlow 9s linear infinite;
-
+    inset: 0;
     clip-path: inherit;
-    opacity: 0.75;
-}
-
-@keyframes hexGlow {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 200% 50%; }
-    100% { background-position: 0% 50%; }
+    padding: 1px; /* thin border */
+    border-radius: 0; /* clip-path handles shape */
+    background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple)) border-box;
+    -webkit-mask: 
+      linear-gradient(#000 0 0) content-box, 
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; /* safari */
+    mask-composite: exclude;
+    animation: voxBorderShift 18s linear infinite; /* from vox-theme.css */
+    opacity: 0.9;
 }
 
 /* Hover state */
 .hex-tile:hover {
-    transform: translateY(-8px) scale(1.05);
+    transform: translateY(-4px) scale(1.03);
     background: var(--tile-bg-hover);
     box-shadow:
-        inset 0 0 25px rgba(0, 0, 0, 0.5),
-        0 0 50px rgba(154, 77, 255, 0.55);
+      0 0 15px rgba(0, 246, 255, 0.35),
+      0 0 22px rgba(255, 0, 212, 0.25);
 }
 
 /* ------------------------------------------------------------
@@ -184,25 +134,20 @@ body {
    ------------------------------------------------------------ */
 
 .hex-tile i {
-    font-size: 48px;
+    font-size: 40px;
     opacity: 1;
-    transition: opacity 0.28s;
+    transition: opacity 0.2s;
 }
 
 .hex-tile .label {
     position: absolute;
-    bottom: 22px;
-    font-size: 18px;
-    letter-spacing: 1px;
+    bottom: 18px;
+    font-size: 16px;
+    letter-spacing: 0.06em;
     font-weight: 500;
     opacity: 0;
-    transition: opacity 0.28s;
+    transition: opacity 0.2s;
 }
 
-.hex-tile:hover i {
-    opacity: 0;
-}
-
-.hex-tile:hover .label {
-    opacity: 1;
-}
+.hex-tile:hover i { opacity: 0; }
+.hex-tile:hover .label { opacity: 1; }
