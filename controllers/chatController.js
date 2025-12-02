@@ -123,6 +123,20 @@ async function getOrCreateSession(userId) {
 }
 
 // -----------------------------------------
+// Web search helper (lightweight)
+async function maybeWebSearch(q) {
+  try {
+    const must = /\b(search|look\s*up|who\s+is|what\s+is|when\s+did|latest|news)\b/i.test(q);
+    if (!must) return null;
+    const r = await fetch(`${process.env.BASE_URL || ''}/tools/search?q=${encodeURIComponent(q)}`);
+    if (!r.ok) return null;
+    const data = await r.json();
+    if (!data?.items?.length) return null;
+    const top = data.items.map((it, i) => `• ${it.text}`).slice(0, 5).join('\n');
+    return top;
+  } catch { return null; }
+}
+
 // MAIN CHAT CONTROLLER
 // -----------------------------------------
 export async function chatResponse(req, res) {
@@ -168,6 +182,9 @@ export async function chatResponse(req, res) {
     // --------------------------------------
     // STEP 5: System Prompt Assembly
     // --------------------------------------
+    // Optional web search augmentation
+    const webBlock = await maybeWebSearch(message);
+
     let systemPrompt = `You are Vox, a personal AI assistant that remembers the user over time.
 
 Use the following long-term memories as factual truth when responding.
@@ -178,7 +195,9 @@ ${coreMemory || "(none)"}
 Relevant Memories:
 ${relevantBlock || "(none)"}
 
-Guidelines:
+${webBlock ? `Web Search:
+${webBlock}
+` : ''}Guidelines:
 - Do not mention that you accessed memory.
 - Do not say 'I remember'.
 - Respond naturally and conversationally.

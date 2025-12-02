@@ -675,7 +675,7 @@
     /* LOAD MEMORIES */
     async function fetchMemories() {
       try {
-        const url = window.__voxIsAdmin ? "/api/memories?scope=all" : "/api/memories";
+const url = "/api/memory";
         const res = await fetch(url);
         const data = await res.json();
         memoriesCache = Array.isArray(data) ? data : [];
@@ -689,14 +689,14 @@
 
     async function clearAll() {
       if (!confirm("Clear ALL memories?")) return;
-      await fetch("/api/memories", { method: "DELETE" });
+await fetch("/api/memory", { method: "DELETE" });
       memoriesCache = [];
       renderMemories([]);
     }
 
     async function deleteMemory(id) {
       if (!confirm("Delete this memory?")) return;
-      await fetch(`/api/memories/${id}`, { method: "DELETE" });
+await fetch(`/api/memory/${id}`, { method: "DELETE" });
       memoriesCache = memoriesCache.filter(m => m.id !== id);
       renderMemories(memoriesCache);
     }
@@ -706,7 +706,7 @@
       const newText = prompt("Edit memory:", m.text);
       if (!newText) return;
 
-      await fetch(`/api/memories/${id}`, {
+await fetch(`/api/memory/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: newText })
@@ -720,7 +720,7 @@
       const text = prompt("What should Vox remember?");
       if (!text) return;
 
-      const res = await fetch("/api/memories", {
+const res = await fetch("/api/memory", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text })

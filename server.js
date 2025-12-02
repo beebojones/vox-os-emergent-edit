@@ -74,6 +74,26 @@ app.delete('/chat/clear', requireAuth, (req, res, next) => import('./controllers
 app.get('/chat/sessions', requireAuth, (req, res, next) => import('./controllers/chatController.js').then(m => m.listSessions(req,res,next)));
 app.get('/chat/messages/:sessionId', requireAuth, (req, res, next) => import('./controllers/chatController.js').then(m => m.listMessages(req,res,next)));
 
+// Simple web search endpoint (DuckDuckGo Instant Answer API)
+app.get('/tools/search', requireAuth, async (req, res) => {
+  try {
+    const q = String(req.query.q || '').trim();
+    if (!q) return res.status(400).json({ error: 'q required' });
+    const r = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_redirect=1&no_html=1`);
+    const data = await r.json();
+    const items = [];
+    if (data.AbstractText) items.push({ source: data.AbstractSource || 'DuckDuckGo', text: data.AbstractText });
+    if (Array.isArray(data.RelatedTopics)) {
+      for (const t of data.RelatedTopics.slice(0, 5)) {
+        if (t && (t.Text || (t.FirstURL && t.FirstURL.length))) items.push({ source: 'web', text: t.Text || t.FirstURL });
+      }
+    }
+    res.json({ query: q, items });
+  } catch (e) {
+    res.status(500).json({ error: 'search failed' });
+  }
+});
+
 
 // -----------------------------------------------------------
 // LOGIN & REGISTER ALWAYS PUBLIC
