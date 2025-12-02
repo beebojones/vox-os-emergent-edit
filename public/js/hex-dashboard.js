@@ -79,14 +79,20 @@ function fitLabel(el){
   const inner = el.querySelector('.hex-inner');
   if (!label || !inner) return;
   const avail = inner.clientWidth * 0.86;
-  let size = Math.min(Math.max(14, el.clientWidth / 10), 30);
+let size = Math.min(Math.max(14, el.clientWidth / 12), 30);
   label.style.whiteSpace = 'nowrap';
   label.style.fontSize = size + 'px';
   let guard = 24;
+// If still too long, shrink letter-spacing as well
   while (label.scrollWidth > avail && guard-- > 0) {
     size -= 1;
     if (size < 12) break;
-    label.style.fontSize = size + 'px';
+label.style.fontSize = size + 'px';
+    if (label.scrollWidth > avail && size <= 14) {
+      // tighten spacing a bit to fit
+      const currentLS = parseFloat(getComputedStyle(label).letterSpacing) || 0;
+      label.style.letterSpacing = Math.max(0, currentLS - 0.5) + 'px';
+    }
   }
 }
 

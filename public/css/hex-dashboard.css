@@ -6,6 +6,8 @@
 :root {
     --hex-size: clamp(180px, 19vw, 260px); /* larger autoscale */
     --hex-gap: clamp(12px, 2.2vw, 20px);   /* closer spacing */
+    --glow-outer-1: rgba(0, 246, 255, 0.35);
+    --glow-outer-2: rgba(255, 0, 212, 0.28);
 
     --glow-cyan: var(--cyan);
     --glow-magenta: var(--magenta);
@@ -98,10 +100,8 @@ body {
     display: grid;
     place-items: center;
 
-    /* Neon aura similar to memory cards */
-    box-shadow:
-      0 0 14px rgba(0, 246, 255, 0.16),
-      0 0 26px rgba(154, 77, 255, 0.14);
+/* Soft outer aura; no visible border */
+    filter: drop-shadow(0 0 24px var(--glow-outer-1)) drop-shadow(0 0 22px var(--glow-outer-2));
 
     transition: transform 0.18s ease;
 }
@@ -117,7 +117,7 @@ body {
     background: conic-gradient(
       #ff0044, #ff7a00, #ffd400, #4dff00, #00f6ff, #0066ff, #7a00ff, #ff00d4, #ff0044
     );
-    animation: voxRingSpin 28s linear infinite;
+animation: voxRingSpin 36s linear infinite;
     filter: blur(48px);               /* soft corona */
     mix-blend-mode: screen;
     opacity: 0.5;
@@ -135,9 +135,9 @@ body {
     clip-path: inherit;
     display: grid;
     place-items: center;
-    background:
-      linear-gradient(120deg, rgba(167, 89, 255, 0.60) 0%, rgba(24, 20, 40, 0.98) 68%) padding-box,
-      radial-gradient(40% 40% at 35% 20%, rgba(0, 246, 255, 0.14), rgba(0,0,0,0)) padding-box;
+background:
+      linear-gradient(120deg, rgba(167, 89, 255, 0.58) 0%, rgba(20, 18, 34, 0.98) 70%) padding-box,
+      radial-gradient(45% 45% at 40% 22%, rgba(0, 246, 255, 0.14), rgba(0,0,0,0)) padding-box;
     box-shadow:
       inset 0 0 35px rgba(0,0,0,0.45),
       0 0 12px rgba(0, 246, 255, 0.18),
@@ -196,7 +196,7 @@ body {
     text-align: center;
     font-size: clamp(16px, 2.2vw, 32px);
     line-height: 1.1;
-    letter-spacing: 0.14em;
+letter-spacing: clamp(0.06em, 0.12em, 0.12em);
     font-weight: 800;
     text-transform: uppercase;
     background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple));
