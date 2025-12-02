@@ -2,143 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Vox OS Desktop</title>
-    <link rel="icon" href="/os/icons/apps.svg" type="image/svg+xml">
+    <title>Vox Assistant</title>
 
-    <!-- Theme + OS Styles -->
-    <link rel="stylesheet" href="css/vox-theme.css">
-    <link rel="stylesheet" href="os/chrome.css">
-    <link rel="stylesheet" href="os/layout.css">
+    <!-- Theme + Global Styles -->
+    <script src="/js/theme.js" defer></script>
+    <link rel="stylesheet" href="/css/vox-theme.css">
 
-    <!-- Window System CSS -->
-    <link rel="stylesheet" href="os/window.css">
+    <!-- Hex Dashboard Styles -->
+    <link rel="stylesheet" href="/css/hex-dashboard.css">
 
-    <!-- Launchpad CSS -->
-    <link rel="stylesheet" href="os/launcher.css">
-    
-    <!-- Load theme early to avoid flash and ensure vars are set -->
-    <script src="js/theme.js"></script>
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            /* Fallback color if CSS vars aren't loaded yet */
-            background: var(--background, #0b0b14);
-            font-family: system-ui, sans-serif;
-        }
-
-        /* Desktop wallpaper */
-        #vox-desktop {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 40% 30%, rgba(80,0,160,0.25), transparent),
-                        radial-gradient(circle at 70% 60%, rgba(0,200,255,0.22), transparent),
-                        #0b0b14;
-            backdrop-filter: blur(4px);
-        }
-
-        /* Taskbar */
-        #vox-taskbar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 42px;
-            background: rgba(10,10,20,0.6);
-            border-top: 1px solid rgba(255,255,255,0.08);
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 0 12px;
-            backdrop-filter: blur(14px);
-        }
-
-        /* Launchpad button */
-        #vox-launcher-btn {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.15);
-            background: linear-gradient(145deg, #151525, #090910);
-            box-shadow: 0 0 8px rgba(140,90,255,0.4);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #dcd0ff;
-            font-size: 20px;
-            margin-right: 12px;
-        }
-
-        #vox-launcher-btn:hover {
-            box-shadow: 0 0 14px rgba(180,130,255,0.8);
-        }
-
-        /* Boot status overlay (hidden once OS initializes) */
-        #boot-status {
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            background: rgba(0,0,0,0.55);
-            color: #cfc9ff;
-            font-size: 13px;
-            border: 1px solid rgba(255,255,255,0.12);
-            z-index: 2000;
-        }
-    </style>
 </head>
-
 <body>
 
-    <div id="boot-status">Loading Vox OS…</div>
+    <!-- Top Bar -->
+    <header class="vox-header">
+        <div class="vox-logo">Vox Assistant</div>
 
-    <!-- Desktop Window Layer -->
-    <div id="vox-desktop"></div>
+        <div class="profile-area">
+            <img id="profilePhoto" class="profile-photo" src="/assets/default-profile.png" />
+            <div class="dropdown">
+                <a href="/profile.html">Profile</a>
+                <a href="/admin.html">Admin Tools</a>
+                <a href="/settings.html">Settings</a>
+                <a id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </header>
 
-    <!-- Launchpad Overlay -->
-    <div id="vox-launchpad" class="hidden"></div>
+    <!-- Hex Grid -->
+    <main class="hex-container">
 
-    <!-- Taskbar -->
-    <div id="vox-taskbar">
-        <div id="vox-launcher-btn">◆</div>
-        <span style="color:#d0c9ff;opacity:.8;">Vox OS</span>
-        <div style="flex:1"></div>
-        <button id="vox-login-btn" style="display:none;margin-right:8px; padding:6px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(20,20,32,0.6); color:#e8e4ff;">Login</button>
-    </div>
+        <div class="hex-tile" data-link="/chat.html">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span class="label">Chat</span>
+        </div>
 
-    <!-- Window Manager -->
-    <script type="module" src="os/windowManager.js"></script>
+        <div class="hex-tile" data-link="/memories.html">
+            <i class="fa-solid fa-brain"></i>
+            <span class="label">Memories</span>
+        </div>
 
-    <!-- Launchpad Logic -->
-    <script type="module" src="os/launcher.js"></script>
+        <div class="hex-tile" data-link="/notifications.html">
+            <i class="fa-solid fa-bell"></i>
+            <span class="label">Notifications</span>
+        </div>
 
-    <!-- Session probe to reveal Login button when unauthenticated -->
-    <script>
-      (async function(){
-        try {
-          const res = await fetch('/auth/validate', { credentials: 'include' });
-          const btn = document.getElementById('vox-login-btn');
-          if (!res.ok) {
-            btn.style.display = 'inline-block';
-            btn.onclick = () => window.location.href = '/login.html';
-          } else {
-            if (btn) btn.style.display = 'none';
-          }
-        } catch {
-          const btn = document.getElementById('vox-login-btn');
-          if (btn) { btn.style.display = 'inline-block'; btn.onclick = () => window.location.href = '/login.html'; }
-        }
-      })();
-    </script>
+        <div class="hex-tile" data-link="/help.html">
+            <i class="fa-solid fa-circle-question"></i>
+            <span class="label">Help</span>
+        </div>
 
-    <noscript>
-      <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;background:#000;z-index:3000;">
-        JavaScript is required to run Vox OS.
-      </div>
-    </noscript>
+        <div class="hex-tile" id="logoutTile">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="label">Logout</span>
+        </div>
+
+    </main>
+
+    <!-- Dashboard JS -->
+    <script src="/js/hex-dashboard.js"></script>
 
 </body>
 </html>
