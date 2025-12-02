@@ -103,30 +103,39 @@ body {
 }
 
 /* Outer neon border like memory cards */
-.hex-tile::before {
-    content: "";
+.hex-tile {
+    background:
+      linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple)) padding-box;
+    animation: voxBorderShift 18s linear infinite;
+}
+
+/* Inner fill to mimic selected tabs/buttons from memory.html */
+.hex-inner {
     position: absolute;
-    inset: 0;
+    inset: 2px; /* reveals a slim glowing border */
     clip-path: inherit;
-    padding: 1px; /* thin border */
-    border-radius: 0; /* clip-path handles shape */
-    background: linear-gradient(120deg, var(--glow-cyan), var(--glow-magenta), var(--glow-purple)) border-box;
-    -webkit-mask: 
-      linear-gradient(#000 0 0) content-box, 
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor; /* safari */
-    mask-composite: exclude;
-    animation: voxBorderShift 18s linear infinite; /* from vox-theme.css */
-    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    background:
+      radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.14), rgba(10, 10, 22, 0.98)) padding-box;
+    box-shadow:
+      0 0 10px rgba(0, 246, 255, 0.18),
+      0 0 18px rgba(154, 77, 255, 0.14);
 }
 
 /* Hover state */
 .hex-tile:hover {
     transform: translateY(-4px) scale(1.03);
-    background: var(--tile-bg-hover);
+}
+.hex-tile:hover .hex-inner {
+    background:
+      radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.22), rgba(10, 10, 22, 0.98)) padding-box;
     box-shadow:
-      0 0 15px rgba(0, 246, 255, 0.35),
-      0 0 22px rgba(255, 0, 212, 0.25);
+      0 0 18px rgba(0, 246, 255, 0.35),
+      0 0 26px rgba(255, 0, 212, 0.25);
 }
 
 /* ------------------------------------------------------------
@@ -136,17 +145,15 @@ body {
 .hex-tile i {
     font-size: 40px;
     opacity: 1;
-    transition: opacity 0.2s;
+    transition: opacity 0.15s;
 }
 
 .hex-tile .label {
-    position: absolute;
-    bottom: 18px;
     font-size: 16px;
     letter-spacing: 0.06em;
     font-weight: 500;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.15s;
 }
 
 .hex-tile:hover i { opacity: 0; }
