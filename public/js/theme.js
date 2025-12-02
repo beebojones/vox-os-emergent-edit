@@ -13,23 +13,42 @@
 })();
 
 /* ----------------------------------------------------------
-   Apply theme to HTML + BODY
+   Apply theme to HTML + BODY (works even if body not yet parsed)
    ---------------------------------------------------------- */
 function applyTheme(mode) {
   const html = document.documentElement;
-  const body = document.body;
 
+  // Always update <html> immediately
   html.classList.remove("light-mode", "dark-mode");
-  body.classList.remove("light-mode", "dark-mode");
 
+  const setOnBody = () => {
+    const body = document.body;
+    if (!body) return; // body might still not be ready in rare cases
+    body.classList.remove("light-mode", "dark-mode");
+  };
+
+  // Compute selection
+  let selectedMode = mode;
   if (mode === "auto") {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const selected = prefersDark ? "dark" : "light";
-    html.classList.add(`${selected}-mode`);
-    body.classList.add(`${selected}-mode`);
+    selectedMode = prefersDark ? "dark" : "light";
+  }
+
+  html.classList.add(`${selectedMode}-mode`);
+
+  // Apply to body now or when it becomes available
+  if (document.body) {
+    setOnBody();
+    document.body.classList.add(`${selectedMode}-mode`);
   } else {
-    html.classList.add(`${mode}-mode`);
-    body.classList.add(`${mode}-mode`);
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+        setOnBody();
+        if (document.body) document.body.classList.add(`${selectedMode}-mode`);
+      },
+      { once: true }
+    );
   }
 
   localStorage.setItem("vox-theme", mode);
