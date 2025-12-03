@@ -1,30 +1,49 @@
-<header id="vox-global-header">
-    <div class="vox-left">
-        <span id="vox-os-title">vos OS</span>
+<!-- ============================================================
+     GLOBAL VOX OS HEADER
+     ============================================================ -->
+
+<header class="vox-header">
+
+  <!-- Left: Logo -->
+  <div class="vox-header-left">
+    <a href="dashboard.html" class="vox-logo">Vos OS</a>
+  </div>
+
+  <!-- Right: Avatar + User Pill + Dropdown -->
+  <div class="vox-header-right">
+
+    <!-- Avatar Hexagon (clickable to Profile) -->
+    <a href="profile.html" id="avatarOuter" class="avatar-hex">
+      <img id="avatarImg" src="" alt="User Avatar">
+    </a>
+
+    <!-- User Pill -->
+    <div class="user-pill" id="userPill">
+      <span id="userDisplay"></span>
+      <span id="userRole" class="role-tag"></span>
+      <span class="arrow">▾</span>
     </div>
 
-    <div class="vox-right">
+    <!-- Dropdown Menu -->
+    <div class="dropdown-menu" id="dropdownMenu">
+      <a href="dashboard.html">Home</a>
+      <a href="chat.html">Chat</a>
+      <a href="history.html">Chat History</a>
+      <a href="memory.html">Memory Console</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="developer.html">Developer Tools</a>
+      <a href="help.html">Help</a>
+      <a href="support.html">Support</a>
 
-        <!-- Avatar (click → profile.html) -->
-        <div id="vox-avatar-wrap">
-            <div id="vox-avatar-hex"></div>
-        </div>
+      <!-- Profile / Settings -->
+      <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0;">
+      <a href="profile.html">Profile</a>
+      <a href="account-settings.html">Account Settings</a>
 
-        <!-- User pill -->
-        <button id="vox-user-pill">
-            <span id="vox-displayname">User</span>
-            <span class="arrow">▾</span>
-        </button>
-
-        <!-- Dropdown -->
-        <div id="vox-dropdown" class="hidden">
-            <a href="profile.html">Profile</a>
-            <a href="account-settings.html">Account Settings</a>
-            <a href="notifications.html">Notifications</a>
-            <a href="memory.html">Memory Console</a>
-            <a href="chat.html">Chat</a>
-            <a href="dashboard.html">Dashboard</a>
-            <a id="logoutLink" href="#">Logout</a>
-        </div>
+      <!-- Logout -->
+      <button id="logoutBtn">Logout</button>
     </div>
+
+  </div>
+
 </header>

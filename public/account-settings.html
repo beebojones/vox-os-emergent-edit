@@ -2,99 +2,174 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Account Settings</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="css/vox-theme.css" />
+  <!-- Theme Styles -->
+  <link rel="stylesheet" href="css/vox-theme.css">
+
+  <!-- Header & User JS -->
   <script src="js/user.js" defer></script>
+
+  <title>Account Settings • Vos OS</title>
 </head>
 
 <body>
 
-  <!-- ============================================================
-       GLOBAL HEADER
-       ============================================================ -->
+  <!-- GLOBAL HEADER -->
+  <!-- (Paste the contents of header.html here OR use server-side include) -->
   <header class="vox-header">
+
     <div class="vox-header-left">
       <a href="dashboard.html" class="vox-logo">Vos OS</a>
     </div>
 
     <div class="vox-header-right">
-      <div id="avatarOuter" class="avatar-hex">
+      <a href="profile.html" id="avatarOuter" class="avatar-hex">
         <img id="avatarImg" src="" alt="">
-      </div>
+      </a>
 
       <div class="user-pill" id="userPill">
         <span id="userDisplay"></span>
-        <span class="role-tag" id="userRole"></span>
+        <span id="userRole" class="role-tag"></span>
         <span class="arrow">▾</span>
       </div>
 
       <div class="dropdown-menu" id="dropdownMenu">
-        <a href="profile.html">Profile</a>
-        <a href="account-settings.html">Account Settings</a>
+        <a href="dashboard.html">Home</a>
+        <a href="chat.html">Chat</a>
+        <a href="history.html">Chat History</a>
         <a href="memory.html">Memory Console</a>
         <a href="notifications.html">Notifications</a>
-        <a href="chat.html">Chat</a>
-        <a href="index.html">Home</a>
+        <a href="developer.html">Developer Tools</a>
+        <a href="help.html">Help</a>
+        <a href="support.html">Support</a>
+
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0;">
+        <a href="profile.html">Profile</a>
+        <a href="account-settings.html">Account Settings</a>
+
         <button id="logoutBtn">Logout</button>
       </div>
     </div>
+
   </header>
 
-  <!-- ============================================================
-       PAGE CONTENT
-       ============================================================ -->
-  <div class="page-shell">
+  <!-- PAGE CONTENT -->
+  <main style="max-width: 980px; margin: 40px auto; padding: 20px;">
 
     <h1 class="section-title">Account Settings</h1>
-    <p class="section-subtitle">Security, identity, and preferences for your Vox OS profile.</p>
+    <p class="section-subtitle">
+      Security, identity, and preferences for your Vox OS profile.
+    </p>
 
-    <!-- ================= SECURITY ================== -->
-    <div class="settings-panel">
+    <!-- SECURITY PANEL -->
+    <section class="settings-panel">
       <h3>Security</h3>
       <p>Change your password to keep your account safe.</p>
 
       <label>Current password</label>
-      <input type="password" id="currentPassword">
+      <input id="currentPassword" type="password">
 
       <label>New password</label>
-      <input type="password" id="newPassword">
+      <input id="newPassword" type="password">
 
-      <button class="settings-btn" id="savePassword">Update Password</button>
-    </div>
+      <button class="settings-btn" id="updatePasswordBtn">Update Password</button>
+    </section>
 
-    <!-- ================= USERNAME ================== -->
-    <div class="settings-panel">
+    <!-- DISPLAY NAME -->
+    <section class="settings-panel">
+      <h3>Display Name</h3>
+      <label>New Name</label>
+      <input id="newDisplayName" type="text">
+      <button class="settings-btn" id="updateDisplayNameBtn">Save Name</button>
+    </section>
+
+    <!-- USERNAME -->
+    <section class="settings-panel">
       <h3>Username</h3>
-      <p>Your login name for Vox OS.</p>
 
-      <label>New username</label>
-      <input type="text" id="newUsername">
+      <label>New Username</label>
+      <input id="newUsername" type="text">
 
-      <label>Current password</label>
-      <input type="password" id="verifyPassword">
+      <label>Password (required)</label>
+      <input id="usernamePasswordVerify" type="password">
 
-      <button class="settings-btn" id="saveUsername">Update Username</button>
-    </div>
+      <button class="settings-btn" id="updateUsernameBtn">Save Username</button>
+    </section>
 
-    <!-- ================= PREFERENCES ================== -->
-    <div class="settings-panel">
-      <h3>Preferences</h3>
-      <p>Customize your Vox OS experience.</p>
+    <!-- PROFILE PHOTO -->
+    <section class="settings-panel">
+      <h3>Profile Photo</h3>
+      <input type="file" id="avatarUpload" accept="image/*">
+      <button class="settings-btn" id="updatePhotoBtn">Save Photo</button>
+    </section>
 
-      <label>Theme</label>
-      <select id="themeSelect" style="padding:10px;border-radius:10px;background:rgba(0,0,0,0.3);color:white;">
-        <option value="dark">Dark (default)</option>
-        <option value="light">Light</option>
-      </select>
+  </main>
 
-      <button class="settings-btn" id="savePreferences">Save Preferences</button>
-    </div>
+  <script>
+    // Password
+    document.getElementById("updatePasswordBtn").onclick = async () => {
+      const currentPassword = document.getElementById("currentPassword").value;
+      const newPassword = document.getElementById("newPassword").value;
 
-  </div>
+      const res = await fetch("/auth/update-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
+
+      const data = await res.json();
+      alert(data.message || data.error);
+    };
+
+    // Display Name
+    document.getElementById("updateDisplayNameBtn").onclick = async () => {
+      const displayName = document.getElementById("newDisplayName").value;
+
+      const res = await fetch("/auth/update-display-name", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ displayName })
+      });
+
+      alert((await res.json()).message);
+    };
+
+    // Username
+    document.getElementById("updateUsernameBtn").onclick = async () => {
+      const username = document.getElementById("newUsername").value;
+      const password = document.getElementById("usernamePasswordVerify").value;
+
+      const res = await fetch("/auth/update-username", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      alert((await res.json()).message);
+    };
+
+    // Profile Photo
+    document.getElementById("updatePhotoBtn").onclick = async () => {
+      const file = document.getElementById("avatarUpload").files[0];
+      if (!file) return alert("Choose an image first.");
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const dataUrl = reader.result;
+
+        const res = await fetch("/auth/update-profile-photo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dataUrl })
+        });
+
+        alert((await res.json()).success ? "Saved!" : "Failed.");
+      };
+      reader.readAsDataURL(file);
+    };
+  </script>
 
 </body>
-
 </html>
