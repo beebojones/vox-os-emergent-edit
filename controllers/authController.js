@@ -515,3 +515,42 @@ export async function updatePassword(req, res) {
   }
 }
 
+// ------------------------------------------
+// AUTH VALIDATE
+// ------------------------------------------
+export async function validate(req, res) {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    // Fetch the user including the profile photo
+    const result = await db.query(
+      `SELECT id, username, display_name, role, profile_photo
+       FROM users WHERE id = $1`,
+      [userId]
+    );
+
+    if (!result.rowCount) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = result.rows[0];
+
+    res.json({
+      user: {
+        id: user.id,
+        username: user.username,
+        displayName: user.display_name,
+        role: user.role,
+        avatarDataUrl: user.profile_photo || null
+      }
+    });
+
+  } catch (err) {
+    console.error("Validate error:", err);
+    res.status(500).json({ error: "Validation failed." });
+  }
+}
