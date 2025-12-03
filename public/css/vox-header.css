@@ -1,188 +1,191 @@
-/* ============================================
-    Vos OS — Global Slim Header (Style B)
-   ============================================ */
+/* =======================================================================
+   V O S   O S — GLOBAL HEADER STYLES
+   ======================================================================= */
 
-:root {
-  --vox-header-height: 60px;
-  --vox-header-bg: rgba(10, 10, 18, 0.82);
-  --vox-header-text: #f2f4ff;
-  --vox-header-border: rgba(0, 246, 255, 0.35);
+/* Header container */
+.vox-header {
+    width: 100%;
+    height: 68px;
+    padding: 0 20px;
 
-  --vox-cyan: #00f6ff;
-  --vox-magenta: #ff00d4;
-  --vox-purple: #9a4dff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9000;
+
+    backdrop-filter: blur(14px);
+    background: rgba(5, 5, 12, 0.65);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    box-shadow:
+        0 0 20px rgba(0, 246, 255, 0.12),
+        0 0 30px rgba(255, 0, 212, 0.10);
 }
 
-/* Reset only inside header to prevent collisions */
-#vox-header * {
-  box-sizing: border-box;
-  font-family: inherit;
-  line-height: 1;
+/* Vos OS Logo */
+.vox-logo {
+    font-size: 26px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+
+    background: linear-gradient(90deg, #00f6ff, #ff00d4, #9a4dff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+
+    text-shadow: 0 0 8px rgba(0, 246, 255, 0.45);
 }
 
-/* ===========================
-     Header container
-   =========================== */
-
-#vox-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-
-  height: var(--vox-header-height);
-  padding: 0 26px;
-
-  background: var(--vox-header-bg);
-  backdrop-filter: blur(14px) brightness(1.1);
-
-  border-bottom: 1px solid var(--vox-header-border);
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  z-index: 9999;
+/* User area wrapper */
+.vox-user-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    cursor: pointer;
 }
 
-/* ===========================
-      Left: Title
-   =========================== */
-
-#vox-title {
-  font-size: 24px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  font-weight: 600;
-
-  background: linear-gradient(
-    90deg,
-    var(--vox-cyan),
-    var(--vox-magenta),
-    var(--vox-purple)
-  );
-  -webkit-background-clip: text;
-  color: transparent;
-
-  padding-top: 2px;
-}
-
-/* ===========================
-      Right: User section
-   =========================== */
-
-#vox-header-right {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  position: relative;
-}
-
-/* Hex avatar */
-.vox-avatar {
-  width: 42px;
-  height: 42px;
-  object-fit: cover;
-
-  clip-path: polygon(
-    25% 0%, 75% 0%,
-    100% 50%,
-    75% 100%, 25% 100%,
-    0% 50%
-  );
-
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 10px rgba(0, 246, 255, 0.35);
-}
-
-/* Username */
-#vox-user-name {
-  font-size: 17px;
-  font-weight: 500;
-  color: var(--vox-header-text);
-}
-
-/* Role pill */
-#vox-role-pill {
-  padding: 5px 12px;
-  font-size: 13px;
-  font-weight: 500;
-
-  border-radius: 999px;
-  border: 1px solid rgba(0, 246, 255, 0.4);
-  color: var(--vox-cyan);
-  background: rgba(0, 246, 255, 0.1);
+/* Display name */
+.vox-display-name {
+    font-size: 15px;
+    letter-spacing: 0.03em;
+    color: #e0e6ff;
+    opacity: 0.92;
 }
 
 /* Dropdown arrow */
-#vox-dropdown-arrow {
-  font-size: 18px;
-  cursor: pointer;
-  color: var(--vox-header-text);
-  opacity: 0.9;
-  user-select: none;
+.vox-dropdown-arrow {
+    font-size: 12px;
+    color: #cfd6ff;
+    opacity: 0.85;
 }
 
-/* Arrow hover */
-#vox-dropdown-arrow:hover {
-  opacity: 1;
+/* Avatar hex shell */
+.vox-avatar-hex {
+    width: 42px;
+    height: 42px;
+    position: relative;
+    clip-path: polygon(
+        25% 6%, 75% 6%,
+        100% 50%, 75% 94%,
+        25% 94%, 0% 50%
+    );
+
+    background: linear-gradient(135deg,
+        rgba(0, 246, 255, 0.15),
+        rgba(255, 0, 212, 0.15),
+        rgba(154, 77, 255, 0.15)
+    );
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    box-shadow:
+        0 0 12px rgba(0, 246, 255, 0.35),
+        0 0 18px rgba(255, 0, 212, 0.35);
+
+    overflow: hidden;
 }
 
-/* ===========================
-      Dropdown Menu
-   =========================== */
-
-#vox-dropdown {
-  display: none;
-  position: absolute;
-
-  top: calc(var(--vox-header-height) + 8px);
-  right: 0;
-
-  width: 200px;
-
-  padding: 8px 0;
-  background: rgba(8, 8, 14, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-
-  backdrop-filter: blur(14px);
-  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.45);
-
-  z-index: 9999;
+/* Avatar image */
+.vox-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-/* Dropdown buttons */
-#vox-dropdown button {
-  width: 100%;
-  padding: 12px 16px;
-  border: none;
-  background: transparent;
+/* Dropdown menu panel */
+.vox-dropdown {
+    position: absolute;
+    top: 60px;
+    right: 0;
 
-  text-align: left;
-  font-size: 15px;
-  color: #f0f4ff;
+    display: none;
+    flex-direction: column;
 
-  cursor: pointer;
-  transition: background 0.15s;
+    width: 210px;
+    padding: 10px;
+
+    background: rgba(8, 8, 16, 0.90);
+    border: 1px solid rgba(0, 246, 255, 0.30);
+
+    border-radius: 14px;
+    backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 0 22px rgba(0, 246, 255, 0.25),
+        0 0 28px rgba(255, 0, 212, 0.25);
+
+    animation: dropFade 0.15s ease-out;
 }
 
-/* Hover */
-#vox-dropdown button:hover {
-  background: rgba(255, 255, 255, 0.08);
+/* Dropdown animation */
+@keyframes dropFade {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Logout separator */
-#vox-dropdown button#logout-btn {
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  margin-top: 6px;
-  padding-top: 14px;
+/* Individual dropdown item */
+.vox-dropdown-item {
+    padding: 10px 14px;
+    border-radius: 10px;
+
+    font-size: 14px;
+    letter-spacing: 0.02em;
+
+    color: #eaf0ff;
+    opacity: 0.92;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
 }
 
-/* ===========================
-       Body padding
-   =========================== */
+/* Hover glow */
+.vox-dropdown-item:hover {
+    background: rgba(0, 246, 255, 0.12);
+    box-shadow:
+        0 0 12px rgba(0, 246, 255, 0.35),
+        0 0 16px rgba(255, 0, 212, 0.25);
+    transform: translateX(2px);
+}
 
-body.vox-has-header {
-  padding-top: var(--vox-header-height);
+/* Light mode adjustments */
+body.vox-light .vox-header {
+    background: rgba(255, 255, 255, 0.65);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.vox-light .vox-display-name,
+body.vox-light .vox-dropdown-arrow {
+    color: #333;
+}
+
+body.vox-light .vox-dropdown {
+    background: rgba(255, 255, 255, 0.92);
+    color: #222;
+}
+
+body.vox-light .vox-dropdown-item {
+    color: #222;
+}
+
+body.vox-light .vox-dropdown-item:hover {
+    background: rgba(0, 0, 0, 0.06);
+    box-shadow: none;
 }

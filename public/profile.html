@@ -1,392 +1,306 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <script src="/js/theme.js"></script>
-    <title>Your Profile | Vox Assistant</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Tier 2 Chrome -->
-    <link rel="stylesheet" href="/os/chrome.css">
-    <link rel="stylesheet" href="/os/layout.css">
-    <link rel="stylesheet" href="/css/vox-theme.css">
+  <link rel="stylesheet" href="css/vox-theme.css">
+  <script src="js/theme.js"></script>
 
-    <style>
-        body {
-            margin: 0;
-            color: var(--text-main);
-            font-family: system-ui, sans-serif;
-            overflow-x: hidden;
-            overflow-y: auto; /* allow vertical scroll */
-        }
+  <title>Profile</title>
 
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 130px auto;
-            padding-bottom: 60px;
-        }
+  <style>
+    body {
+      margin: 0;
+      background: var(--bg-main);
+      font-family: system-ui, sans-serif;
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-top: 80px; /* space for header */
+    }
 
-.title {
-            font-size: clamp(28px, 6vw, 48px);
-            font-weight: 700;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));
-            -webkit-background-clip: text; background-clip: text; color: transparent;
-            text-shadow: 0 0 18px rgba(160,110,255,0.9);
-        }
+    .profile-shell {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 18px 80px;
+    }
 
-        .subtitle {
-            font-size: 20px;
-            opacity: 0.8;
-            margin-bottom: 50px;
-        }
+    .section-title {
+      font-size: 28px;
+      margin: 20px 0 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
 
-/* Neon profile card to match Memory Console */
-        .profile-card {
-            display: grid;
-            grid-template-columns: 220px 1fr;
-            gap: 26px;
-            align-items: center;
+    .profile-card {
+      background: rgba(10,10,20,0.8);
+      padding: 22px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 28px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 18px rgba(0, 246, 255, 0.12);
+    }
 
-            border: 1px solid transparent;
-            border-radius: 18px;
-            padding: 32px;
-            margin-bottom: 30px;
-            background: linear-gradient(145deg, rgba(5,5,12,.95), rgba(10,10,22,.98)) padding-box,
-                        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
-            background-size: 100% 100%, 240% 240%;
-            box-shadow: 0 0 35px rgba(160,110,255,0.25), 0 0 18px rgba(0,246,255,0.10);
-            animation: voxBorderShift 18s linear infinite;
-            transition: 0.25s ease;
-        }
+    .profile-label {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
 
-        .profile-card:hover { transform: translateY(-2px); }
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.12);
+      color: var(--text-main);
+      font-size: 16px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(10px);
+    }
 
-        /* Hexagon avatar */
-        /* Memory Console-style neon border + glow */
-        @keyframes glowShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-.avatar {
-            --size: 140px;              /* hexagon height */
-            width: calc(var(--size) * 1.1547); /* regular flat-top hex: width = 2/√3 ≈ 1.1547 * height */
-            height: var(--size);
-            aspect-ratio: 2 / 1.732;   /* 2 : √3 keeps equal sides */
-            position: relative;
-            display: grid;
-            place-items: center;
-            font-size: calc(var(--size) * 0.32);
-            font-weight: 800;
-            color: #fff;
-            text-shadow: 0 0 12px rgba(154,77,255,0.85);
-            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-            border: 1px solid transparent;
-            background:
-              radial-gradient(circle at 20% 15%, rgba(0,246,255,0.22), rgba(5,5,16,0.96)) padding-box,
-              linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
-            box-shadow:
-              0 0 12px rgba(0,246,255,0.35),
-              0 0 18px rgba(255,0,212,0.25);
-            animation: glowShift 6s linear infinite;
-            flex: 0 0 auto;            /* prevent stretching */
-            will-change: transform, box-shadow;
-            transition: transform .16s ease, box-shadow .16s ease;
-        }
-        .avatar img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; clip-path:inherit; border-radius:0; }
-        .avatar-initials { position:relative; z-index:1; }
-        .avatar::after{
-            content:"";
-            position:absolute; inset: 0; clip-path: inherit;
-            background: linear-gradient(160deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%);
-            mix-blend-mode: screen; pointer-events: none;
-        }
-        .avatar::before{ content:""; position:absolute; inset:-8px; clip-path:inherit; background: radial-gradient(80% 80% at 50% 50%, rgba(0,246,255,0.35), transparent 70%); filter: blur(10px); z-index:-1; }
-        .avatar:hover{
-            transform: translateY(-2px);
-            box-shadow:
-              0 0 22px rgba(0,246,255,0.55),
-              0 0 28px rgba(255,0,212,0.45);
-        }
+    input:focus {
+      outline: none;
+      border-color: var(--cyan);
+      box-shadow: 0 0 8px rgba(0,246,255,0.4);
+    }
 
-.info-block { min-width: 0; display: grid; grid-auto-rows: min-content; }
+    .btn {
+      padding: 12px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      color: white;
+      background:
+        linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.96)) padding-box,
+        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+      background-size: 100% 100%, 220% 220%;
+      animation: voxBorderShift 14s linear infinite;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      transition: .2s;
+    }
 
-        .info-item { margin-bottom: 12px; }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 0 12px rgba(0,246,255,0.4),
+        0 0 18px rgba(255,0,212,0.3);
+    }
 
-        .info-label { font-size: 16px; opacity: 0.75; }
+    .avatar-editor {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-bottom: 20px;
+    }
 
-        .info-value {
-            font-size: 28px; font-weight: 700; text-shadow: 0 0 12px rgba(160,110,255,0.7);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
+    #profile-avatar-preview {
+      width: 100px;
+      height: 55px;
+      clip-path: polygon(
+        25% 0%, 75% 0%,
+        100% 50%,
+        75% 100%, 25% 100%,
+        0% 50%
+      );
+      background-size: cover;
+      background-position: center;
+      background-color: rgba(255,255,255,0.1);
+      box-shadow:
+        0 0 10px rgba(0,246,255,0.45),
+        0 0 20px rgba(255,0,212,0.35);
+      border: 1px solid rgba(0,246,255,0.4);
+    }
 
-        .actions-row { display: flex; gap: 10px; flex-wrap: nowrap; align-items: center; }
-        button.edge-btn { padding: 10px 14px; border-radius: 12px; border:1px solid transparent; color:#fff; background: linear-gradient(145deg, rgba(5,5,12,.9), rgba(15,15,28,.96)) padding-box, linear-gradient(120deg,var(--cyan),var(--magenta),var(--purple)) border-box; background-size:100% 100%, 220% 220%; animation: voxBorderShift 14s linear infinite; white-space: nowrap; }
+    .note {
+      opacity: 0.7;
+      font-size: 13px;
+      margin-top: -6px;
+    }
 
-        /* Stats grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-.stat-card {
-            border: 1px solid transparent;
-            border-radius: 16px;
-            padding: 28px;
-            background: 
-              linear-gradient(145deg, rgba(5, 5, 12, 0.95), rgba(10, 10, 22, 0.98)) padding-box,
-              linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
-            background-size: 100% 100%, 240% 240%;
-            box-shadow: 0 0 35px rgba(160,110,255,0.25), 0 0 18px rgba(0,246,255,0.10);
-            animation: voxBorderShift 18s linear infinite;
-            transition: 0.25s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 55px rgba(180,130,255,0.45), 0 0 24px rgba(0,246,255,0.2);
-        }
-
-        .stat-number {
-            font-size: 40px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            text-shadow: 0 0 14px rgba(160,110,255,0.85);
-        }
-
-        .stat-label {
-            font-size: 16px;
-            opacity: 0.75;
-        }
-
-        /* Buttons */
-.buttons { margin-top: 40px; display:flex; gap:10px; flex-wrap: wrap; }
-        .buttons .edge-btn { padding: 12px 16px; font-size:16px; }
-    </style>
+  </style>
 </head>
+
 <body>
 
-    <div class="container">
+  <!-- Global header -->
+  <!-- (Already wired into user.js to populate avatar + dropdown) -->
+  <header id="vox-global-header">
+    <div class="vox-left">
+      <span id="vox-os-title">vos OS</span>
+    </div>
 
-        <div class="title">Your Profile</div>
-        <div class="subtitle">Account identity and activity overview</div>
+    <div class="vox-right">
+      <div id="vox-avatar-wrap"><div id="vox-avatar-hex"></div></div>
 
-        <!-- Profile Card -->
-        <div class="profile-card">
-            <div class="avatar" id="avatarBox">
-              <img id="avatarImg" alt="" style="display:none;"/>
-              <span id="avatarInitials" class="avatar-initials">JC</span>
-            </div>
+      <button id="vox-user-pill">
+        <span id="vox-displayname">User</span>
+        <span class="arrow">▾</span>
+      </button>
 
-            <div class="info-block">
-                <div class="info-item">
-                    <div class="info-label">Display Name</div>
-                    <div class="info-value" id="displayName">—</div>
-                </div>
+      <div id="vox-dropdown" class="hidden">
+        <a href="profile.html">Profile</a>
+        <a href="account-settings.html">Account Settings</a>
+        <a href="notifications.html">Notifications</a>
+        <a href="memory.html">Memory Console</a>
+        <a href="chat.html">Chat</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a id="logoutLink" href="#">Logout</a>
+      </div>
+    </div>
+  </header>
 
-                <div class="info-item">
-                    <div class="info-label">Username</div>
-                    <div class="info-value" id="username">—</div>
-                </div>
+  <div class="profile-shell">
 
-            <div class="info-item">
-                    <div class="info-label">Member Since</div>
-                    <div class="info-value" id="memberSince">—</div>
-                </div>
+    <!-- ========================
+         AVATAR
+    ========================= -->
+    <div class="section-title">Profile Photo</div>
+    <div class="profile-card">
 
-                <div class="info-item">
-                  <div class="info-label" style="margin-bottom:8px;">Profile Photo</div>
-                  <div class="actions-row" style="margin-top:6px;">
-                    <input type="file" id="profilePhotoInput" accept="image/*" style="display:none" />
-                    <button class="edge-btn" id="changePhotoBtn" type="button">Add Photo</button>
-                    <button class="edge-btn" id="clearPhotoBtn" type="button">Remove Photo</button>
-                  </div>
-                </div>
-            </div>
+      <div class="avatar-editor">
+        <div id="profile-avatar-preview"></div>
+
+        <div>
+          <input type="file" id="avatarFile" accept="image/*">
+          <button id="saveAvatar" class="btn">Upload</button>
+          <button id="clearAvatar" class="btn" style="margin-left:8px;">Remove</button>
+
+          <div class="note">Image is stored safely in the database.</div>
         </div>
-
-        <!-- Stats -->
-        <div class="stats-grid">
-
-            <div class="stat-card">
-                <div class="stat-number" id="memCount">--</div>
-                <div class="stat-label">Memories Stored</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-number" id="chatCount">--</div>
-                <div class="stat-label">Chat Messages Sent</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-number">Active</div>
-                <div class="stat-label">Glow Engine Status</div>
-            </div>
-
-        </div>
-
-        <!-- Buttons removed per request -->
+      </div>
 
     </div>
 
-    <!-- Profile Logic -->
-    <script>
-      function nameFromBackend(u){
-        return (u.display_name||u.displayName||u.name||u.full_name||u.fullName||u.nickname||u.username||'User');
+    <!-- ========================
+         DISPLAY NAME
+    ========================= -->
+    <div class="section-title">Display Name</div>
+    <div class="profile-card">
+      <div class="profile-label">Update display name</div>
+      <input id="displayNameInput" type="text" placeholder="Display name">
+      <button id="saveDisplayName" class="btn">Save</button>
+    </div>
+
+    <!-- ========================
+         USERNAME
+    ========================= -->
+    <div class="section-title">Username</div>
+    <div class="profile-card">
+      <div class="profile-label">Change username</div>
+      <input id="usernameInput" type="text" placeholder="New username">
+      <input id="usernamePassword" type="password" placeholder="Current password">
+      <button id="saveUsername" class="btn">Update Username</button>
+    </div>
+
+  </div>
+
+  <script src="js/user.js"></script>
+
+  <script>
+    let currentUser = null;
+
+    // Load user for form defaults
+    async function loadUser() {
+      const res = await fetch('/auth/validate');
+      const data = await res.json();
+      if (!data?.user) return;
+
+      currentUser = data.user;
+
+      document.getElementById('displayNameInput').value = currentUser.displayName || "";
+
+      if (currentUser.avatarDataUrl) {
+        document.getElementById('profile-avatar-preview').style.backgroundImage =
+          `url('${currentUser.avatarDataUrl}')`;
       }
-      function showAvatarPhoto(dataUrl){
-        const img = document.getElementById('avatarImg');
-        const initials = document.getElementById('avatarInitials');
-        if (img){ img.src = dataUrl; img.style.display = 'block'; }
-        if (initials) initials.style.display = 'none';
-        setPhotoButtonLabel();
-      }
-      function showAvatarInitials(text){
-        const img = document.getElementById('avatarImg');
-        const initials = document.getElementById('avatarInitials');
-        if (img){ img.removeAttribute('src'); img.style.display = 'none'; }
-        if (initials){ initials.textContent = text || '??'; initials.style.display = 'block'; }
-        setPhotoButtonLabel();
-      }
-      function applyPhotoFromBackend(u){
-        if (u && u.profile_photo){ showAvatarPhoto(u.profile_photo); }
-        else { showAvatarInitials(getInitials(nameFromBackend(u))); }
-      }
-      function getInitials(str){
-        if (!str) return '??';
-        const parts = String(str).trim().split(/\s+/);
-        if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
-        return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
-      }
-      (async function init(){
-        // Load stored profile photo first if cached
-        try{
-          const dataUrl = localStorage.getItem('vox-profile-photo');
-          if (dataUrl){ showAvatarPhoto(dataUrl); }
-          else { showAvatarInitials(getInitials('User')); }
-        } catch { showAvatarInitials(getInitials('User')); }
-        // Memory count
-        try {
-          const mem = await fetch('/api/memories');
-          const arr = mem.ok ? await mem.json() : [];
-          document.getElementById('memCount').innerText = Array.isArray(arr)? arr.length : '—';
-        } catch { document.getElementById('memCount').innerText = '—'; }
+    }
 
-        // Chat count placeholder
-        document.getElementById('chatCount').innerText = '—';
+    // Upload avatar
+    document.getElementById('saveAvatar').onclick = async () => {
+      const f = document.getElementById('avatarFile').files[0];
+      if (!f) return alert("Choose a file first");
 
-        // User info
-        try {
-          const r = await fetch('/auth/validate');
-          if (r.ok){
-            const data = await r.json();
-            const u = data.user || {};
-            const name = nameFromBackend(u);
-            document.getElementById('displayName').innerText = name;
-            document.getElementById('username').innerText = (u.username || '—');
-            document.getElementById('memberSince').innerText = (u.timestamp ? new Date(u.timestamp).getFullYear() : '—');
-            document.getElementById('avatarInitials').textContent = getInitials(name);
-            applyPhotoFromBackend(u);
-          }
-        } catch {}
-      })();
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const dataUrl = reader.result;
 
-      // Photo handlers (save to DB and local cache)
-      const changeBtn = document.getElementById('changePhotoBtn');
-      const clearBtn = document.getElementById('clearPhotoBtn');
-      const inputFile = document.getElementById('profilePhotoInput');
-      const avatarImg = document.getElementById('avatarImg');
-
-      function setPhotoButtonLabel(){
-        try {
-          const has = !!(avatarImg && avatarImg.style.display !== 'none' && avatarImg.src);
-          changeBtn.textContent = has ? 'Update Photo' : 'Add Photo';
-        } catch {}
-      }
-
-      if (changeBtn && inputFile){
-        changeBtn.addEventListener('click', () => inputFile.click());
-        inputFile.addEventListener('change', async () => {
-          const f = inputFile.files && inputFile.files[0];
-          if (!f) return;
-
-          // Compress client-side to keep payload small and fast
-          try {
-            const dataUrl = await (async function compressBest(file){
-              const blobUrl = URL.createObjectURL(file);
-              const img = new Image();
-              img.src = blobUrl;
-              await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
-              const maxSide = 1024; // upgraded avatar resolution
-              const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
-              const w = Math.max(1, Math.round(img.width * scale));
-              const h = Math.max(1, Math.round(img.height * scale));
-              const c = document.createElement('canvas');
-              c.width = w; c.height = h;
-              const ctx = c.getContext('2d');
-              ctx.drawImage(img, 0, 0, w, h);
-              URL.revokeObjectURL(blobUrl);
-
-              const limit = 8_000_000; // ~8MB budget for data URL
-              const qualities = [0.95, 0.9, 0.85, 0.8, 0.75];
-
-              function pick(...candidates){
-                const filtered = candidates.filter(Boolean);
-                if (!filtered.length) return null;
-                // Prefer the highest quality that fits under the limit; if multiple, pick the smallest
-                const under = filtered.filter(x => x.length < limit);
-                if (under.length) return under.sort((a,b) => a.length - b.length)[0];
-                // Otherwise pick the smallest overall
-                return filtered.sort((a,b) => a.length - b.length)[0];
-              }
-
-              for (const q of qualities){
-                const webp = (function(){ try { return c.toDataURL('image/webp', q); } catch { return null; } })();
-                const jpeg = c.toDataURL('image/jpeg', q);
-                const chosen = pick(webp, jpeg);
-                if (chosen && chosen.length < limit) return chosen;
-                if (q === qualities[qualities.length-1]) return chosen; // last resort
-              }
-              return c.toDataURL('image/jpeg', 0.75);
-            })(f);
-
-            const resp = await fetch('/auth/profile-photo', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ dataUrl }) });
-            if (!resp.ok){
-              let errTxt = 'Failed to save photo';
-              try { const msg = await resp.json(); errTxt = msg?.error || errTxt; } catch {}
-              if (resp.status === 404) errTxt = 'Route not found. Restart the server to load /auth/profile-photo.';
-              alert(errTxt);
-              return;
-            }
-            try { localStorage.setItem('vox-profile-photo', dataUrl); } catch {}
-            showAvatarPhoto(dataUrl);
-          } catch (e) {
-            alert('Could not process image');
-          }
+        const res = await fetch('/auth/update-photo', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dataUrl })
         });
-      }
-      if (clearBtn){
-clearBtn.addEventListener('click', async () => { 
-          try { localStorage.removeItem('vox-profile-photo'); } catch {}
-          showAvatarInitials(getInitials(document.getElementById('displayName').innerText || 'User'));
-          try { 
-            const resp = await fetch('/auth/profile-photo', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ dataUrl: '' }) });
-            if (!resp.ok){
-              let errTxt = 'Failed to remove photo';
-              try { const msg = await resp.json(); errTxt = msg?.error || errTxt; } catch {}
-              if (resp.status === 404) errTxt = 'Route not found. Restart the server to load /auth/profile-photo.';
-              alert(errTxt);
-            }
-          } catch { alert('Failed to remove photo'); }
-          setPhotoButtonLabel();
-        });
-      }
-    </script>
 
-    <!-- Glow + User Header -->
-    <script src="/os/glow_engine.js"></script>
-    <script src="/js/user.js"></script>
+        const out = await res.json();
+        if (!out.success) return alert(out.error || "Upload failed");
+
+        document.getElementById('profile-avatar-preview').style.backgroundImage =
+          `url('${dataUrl}')`;
+
+        // Immediately refresh global header
+        if (window.refreshUserHeader) window.refreshUserHeader();
+      };
+
+      reader.readAsDataURL(f);
+    };
+
+    // Remove avatar
+    document.getElementById('clearAvatar').onclick = async () => {
+      const res = await fetch('/auth/update-photo', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dataUrl: "" })
+      });
+
+      const out = await res.json();
+      if (!out.success) return alert(out.error || "Removal failed");
+
+      document.getElementById('profile-avatar-preview').style.backgroundImage = "none";
+
+      if (window.refreshUserHeader) window.refreshUserHeader();
+    };
+
+    // Save display name
+    document.getElementById('saveDisplayName').onclick = async () => {
+      const newName = document.getElementById('displayNameInput').value.trim();
+      const res = await fetch('/auth/display-name', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ displayName: newName })
+      });
+      const out = await res.json();
+      if (!out.success) return alert(out.error || "Could not update");
+      if (window.refreshUserHeader) window.refreshUserHeader();
+      alert("Display name updated!");
+    };
+
+    // Save username
+    document.getElementById('saveUsername').onclick = async () => {
+      const u = document.getElementById('usernameInput').value.trim();
+      const pw = document.getElementById('usernamePassword').value.trim();
+
+      const res = await fetch('/auth/username', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: u, password: pw })
+      });
+
+      const out = await res.json();
+      if (!out.success) return alert(out.error || "Could not update username");
+
+      alert("Username updated! Log in again if needed.");
+    };
+
+    loadUser();
+  </script>
 
 </body>
 </html>
