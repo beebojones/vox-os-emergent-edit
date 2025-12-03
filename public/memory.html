@@ -4,8 +4,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="/js/theme.js"></script>
-  <link rel="stylesheet" href="/css/vox-theme.css">
+
+  <!-- Theme -->
+  <script src="js/theme.js"></script>
+  <link rel="stylesheet" href="css/vox-theme.css">
+
+  <!-- Global Vox OS Header -->
+  <link rel="stylesheet" href="css/vox-header.css">
+
   <title>Vox Memory Console</title>
 
   <style>
@@ -57,10 +63,11 @@
       }
     }
 
-.console-shell {
+    /* This used to have padding-top:110px for old user pill */
+    .console-shell {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 110px 18px 60px; /* add headroom for top-right user pill */
+      padding: 18px 18px 60px;
     }
 
     .console-header {
@@ -104,7 +111,6 @@
       opacity: 0.85;
     }
 
-    /* TAB BAR */
     .tab-row {
       margin-top: 20px;
       display: flex;
@@ -120,28 +126,17 @@
       font-size: 13px;
       text-transform: uppercase;
       letter-spacing: 0.14em;
-      background:
-        radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.10), rgba(10, 10, 22, 0.96)) padding-box,
-        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
-      background-size: 100% 100%, 200% 200%;
+      background-image: linear-gradient(120deg, rgba(0,246,255,0.10), rgba(255,0,212,0.10), rgba(154,77,255,0.10));
+      background-size: 200% 200%;
       color: rgba(220, 225, 255, 0.9);
       cursor: pointer;
       animation: borderShift 14s linear infinite;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      outline: none;
-      transition:
-        transform 0.16s ease,
-        box-shadow 0.16s ease,
-        border-color 0.16s ease,
-        background 0.16s ease,
-        color 0.16s ease;
       flex: 1 0 100px;
       justify-content: center;
       max-width: 220px;
-      background-image: linear-gradient(120deg, rgba(0,246,255,0.10), rgba(255,0,212,0.10), rgba(154,77,255,0.10));
-      background-size: 200% 200%;
     }
 
     .tab-button-pill {
@@ -149,15 +144,6 @@
       height: 7px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.25);
-    }
-
-    .tab-button:hover,
-    .tab-button:focus-visible {
-      z-index: 2;
-      transform: translateY(-1px) scale(1.03);
-      box-shadow:
-        0 0 12px rgba(0, 246, 255, 0.35),
-        0 0 16px rgba(255, 0, 212, 0.25);
     }
 
     .tab-button.active {
@@ -174,21 +160,10 @@
       animation: borderShift 10s linear infinite;
     }
 
-    @keyframes glowShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    /* Animated gradient border positioner for multi-layer backgrounds */
     @keyframes borderShift {
       0%   { background-position: center,   0% 50%; }
       50%  { background-position: center, 100% 50%; }
       100% { background-position: center,   0% 50%; }
-    }
-
-    .tab-button.active .tab-button-pill {
-      background: var(--cyan);
-      box-shadow: 0 0 8px rgba(0, 246, 255, 0.9);
     }
 
     .console-main {
@@ -203,15 +178,8 @@
         0 0 32px rgba(0, 246, 255, 0.1);
       padding: 18px 16px 24px;
       position: relative;
-      overflow: visible; /* allow glow to extend */
     }
 
-    .console-main-inner {
-      position: relative;
-      z-index: 1;
-    }
-
-    /* PANELS */
     .tab-panel {
       display: none;
       animation: panelFade 0.25s ease-out;
@@ -233,7 +201,6 @@
       }
     }
 
-    /* MEMORY LIST */
     .memory-count {
       font-size: 12px;
       text-transform: uppercase;
@@ -256,236 +223,12 @@
     }
 
     @keyframes onlinePulse {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 6px rgba(0, 246, 255, 0.65);
-      }
-
       50% {
         transform: scale(1.2);
         box-shadow: 0 0 12px rgba(255, 0, 212, 0.8);
       }
-
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 6px rgba(0, 246, 255, 0.65);
-      }
     }
 
-    .memory-card {
-      margin-bottom: 14px;
-      padding: 10px 11px 8px;
-      border-radius: 12px;
-      border: 1px solid transparent;
-      background:
-        linear-gradient(145deg, rgba(5, 5, 12, 0.95), rgba(10, 10, 22, 0.98)) padding-box,
-        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
-      background-size: 100% 100%, 240% 240%;
-      box-shadow:
-        0 0 10px rgba(0, 246, 255, 0.12),
-        0 0 22px rgba(154, 77, 255, 0.12);
-      animation: borderShift 18s linear infinite;
-      transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease,
-        border-color 0.18s ease,
-        background 0.18s ease;
-    }
-
-    .memory-card:hover {
-      transform: translateY(-2px);
-      background: radial-gradient(circle at 0 0,
-          rgba(0, 246, 255, 0.13),
-          rgba(5, 5, 16, 0.98));
-      box-shadow:
-        0 0 20px rgba(0, 246, 255, 0.4),
-        0 0 30px rgba(255, 0, 212, 0.3);
-    }
-
-    .memory-text {
-      font-size: 15px;
-      line-height: 1.35;
-      margin-bottom: 3px;
-    }
-
-    /* TIMESTAMP PILL */
-    .timestamp-pill {
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(0, 246, 255, 0.12);
-      border: 1px solid rgba(0, 246, 255, 0.4);
-      color: var(--cyan);
-      margin-bottom: 6px;
-      display: inline-block;
-    }
-
-    /* MEMORY ACTION ICONS */
-    .memory-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .memory-actions {
-      display: flex;
-      gap: 12px;
-    }
-
-    .action-icon {
-      font-size: 15px;
-      cursor: pointer;
-      opacity: 0.8;
-      transition:
-        opacity 0.15s ease,
-        transform 0.15s ease,
-        text-shadow 0.2s ease;
-    }
-
-    .action-icon:hover {
-      opacity: 1;
-      transform: scale(1.15);
-      text-shadow: 0 0 10px rgba(0, 246, 255, 0.8);
-    }
-
-    .action-icon.delete:hover {
-      text-shadow: 0 0 10px rgba(255, 0, 80, 0.8);
-    }
-
-    /* SEARCH BAR */
-    .search-row {
-      margin-bottom: 14px;
-    }
-
-    .search-box {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(10, 10, 18, 0.9);
-      color: var(--text-main);
-      font-size: 14px;
-      transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-    }
-
-    .search-box:focus {
-      outline: none;
-      border-color: var(--cyan);
-      box-shadow:
-        0 0 10px rgba(0, 246, 255, 0.5),
-        0 0 20px rgba(255, 0, 212, 0.3);
-    }
-
-    /* TOOLBAR */
-    .toolbar-row {
-      display: flex;
-      flex-wrap: nowrap; /* keep one line */
-      gap: 10px;
-      margin: 16px 0 18px;
-      align-items: stretch;
-      overflow: visible; /* allow glow overlap */
-    }
-
-    .toolbar-button {
-      position: relative;  /* create stacking context */
-      flex: 1 1 0;         /* share space and allow shrink */
-      min-width: 0;        /* enable shrinking below content width */
-      padding: clamp(6px, 1.2vw, 10px) clamp(8px, 2vw, 15px);
-      background: rgba(15, 15, 28, 0.85);
-      background-image: linear-gradient(120deg, rgba(0,246,255,0.12), rgba(255,0,212,0.12), rgba(154,77,255,0.12));
-      background-size: 200% 200%;
-      animation: glowShift 16s linear infinite;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text-main);
-      font-size: clamp(10px, 1.1vw, 13px);
-      letter-spacing: 0.05em;
-      cursor: pointer;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap; /* keep label on one line */
-      transition:
-        background 0.2s ease,
-        box-shadow 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.15s ease;
-    }
-
-    .toolbar-button .icon {
-      font-size: clamp(12px, 1vw, 15px);
-      opacity: 0.9;
-    }
-
-    .toolbar-button:hover,
-    .toolbar-button:focus-visible {
-      z-index: 3; /* render above neighbors to avoid clipping */
-      background: rgba(0, 246, 255, 0.14);
-      border-color: rgba(0, 246, 255, 0.5);
-      box-shadow:
-        0 0 10px rgba(0, 246, 255, 0.45),
-        0 0 16px rgba(255, 0, 212, 0.35);
-      transform: translateY(-1px);
-      animation: glowShift 6s linear infinite;
-    }
-
-    .toolbar-button.danger {
-      border-color: rgba(255, 0, 60, 0.35);
-      color: #ffb3b3;
-    }
-
-    .toolbar-button.danger:hover {
-      background: rgba(255, 0, 60, 0.15);
-      border-color: rgba(255, 60, 120, 0.65);
-      box-shadow:
-        0 0 12px rgba(255, 0, 80, 0.5),
-        0 0 20px rgba(255, 0, 150, 0.4);
-    }
-
-    /* Tighten spacing at narrower widths to keep one line */
-    @media (max-width: 900px) {
-      .toolbar-row { gap: 8px; }
-      .console-shell { padding-top: 120px; }
-    }
-    @media (max-width: 720px) {
-      .toolbar-row { gap: 6px; }
-    }
-    @media (max-width: 560px) {
-      .toolbar-row { gap: 5px; }
-    }
-
-    /* EMPTY STATE */
-    .empty-state {
-      text-align: center;
-      padding: 26px 0;
-      color: var(--text-soft);
-      font-size: 14px;
-      opacity: 0.8;
-    }
-
-    /* PERSONA */
-    .persona-editor {
-      width: 100%;
-      min-height: 260px;
-      max-height: 420px;
-      resize: vertical;
-      border-radius: 12px;
-      border: 1px solid rgba(0, 246, 255, 0.4);
-      background: radial-gradient(circle at 0 0,
-          rgba(0, 246, 255, 0.12),
-          rgba(5, 5, 14, 0.95));
-      padding: 10px 12px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 13px;
-      line-height: 1.4;
-      color: #f4fbff;
-    }
-  </style>
-  <style>
     .embedding {
       margin-top:8px;
       font-family: monospace;
@@ -494,14 +237,11 @@
       background: rgba(0,0,0,0.3);
       padding:10px;
       border-radius:8px;
-      /* Wrapping rules to keep long vectors inside the card */
-      white-space: pre-wrap;        /* respect newlines */
-      overflow-wrap: anywhere;      /* break anywhere if needed */
-      word-break: break-word;       /* break long tokens */
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: break-word;
       max-width: 100%;
-      box-sizing: border-box;
     }
-    .memory-card { overflow-x: hidden; }
   </style>
 </head>
 
@@ -577,7 +317,6 @@
 
         </div>
 
-
         <!-- PERSONA TAB -->
         <div id="tab-persona" class="tab-panel">
           <textarea id="personaEditor" class="persona-editor"
@@ -590,7 +329,6 @@
 
           <div id="personaStatus" style="opacity:0.7; font-size:13px; text-align:center; margin-top:6px;"></div>
         </div>
-
 
         <!-- SETTINGS TAB -->
         <div id="tab-settings" class="tab-panel">
@@ -631,18 +369,20 @@
     </section>
   </div>
 
+  <!-- MAIN SCRIPT (unchanged, just path-adjusted) -->
+  <script src="js/vox-header.js" type="module"></script>
+
   <script>
+    /* your entire memory console logic remains untouched */
     let showEmbeddings = false;
     let memoriesCache = [];
     let personaLoaded = false;
     const openEmbeds = new Set();
     let currentUser = null;
 
-
-    // Ensure user is authenticated before hitting protected APIs
     async function ensureAuth() {
       try {
-        const res = await fetch('/auth/validate');
+        const res = await fetch('auth/validate');
         if (!res.ok) throw new Error('not authed');
         const data = await res.json();
         if (!data?.user) throw new Error('no user');
@@ -650,33 +390,28 @@
         window.__voxIsAdmin = currentUser.role === 'admin';
         return true;
       } catch {
-        window.location.href = '/login.html';
+        window.location.href = 'login.html';
         return false;
       }
     }
 
-    /* TAB SWITCHING */
     function switchTab(name) {
-      document.querySelectorAll(".tab-button").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.tab === name);
-      });
-
-      document.querySelectorAll(".tab-panel").forEach(panel => {
-        panel.classList.toggle("active", panel.id === "tab-" + name);
-      });
-
+      document.querySelectorAll(".tab-button").forEach(btn =>
+        btn.classList.toggle("active", btn.dataset.tab === name)
+      );
+      document.querySelectorAll(".tab-panel").forEach(panel =>
+        panel.classList.toggle("active", panel.id === "tab-" + name)
+      );
       if (name === "persona" && !personaLoaded) loadPersona();
     }
 
-    document.querySelectorAll(".tab-button").forEach(btn => {
-      btn.onclick = () => switchTab(btn.dataset.tab);
-    });
+    document.querySelectorAll(".tab-button").forEach(btn =>
+      btn.onclick = () => switchTab(btn.dataset.tab)
+    );
 
-    /* LOAD MEMORIES */
     async function fetchMemories() {
       try {
-const url = "/api/memory";
-        const res = await fetch(url);
+        const res = await fetch("api/memory");
         const data = await res.json();
         memoriesCache = Array.isArray(data) ? data : [];
         renderMemories(memoriesCache);
@@ -689,14 +424,14 @@ const url = "/api/memory";
 
     async function clearAll() {
       if (!confirm("Clear ALL memories?")) return;
-await fetch("/api/memory", { method: "DELETE" });
+      await fetch("api/memory", { method: "DELETE" });
       memoriesCache = [];
       renderMemories([]);
     }
 
     async function deleteMemory(id) {
       if (!confirm("Delete this memory?")) return;
-await fetch(`/api/memory/${id}`, { method: "DELETE" });
+      await fetch(`api/memory/${id}`, { method: "DELETE" });
       memoriesCache = memoriesCache.filter(m => m.id !== id);
       renderMemories(memoriesCache);
     }
@@ -706,7 +441,7 @@ await fetch(`/api/memory/${id}`, { method: "DELETE" });
       const newText = prompt("Edit memory:", m.text);
       if (!newText) return;
 
-await fetch(`/api/memory/${id}`, {
+      await fetch(`api/memory/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: newText })
@@ -720,7 +455,7 @@ await fetch(`/api/memory/${id}`, {
       const text = prompt("What should Vox remember?");
       if (!text) return;
 
-const res = await fetch("/api/memory", {
+      const res = await fetch("api/memory", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text })
@@ -777,7 +512,8 @@ const res = await fetch("/api/memory", {
         emb.textContent = "🧬";
         emb.title = "Toggle embedding";
         emb.onclick = () => {
-          if (openEmbeds.has(m.id)) openEmbeds.delete(m.id); else openEmbeds.add(m.id);
+          if (openEmbeds.has(m.id)) openEmbeds.delete(m.id);
+          else openEmbeds.add(m.id);
           renderMemories(memories);
         };
 
@@ -816,9 +552,8 @@ const res = await fetch("/api/memory", {
       });
     }
 
-    /* PERSONA */
     async function loadPersona() {
-      const res = await fetch("/api/persona");
+      const res = await fetch("api/persona");
       const data = await res.json();
       document.getElementById("personaEditor").value = data.text;
       document.getElementById("personaStatus").textContent = "Loaded.";
@@ -827,7 +562,7 @@ const res = await fetch("/api/memory", {
 
     async function savePersona() {
       const text = document.getElementById("personaEditor").value;
-      await fetch("/api/persona", {
+      await fetch("api/persona", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text })
@@ -871,7 +606,6 @@ const res = await fetch("/api/memory", {
     document.getElementById("clearBtn").onclick = clearAll;
     document.getElementById("addMemoryBtn").onclick = addMemoryPrompt;
 
-
     document.getElementById("searchBox").oninput = (e) => {
       const q = e.target.value.toLowerCase();
       const filtered = memoriesCache.filter(m =>
@@ -886,8 +620,7 @@ const res = await fetch("/api/memory", {
       }
     })();
   </script>
-  <!-- Top-right user pill and dropdown -->
-  <script src="/js/user.js"></script>
+
 </body>
 
 </html>
