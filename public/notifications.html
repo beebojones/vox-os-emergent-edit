@@ -1,137 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- Theme + Header -->
-    <script src="js/theme.js"></script>
-    <link rel="stylesheet" href="css/vox-theme.css">
-    <link rel="stylesheet" href="css/vox-header.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Notifications</title>
+  <script src="js/theme.js"></script>
+  <link rel="stylesheet" href="css/vox-theme.css">
+  <link rel="stylesheet" href="css/vox-header.css">
 
-    <style>
-        body {
-            margin: 0;
-            font-family: system-ui, sans-serif;
-            background: var(--bg-main);
-            color: var(--text-main);
-            overflow-x: hidden;
-        }
+  <title>Notifications</title>
 
-        /* Space for global header */
-        #page-wrapper {
-            padding-top: 100px;
-            max-width: 900px;
-            margin: 0 auto;
-            padding-left: 20px;
-            padding-right: 20px;
-        }
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 24px;
-            font-size: 32px;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-        }
+    #page-wrapper {
+      padding-top: calc(var(--vox-header-height) + 40px);
+      max-width: 900px;
+      margin: 0 auto;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
 
-        /* Notification cards */
-        .notif-card {
-            background:
-                linear-gradient(145deg, rgba(5,5,12,0.92), rgba(15,15,28,0.96)) padding-box,
-                linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
-            background-size: 100% 100%, 240% 240%;
-            border: 1px solid transparent;
-            padding: 16px 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            animation: borderShift 16s linear infinite;
-            box-shadow: 0 0 14px rgba(0, 246, 255, 0.15);
-        }
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #fff;
+    }
 
-        .notif-title {
-            font-size: 20px;
-            margin: 0 0 8px;
-            font-weight: 600;
-        }
+    .notif-card {
+      background:
+        linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.94)) padding-box,
+        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+      border: 1px solid transparent;
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      background-size: 100% 100%, 220% 220%;
+      animation: borderShift 16s linear infinite;
+    }
 
-        .notif-body {
-            font-size: 16px;
-            line-height: 1.45;
-            opacity: 0.9;
-        }
+    .notif-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
 
-        .notif-time {
-            font-size: 13px;
-            opacity: 0.7;
-            margin-top: 8px;
-        }
+    .notif-body {
+      font-size: 16px;
+      opacity: 0.9;
+      line-height: 1.45;
+    }
 
-        @keyframes borderShift {
-          0%   { background-position: center,   0% 50%; }
-          50%  { background-position: center, 100% 50%; }
-          100% { background-position: center,   0% 50%; }
-        }
+    .notif-time {
+      font-size: 13px;
+      opacity: 0.75;
+      margin-top: 8px;
+    }
 
-        .empty-state {
-            text-align: center;
-            margin-top: 40px;
-            opacity: 0.8;
-        }
-    </style>
+    .empty-state {
+      text-align: center;
+      margin-top: 40px;
+      opacity: 0.7;
+      font-size: 15px;
+    }
+
+    @keyframes borderShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
 </head>
 
 <body>
 
-    <!-- Global Vox Header -->
-    <div id="vox-header">
-        <div id="vox-title">Vox OS</div>
-        <div id="vox-user-area"></div>
-    </div>
+  <div id="vox-header">
+    <div id="vox-title">Vox OS</div>
+    <div id="vox-user-area"></div>
+  </div>
 
-    <div id="page-wrapper">
-        <h1>Notifications</h1>
-        <div id="notif-list"></div>
-    </div>
+  <div id="page-wrapper">
+    <h1>Notifications</h1>
+    <div id="notif-list"></div>
+  </div>
 
-    <script>
-        async function loadNotifications() {
-            const container = document.getElementById("notif-list");
+  <script>
+    async function loadNotifications() {
+      const container = document.getElementById("notif-list");
 
-            try {
-                const res = await fetch("api/notifications", { credentials: "include" });
-                const data = await res.json();
+      try {
+        const res = await fetch("api/notifications", { credentials: "include" });
+        const data = await res.json();
 
-                if (!Array.isArray(data) || data.length === 0) {
-                    container.innerHTML = `<div class="empty-state">No notifications yet.</div>`;
-                    return;
-                }
-
-                container.innerHTML = "";
-
-                data.forEach(n => {
-                    const card = document.createElement("div");
-                    card.className = "notif-card";
-
-                    card.innerHTML = `
-                        <div class="notif-title">${n.title || "Notification"}</div>
-                        <div class="notif-body">${n.body || ""}</div>
-                        <div class="notif-time">${new Date(n.timestamp).toLocaleString()}</div>
-                    `;
-
-                    container.appendChild(card);
-                });
-            } catch (err) {
-                container.innerHTML = `<div class="empty-state">Error loading notifications.</div>`;
-            }
+        if (!Array.isArray(data) || data.length === 0) {
+          container.innerHTML = `<div class="empty-state">No notifications yet.</div>`;
+          return;
         }
 
-        loadNotifications();
-    </script>
+        container.innerHTML = "";
+        data.forEach(n => {
+          const card = document.createElement("div");
+          card.className = "notif-card";
+          card.innerHTML = `
+            <div class="notif-title">${n.title || "Notification"}</div>
+            <div class="notif-body">${n.body || ""}</div>
+            <div class="notif-time">${new Date(n.timestamp).toLocaleString()}</div>
+          `;
+          container.appendChild(card);
+        });
+      } catch {
+        container.innerHTML = `<div class="empty-state">Error loading notifications.</div>`;
+      }
+    }
 
-    <!-- New global header script -->
-    <script type="module" src="js/vox-header.js"></script>
+    loadNotifications();
+  </script>
+
+  <script type="module" src="js/vox-header.js"></script>
+
 </body>
 </html>

@@ -5,26 +5,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Theme -->
+  <!-- Theme + Global Header -->
   <script src="js/theme.js"></script>
   <link rel="stylesheet" href="css/vox-theme.css">
-
-  <!-- Global Vox OS Header -->
   <link rel="stylesheet" href="css/vox-header.css">
 
   <title>Vox Memory Console</title>
 
   <style>
     :root {
-      --bg-main: #050509;
-      --bg-panel: rgba(10, 10, 20, 0.95);
-      --text-main: #f5f5f5;
-      --text-soft: #a8b0d0;
-      --cyan: #00f6ff;
-      --magenta: #ff00d4;
-      --purple: #9a4dff;
-      --orange: #ff7a00;
-      --border-soft: rgba(255, 255, 255, 0.06);
+      --section-top-offset: calc(var(--vox-header-height) + 30px);
     }
 
     * {
@@ -33,7 +23,6 @@
 
     body {
       margin: 0;
-      padding: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text-main);
 
@@ -47,117 +36,92 @@
       min-height: 100vh;
       overflow-x: hidden;
       animation: bgShift 25s linear infinite alternate;
+      padding-top: var(--section-top-offset);
     }
 
     @keyframes bgShift {
       0% {
         background-position: 0 0, 100% 100%, 100% 0, 0 100%;
       }
-
       50% {
         background-position: 10% -5%, 95% 110%, 110% 10%, -10% 95%;
       }
-
       100% {
         background-position: -5% 10%, 105% 90%, 90% -10%, 5% 105%;
       }
     }
 
-    /* This used to have padding-top:110px for old user pill */
     .console-shell {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 18px 18px 60px;
+      padding: 0 18px 60px;
     }
 
     .console-header {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 25px;
     }
 
     .console-title {
-      font-size: 40px;
+      font-size: 44px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       margin: 0 0 6px 0;
       background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));
-      background-clip: text;
       -webkit-background-clip: text;
+      background-clip: text;
       color: transparent;
-      position: relative;
-      animation: titleGlow 16s linear infinite alternate;
+      animation: titleGlow 12s linear infinite alternate;
     }
 
     @keyframes titleGlow {
-      0% {
-        text-shadow: 0 0 8px rgba(0, 246, 255, 0.5);
-      }
-
-      50% {
-        text-shadow: 0 0 14px rgba(255, 0, 212, 0.7);
-      }
-
-      100% {
-        text-shadow: 0 0 10px rgba(154, 77, 255, 0.6);
-      }
+      0% { text-shadow: 0 0 8px rgba(0, 246, 255, 0.5); }
+      50% { text-shadow: 0 0 14px rgba(255, 0, 212, 0.7); }
+      100% { text-shadow: 0 0 10px rgba(154, 77, 255, 0.6); }
     }
 
     .console-subtitle {
       margin: 0;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-soft);
-      opacity: 0.85;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      opacity: 0.78;
     }
 
+    /* Tab Bar */
     .tab-row {
-      margin-top: 20px;
+      margin-top: 24px;
       display: flex;
       justify-content: center;
-      gap: 10px;
-      flex-wrap: nowrap;
+      gap: 14px;
     }
 
     .tab-button {
       border-radius: 999px;
       border: 1px solid transparent;
-      padding: 7px 18px;
-      font-size: 13px;
+      padding: 10px 26px;
+      font-size: 14px;
       text-transform: uppercase;
-      letter-spacing: 0.14em;
-      background-image: linear-gradient(120deg, rgba(0,246,255,0.10), rgba(255,0,212,0.10), rgba(154,77,255,0.10));
-      background-size: 200% 200%;
-      color: rgba(220, 225, 255, 0.9);
+      letter-spacing: 0.16em;
+
+      background:
+        radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.12), rgba(10, 10, 22, 0.96)) padding-box,
+        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+
+      background-size: 100% 100%, 200% 200%;
+      color: rgba(220, 225, 255, 0.92);
+
       cursor: pointer;
       animation: borderShift 14s linear infinite;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      flex: 1 0 100px;
-      justify-content: center;
-      max-width: 220px;
-    }
-
-    .tab-button-pill {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.25);
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
     }
 
     .tab-button.active {
-      border: 1px solid transparent;
       background:
         radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.22), rgba(10, 10, 22, 0.98)) padding-box,
         linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
-      background-size: 100% 100%, 220% 220%;
-      color: #ffffff;
-      box-shadow:
-        0 0 18px rgba(0, 246, 255, 0.5),
-        0 0 26px rgba(255, 0, 212, 0.35);
-      transform: translateY(-1px) scale(1.03);
-      animation: borderShift 10s linear infinite;
+      color: #fff;
+      box-shadow: 0 0 18px rgba(0, 246, 255, 0.4);
+      transform: translateY(-1px);
     }
 
     @keyframes borderShift {
@@ -166,86 +130,108 @@
       100% { background-position: center,   0% 50%; }
     }
 
+    /* Panel container */
     .console-main {
-      margin-top: 20px;
-      background: linear-gradient(145deg,
-          rgba(5, 5, 12, 0.95),
-          rgba(10, 10, 22, 0.98));
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.75),
-        0 0 32px rgba(0, 246, 255, 0.1);
-      padding: 18px 16px 24px;
-      position: relative;
+      margin-top: 26px;
+      background: linear-gradient(145deg, rgba(5,5,12,0.95), rgba(10,10,22,0.98));
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.75);
+      padding: 22px 20px 30px;
     }
 
     .tab-panel {
       display: none;
-      animation: panelFade 0.25s ease-out;
     }
-
     .tab-panel.active {
       display: block;
+      animation: fadeIn 0.25s ease-out;
     }
 
-    @keyframes panelFade {
-      from {
-        opacity: 0;
-        transform: translateY(4px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    .memory-count {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-soft);
-      opacity: 0.9;
-      margin: 0 0 10px 4px;
-      display: inline-flex;
+    /* Toolbar */
+    .toolbar-row {
+      display: flex;
+      gap: 12px;
+      margin: 18px 0;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-button {
+      flex: 1 1 140px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+
+      color: #fff;
+      background:
+        linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.96)) padding-box,
+        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+
+      background-size: 100% 100%, 240% 240%;
+      animation: borderShift 16s linear infinite;
+      cursor: pointer;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      display: flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
     }
 
-    .memory-count-indicator {
-      width: 8px;
-      height: 8px;
+    .toolbar-button.danger {
+      border-color: rgba(255, 0, 60, 0.35);
+      color: #ffb3b3;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(15, 15, 28, 0.9);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    /* Memory Cards */
+    .memory-card {
+      background:
+        linear-gradient(145deg, rgba(5,5,12,0.95), rgba(10,10,22,0.98)) padding-box,
+        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+
+      border: 1px solid transparent;
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+      background-size: 100% 100%, 240% 240%;
+      animation: borderShift 18s linear infinite;
+      box-shadow: 0 0 14px rgba(0, 246, 255, 0.15);
+    }
+
+    .timestamp-pill {
+      font-size: 12px;
+      padding: 4px 10px;
       border-radius: 999px;
-      background: var(--cyan);
-      box-shadow: 0 0 8px rgba(0, 246, 255, 0.75);
-      animation: onlinePulse 2.2s ease-in-out infinite;
-    }
-
-    @keyframes onlinePulse {
-      50% {
-        transform: scale(1.2);
-        box-shadow: 0 0 12px rgba(255, 0, 212, 0.8);
-      }
-    }
-
-    .embedding {
-      margin-top:8px;
-      font-family: monospace;
-      font-size:12px;
-      opacity:0.9;
-      background: rgba(0,0,0,0.3);
-      padding:10px;
-      border-radius:8px;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      word-break: break-word;
-      max-width: 100%;
+      background: rgba(0, 246, 255, 0.12);
+      border: 1px solid rgba(0, 246, 255, 0.4);
+      color: var(--cyan);
+      margin-bottom: 6px;
+      display: inline-block;
     }
   </style>
 </head>
 
 <body>
+
+  <!-- Global Header -->
+  <div id="vox-header">
+    <div id="vox-title">Vox OS</div>
+    <div id="vox-user-area"></div>
+  </div>
 
   <div class="console-shell">
     <header class="console-header">
@@ -254,70 +240,38 @@
     </header>
 
     <div class="tab-row">
-      <button class="tab-button active" data-tab="memories">
-        <span class="tab-button-pill"></span>
-        <span>Memories</span>
-      </button>
-
-      <button class="tab-button" data-tab="persona">
-        <span class="tab-button-pill"></span>
-        <span>Persona</span>
-      </button>
-
-      <button class="tab-button" data-tab="settings">
-        <span class="tab-button-pill"></span>
-        <span>Settings</span>
-      </button>
+      <button class="tab-button active" data-tab="memories">Memories</button>
+      <button class="tab-button" data-tab="persona">Persona</button>
+      <button class="tab-button" data-tab="settings">Settings</button>
     </div>
 
     <section class="console-main">
       <div class="console-main-inner">
 
-        <!-- MEMORIES TAB -->
+        <!-- Memories -->
         <div id="tab-memories" class="tab-panel active">
 
           <div class="toolbar-row">
-            <button id="refreshBtn" class="toolbar-button">
-              <span class="icon">⟳</span> Refresh
-            </button>
-
-            <button id="addMemoryBtn" class="toolbar-button">
-              <span class="icon">➕</span> Add Memory
-            </button>
-
-            <button id="toggleEmbeddings" class="toolbar-button">
-              <span class="icon">🧬</span> Embeddings
-            </button>
-
-            <button id="exportJSON" class="toolbar-button">
-              <span class="icon">📦</span> Export JSON
-            </button>
-
-            <button id="exportCSV" class="toolbar-button">
-              <span class="icon">📄</span> Export CSV
-            </button>
-
-            <button id="clearBtn" class="toolbar-button danger">
-              <span class="icon">🧹</span> Clear All
-            </button>
-
+            <button id="refreshBtn" class="toolbar-button"><span>⟳</span> Refresh</button>
+            <button id="addMemoryBtn" class="toolbar-button"><span>➕</span> Add Memory</button>
+            <button id="toggleEmbeddings" class="toolbar-button"><span>🧬</span> Embeddings</button>
+            <button id="exportJSON" class="toolbar-button"><span>📦</span> Export JSON</button>
+            <button id="exportCSV" class="toolbar-button"><span>📄</span> Export CSV</button>
+            <button id="clearBtn" class="toolbar-button danger"><span>🧹</span> Clear All</button>
           </div>
 
-          <div class="search-row">
-            <input id="searchBox" class="search-box" type="text"
-              placeholder="Search memories by text..." />
-          </div>
+          <input id="searchBox" class="search-box" placeholder="Search memories by text...">
 
-          <div class="memory-count">
+          <div class="memory-count" style="margin-top: 12px;">
             <span class="memory-count-indicator"></span>
             <span id="memoryCountLabel">0 memories</span>
           </div>
 
-          <div id="memoryList" class="memory-list"></div>
+          <div id="memoryList"></div>
 
         </div>
 
-        <!-- PERSONA TAB -->
+        <!-- Persona -->
         <div id="tab-persona" class="tab-panel">
           <textarea id="personaEditor" class="persona-editor"
             placeholder="Loading persona_core.txt..."></textarea>
@@ -327,10 +281,10 @@
             <button id="savePersonaBtn" class="toolbar-button">💾 Save</button>
           </div>
 
-          <div id="personaStatus" style="opacity:0.7; font-size:13px; text-align:center; margin-top:6px;"></div>
+          <div id="personaStatus" style="text-align:center; opacity:0.7; font-size:14px;"></div>
         </div>
 
-        <!-- SETTINGS TAB -->
+        <!-- Settings -->
         <div id="tab-settings" class="tab-panel">
           <div class="settings-grid">
 
@@ -338,22 +292,18 @@
               <div class="settings-heading">Assistant model</div>
               <div class="settings-label">Current model (visual only)</div>
 
-              <div class="settings-select-wrapper">
-                <span class="settings-select-label">Model</span>
+              <select id="modelSelect"
+                style="margin-top:10px; padding:8px; border-radius:10px; background:#0d0d18; color:#fff;">
+                <option value="gpt-4.1">gpt-4.1</option>
+                <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+                <option value="o3-mini">o3-mini</option>
+                <option value="o1-mini">o1-mini</option>
+              </select>
 
-                <select id="modelSelect" class="settings-select">
-                  <option value="gpt-4.1">gpt-4.1</option>
-                  <option value="gpt-4.1-mini">gpt-4.1-mini</option>
-                  <option value="o3-mini">o3-mini</option>
-                  <option value="o1-mini">o1-mini</option>
-                </select>
-
-                <span class="settings-select-arrow">▾</span>
-              </div>
             </div>
 
             <div class="settings-card">
-              <div class="settings-heading">Console status</div>
+              <div class="settings-heading">Console Status</div>
               <div class="settings-placeholder">
                 Vox Memory Console is running locally.<br />
                 Memories stored in Postgres.<br />
@@ -369,11 +319,8 @@
     </section>
   </div>
 
-  <!-- MAIN SCRIPT (unchanged, just path-adjusted) -->
-  <script src="js/vox-header.js" type="module"></script>
-
+  <!-- Original Memory Console JS (unchanged) -->
   <script>
-    /* your entire memory console logic remains untouched */
     let showEmbeddings = false;
     let memoriesCache = [];
     let personaLoaded = false;
@@ -396,18 +343,18 @@
     }
 
     function switchTab(name) {
-      document.querySelectorAll(".tab-button").forEach(btn =>
-        btn.classList.toggle("active", btn.dataset.tab === name)
-      );
-      document.querySelectorAll(".tab-panel").forEach(panel =>
-        panel.classList.toggle("active", panel.id === "tab-" + name)
-      );
+      document.querySelectorAll(".tab-button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === name);
+      });
+      document.querySelectorAll(".tab-panel").forEach(panel => {
+        panel.classList.toggle("active", panel.id === "tab-" + name);
+      });
       if (name === "persona" && !personaLoaded) loadPersona();
     }
 
-    document.querySelectorAll(".tab-button").forEach(btn =>
-      btn.onclick = () => switchTab(btn.dataset.tab)
-    );
+    document.querySelectorAll(".tab-button").forEach(btn => {
+      btn.onclick = () => switchTab(btn.dataset.tab);
+    });
 
     async function fetchMemories() {
       try {
@@ -415,10 +362,9 @@
         const data = await res.json();
         memoriesCache = Array.isArray(data) ? data : [];
         renderMemories(memoriesCache);
-      } catch (err) {
-        console.error("Failed to fetch memories", err);
+      } catch {
         document.getElementById("memoryList").innerHTML =
-          `<div class="empty-state">⚠️ Could not load memories from the server.</div>`;
+          `<div class="empty-state">⚠️ Could not load memories.</div>`;
       }
     }
 
@@ -461,10 +407,7 @@
         body: JSON.stringify({ text })
       });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        return alert(err.error || "Failed to create memory");
-      }
+      if (!res.ok) return alert("Failed to create memory");
 
       const created = await res.json();
       memoriesCache.unshift(created);
@@ -482,11 +425,7 @@
 
       if (memories.length === 0) {
         countLabel.textContent = "0 memories";
-        list.innerHTML = `
-          <div class="empty-state">
-            🧠 No memories yet.<br>
-            Use the Add Memory button to store context.
-          </div>`;
+        list.innerHTML = `<div class="empty-state">No memories yet.</div>`;
         return;
       }
 
@@ -500,39 +439,14 @@
         const header = document.createElement("div");
         header.className = "memory-header";
 
-        const pill = document.createElement("div");
-        pill.className = "timestamp-pill";
-        pill.textContent = formatTimestamp(m.timestamp);
-
-        const actions = document.createElement("div");
-        actions.className = "memory-actions";
-
-        const emb = document.createElement("span");
-        emb.className = "action-icon embed";
-        emb.textContent = "🧬";
-        emb.title = "Toggle embedding";
-        emb.onclick = () => {
-          if (openEmbeds.has(m.id)) openEmbeds.delete(m.id);
-          else openEmbeds.add(m.id);
-          renderMemories(memories);
-        };
-
-        const edit = document.createElement("span");
-        edit.className = "action-icon edit";
-        edit.textContent = "✏️";
-        edit.onclick = () => editMemory(m.id);
-
-        const del = document.createElement("span");
-        del.className = "action-icon delete";
-        del.textContent = "🗑️";
-        del.onclick = () => deleteMemory(m.id);
-
-        actions.appendChild(emb);
-        actions.appendChild(edit);
-        actions.appendChild(del);
-
-        header.appendChild(pill);
-        header.appendChild(actions);
+        header.innerHTML = `
+          <div class="timestamp-pill">${formatTimestamp(m.timestamp)}</div>
+          <div class="memory-actions" style="display:flex; gap:10px;">
+            <span class="action-icon" onclick="toggleEmbed(${m.id})">🧬</span>
+            <span class="action-icon" onclick="editMemory(${m.id})">✏️</span>
+            <span class="action-icon" onclick="deleteMemory(${m.id})">🗑️</span>
+          </div>
+        `;
 
         const text = document.createElement("div");
         text.className = "memory-text";
@@ -541,15 +455,21 @@
         card.appendChild(header);
         card.appendChild(text);
 
-        if (showEmbeddings || openEmbeds.has(m.id)) {
-          const embBox = document.createElement("pre");
-          embBox.className = "embedding";
-          embBox.textContent = m.embedding ? m.embedding : '(no embedding stored)';
-          card.appendChild(embBox);
+        if (openEmbeds.has(m.id)) {
+          const eb = document.createElement("pre");
+          eb.className = "embedding";
+          eb.textContent = m.embedding || "(no embedding stored)";
+          card.appendChild(eb);
         }
 
         list.appendChild(card);
       });
+    }
+
+    function toggleEmbed(id) {
+      if (openEmbeds.has(id)) openEmbeds.delete(id);
+      else openEmbeds.add(id);
+      renderMemories(memoriesCache);
     }
 
     async function loadPersona() {
@@ -593,7 +513,6 @@
         ["id", "text", "timestamp"],
         ...memoriesCache.map(m => [m.id, JSON.stringify(m.text).replace(/^"|"$/g, ""), m.timestamp])
       ];
-
       const csv = rows.map(r => r.join(",")).join("\n");
       const blob = new Blob([csv], { type: "text/csv" });
       const a = document.createElement("a");
@@ -606,14 +525,6 @@
     document.getElementById("clearBtn").onclick = clearAll;
     document.getElementById("addMemoryBtn").onclick = addMemoryPrompt;
 
-    document.getElementById("searchBox").oninput = (e) => {
-      const q = e.target.value.toLowerCase();
-      const filtered = memoriesCache.filter(m =>
-        m.text.toLowerCase().includes(q)
-      );
-      renderMemories(filtered);
-    };
-
     (async () => {
       if (await ensureAuth()) {
         fetchMemories();
@@ -621,6 +532,6 @@
     })();
   </script>
 
+  <script type="module" src="js/vox-header.js"></script>
 </body>
-
 </html>
