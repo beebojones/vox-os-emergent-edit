@@ -1,674 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Account Settings · Vox OS</title>
+  <title>Account Settings</title>
 
-  <!-- Theme + Shared Shell -->
-  <script src="js/theme.js"></script>
-  <link rel="stylesheet" href="css/vox-theme.css">
-
-  <style>
-    :root {
-      --bg-main: #050509;
-      --bg-panel: rgba(10, 10, 20, 0.95);
-      --text-main: #f5f5f5;
-      --text-soft: #a8b0d0;
-      --cyan: #00f6ff;
-      --magenta: #ff00d4;
-      --purple: #9a4dff;
-      --border-soft: rgba(255, 255, 255, 0.06);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text-main);
-      background:
-        radial-gradient(circle at 0% 0%, rgba(0, 246, 255, 0.06), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(255, 0, 212, 0.07), transparent 55%),
-        radial-gradient(circle at 100% 0%, rgba(154, 77, 255, 0.08), transparent 55%),
-        radial-gradient(circle at 0% 100%, rgba(255, 122, 0, 0.05), transparent 55%),
-        var(--bg-main);
-      min-height: 100vh;
-      overflow-x: hidden;
-      animation: accBgShift 25s linear infinite alternate;
-    }
-
-    @keyframes accBgShift {
-      0%   { background-position: 0 0, 100% 100%, 100% 0, 0 100%; }
-      50%  { background-position: 10% -5%, 95% 110%, 110% 10%, -10% 95%; }
-      100% { background-position: -5% 10%, 105% 90%, 90% -10%, 5% 105%; }
-    }
-
-    .settings-shell {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 110px 18px 60px; /* headroom for top shell with avatar */
-    }
-
-    .settings-header {
-      margin-bottom: 18px;
-    }
-
-    .settings-title {
-      font-size: 32px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      margin: 0 0 6px 0;
-      background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      animation: settingsTitleGlow 16s linear infinite alternate;
-    }
-
-    @keyframes settingsTitleGlow {
-      0%   { text-shadow: 0 0 8px rgba(0, 246, 255, 0.5); }
-      50%  { text-shadow: 0 0 14px rgba(255, 0, 212, 0.7); }
-      100% { text-shadow: 0 0 10px rgba(154, 77, 255, 0.6); }
-    }
-
-    .settings-subtitle {
-      margin: 0;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-soft);
-      opacity: 0.9;
-    }
-
-    .settings-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-      gap: 18px;
-      margin-top: 20px;
-    }
-
-    @media (max-width: 900px) {
-      .settings-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .settings-card {
-      background: linear-gradient(145deg,
-        rgba(5, 5, 12, 0.95),
-        rgba(10, 10, 22, 0.98));
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.75),
-        0 0 24px rgba(0, 246, 255, 0.16);
-      padding: 16px 16px 18px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .settings-heading {
-      font-size: 14px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(245, 245, 255, 0.96);
-      margin-bottom: 4px;
-    }
-
-    .settings-label {
-      font-size: 12px;
-      color: var(--text-soft);
-      opacity: 0.9;
-      margin-bottom: 12px;
-    }
-
-    .settings-row {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .settings-row-inline {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .settings-field-label {
-      font-size: 13px;
-      color: rgba(220, 225, 255, 0.9);
-    }
-
-    .settings-input,
-    .settings-select {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(10, 10, 18, 0.9);
-      color: var(--text-main);
-      font-size: 14px;
-      outline: none;
-      transition:
-        border-color 0.16s ease,
-        box-shadow 0.16s ease,
-        background 0.16s ease;
-    }
-
-    .settings-input:focus,
-    .settings-select:focus {
-      border-color: var(--cyan);
-      box-shadow:
-        0 0 10px rgba(0, 246, 255, 0.5),
-        0 0 20px rgba(255, 0, 212, 0.3);
-      background: rgba(5, 5, 14, 0.96);
-    }
-
-    .settings-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
-
-    .btn-primary,
-    .btn-secondary,
-    .btn-danger {
-      position: relative;
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      font-size: 13px;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background:
-        radial-gradient(circle at 0 0, rgba(0, 246, 255, 0.12), rgba(10, 10, 24, 0.98)) padding-box,
-        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
-      background-size: 100% 100%, 220% 220%;
-      color: #ffffff;
-      animation: accBtnShift 15s linear infinite;
-      transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        opacity 0.15s ease;
-    }
-
-    .btn-secondary {
-      background:
-        radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.09), rgba(10, 10, 24, 0.98)) padding-box,
-        linear-gradient(120deg, rgba(255, 255, 255, 0.35), rgba(154, 77, 255, 0.6)) border-box;
-      color: rgba(240, 240, 255, 0.96);
-    }
-
-    .btn-danger {
-      background:
-        radial-gradient(circle at 0 0, rgba(255, 0, 80, 0.18), rgba(10, 10, 24, 0.98)) padding-box,
-        linear-gradient(120deg, #ff0040, #ff7a00) border-box;
-      color: #ffdde0;
-    }
-
-    .btn-primary:hover,
-    .btn-secondary:hover,
-    .btn-danger:hover {
-      transform: translateY(-1px);
-      box-shadow:
-        0 0 14px rgba(0, 246, 255, 0.45),
-        0 0 18px rgba(255, 0, 212, 0.35);
-    }
-
-    @keyframes accBtnShift {
-      0%   { background-position: center,   0% 50%; }
-      50%  { background-position: center, 100% 50%; }
-      100% { background-position: center,   0% 50%; }
-    }
-
-    .settings-helper {
-      font-size: 12px;
-      color: var(--text-soft);
-      opacity: 0.8;
-    }
-
-    .settings-status {
-      font-size: 12px;
-      margin-top: 6px;
-      min-height: 16px;
-    }
-
-    .settings-status.ok {
-      color: #7cffc1;
-    }
-
-    .settings-status.err {
-      color: #ffb3c1;
-    }
-
-    .badge-role {
-      display: inline-flex;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(0, 246, 255, 0.4);
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--cyan);
-      margin-top: 4px;
-    }
-
-    .muted-block {
-      font-size: 12px;
-      color: var(--text-soft);
-      opacity: 0.8;
-      line-height: 1.5;
-    }
-
-    .pill-toggle-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 6px;
-    }
-
-    .pill-toggle {
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(10,10,20,0.9);
-      font-size: 12px;
-      cursor: pointer;
-      color: var(--text-soft);
-      transition:
-        border-color 0.16s ease,
-        background 0.16s ease,
-        color 0.16s ease,
-        box-shadow 0.16s ease;
-    }
-
-    .pill-toggle.active {
-      border-color: var(--cyan);
-      background: radial-gradient(circle at 0 0,
-        rgba(0,246,255,0.25),
-        rgba(5,5,16,0.96));
-      color: #ffffff;
-      box-shadow:
-        0 0 10px rgba(0,246,255,0.5),
-        0 0 18px rgba(255,0,212,0.35);
-    }
-
-    .settings-section-label {
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: rgba(168, 176, 208, 0.85);
-      margin: 18px 0 6px;
-    }
-  </style>
+  <link rel="stylesheet" href="css/vox-theme.css" />
+  <script src="js/user.js" defer></script>
 </head>
 
 <body>
-  <div class="settings-shell">
-    <header class="settings-header">
-      <h1 class="settings-title">Account Settings</h1>
-      <p class="settings-subtitle">Security, identity, and preferences for your Vox OS profile</p>
-    </header>
 
-    <div class="settings-grid">
-      <!-- LEFT COLUMN: Security + Identity -->
-      <div class="settings-col-left">
-        <!-- Security card -->
-        <section class="settings-card" aria-labelledby="sec-security-heading">
-          <div class="settings-heading" id="sec-security-heading">Security</div>
-          <div class="settings-label">Change your password to keep your account safe.</div>
+  <!-- ============================================================
+       GLOBAL HEADER
+       ============================================================ -->
+  <header class="vox-header">
+    <div class="vox-header-left">
+      <a href="dashboard.html" class="vox-logo">Vos OS</a>
+    </div>
 
-          <form id="passwordForm">
-            <div class="settings-row">
-              <label class="settings-field-label" for="currentPassword">Current password</label>
-              <input type="password" id="currentPassword" class="settings-input" autocomplete="current-password">
-            </div>
-
-            <div class="settings-row">
-              <label class="settings-field-label" for="newPassword">New password</label>
-              <input type="password" id="newPassword" class="settings-input" autocomplete="new-password">
-            </div>
-
-            <div class="settings-row">
-              <label class="settings-field-label" for="confirmPassword">Confirm new password</label>
-              <input type="password" id="confirmPassword" class="settings-input" autocomplete="new-password">
-              <div class="settings-helper">Minimum 6 characters. Try to avoid reusing old passwords.</div>
-            </div>
-
-            <div class="settings-actions">
-              <button type="submit" class="btn-primary">
-                <span>Update Password</span>
-              </button>
-            </div>
-
-            <div id="passwordStatus" class="settings-status"></div>
-          </form>
-        </section>
-
-        <!-- Identity card -->
-        <section class="settings-card" aria-labelledby="sec-identity-heading" style="margin-top:16px;">
-          <div class="settings-heading" id="sec-identity-heading">Identity</div>
-          <div class="settings-label">Update your display name and login username.</div>
-
-          <div class="settings-section-label">Display name</div>
-          <form id="displayNameForm">
-            <div class="settings-row">
-              <label class="settings-field-label" for="displayNameInput">Display name</label>
-              <input type="text" id="displayNameInput" class="settings-input" autocomplete="name" placeholder="How Vox OS greets you">
-            </div>
-
-            <div class="settings-actions">
-              <button type="submit" class="btn-secondary">
-                <span>Save display name</span>
-              </button>
-            </div>
-
-            <div id="displayNameStatus" class="settings-status"></div>
-          </form>
-
-          <div class="settings-section-label">Username</div>
-          <form id="usernameForm">
-            <div class="settings-row">
-              <label class="settings-field-label" for="usernameInput">New username</label>
-              <input type="text" id="usernameInput" class="settings-input" autocomplete="username">
-            </div>
-
-            <div class="settings-row">
-              <label class="settings-field-label" for="usernamePassword">Current password</label>
-              <input type="password" id="usernamePassword" class="settings-input" autocomplete="current-password">
-              <div class="settings-helper">
-                Changing your username will update how you log in.
-              </div>
-            </div>
-
-            <div class="settings-actions">
-              <button type="submit" class="btn-secondary">
-                <span>Update username</span>
-              </button>
-            </div>
-
-            <div id="usernameStatus" class="settings-status"></div>
-          </form>
-        </section>
+    <div class="vox-header-right">
+      <div id="avatarOuter" class="avatar-hex">
+        <img id="avatarImg" src="" alt="">
       </div>
 
-      <!-- RIGHT COLUMN: Preferences + Sessions/Admin -->
-      <div class="settings-col-right">
-        <!-- Preferences card -->
-        <section class="settings-card" aria-labelledby="sec-pref-heading">
-          <div class="settings-heading" id="sec-pref-heading">Preferences</div>
-          <div class="settings-label">Theme and behavior preferences for your account.</div>
+      <div class="user-pill" id="userPill">
+        <span id="userDisplay"></span>
+        <span class="role-tag" id="userRole"></span>
+        <span class="arrow">▾</span>
+      </div>
 
-          <div class="settings-section-label">Theme</div>
-          <div class="settings-helper">
-            This saves your theme preference to the server. The visual theme itself is still handled by Vox OS.
-          </div>
-
-          <div class="pill-toggle-row" id="themePills">
-            <button type="button" class="pill-toggle" data-theme="system">System default</button>
-            <button type="button" class="pill-toggle" data-theme="dark">Dark</button>
-            <button type="button" class="pill-toggle" data-theme="light">Light</button>
-          </div>
-
-          <div class="settings-actions" style="margin-top:10px;">
-            <button type="button" id="savePreferencesBtn" class="btn-primary">
-              Save preferences
-            </button>
-          </div>
-
-          <div id="preferencesStatus" class="settings-status"></div>
-        </section>
-
-        <!-- Session / role card -->
-        <section class="settings-card" aria-labelledby="sec-session-heading" style="margin-top:16px;">
-          <div class="settings-heading" id="sec-session-heading">Session & Role</div>
-          <div class="settings-label">Quick info about your Vox OS account.</div>
-
-          <div id="sessionUserInfo" class="muted-block">
-            Loading account details...
-          </div>
-
-          <div class="settings-section-label">Session controls</div>
-          <div class="muted-block">
-            Log out from the menu in the top-right user pill.  
-            A global "log out of all devices" control can live here later.
-          </div>
-        </section>
+      <div class="dropdown-menu" id="dropdownMenu">
+        <a href="profile.html">Profile</a>
+        <a href="account-settings.html">Account Settings</a>
+        <a href="memory.html">Memory Console</a>
+        <a href="notifications.html">Notifications</a>
+        <a href="chat.html">Chat</a>
+        <a href="index.html">Home</a>
+        <button id="logoutBtn">Logout</button>
       </div>
     </div>
+  </header>
+
+  <!-- ============================================================
+       PAGE CONTENT
+       ============================================================ -->
+  <div class="page-shell">
+
+    <h1 class="section-title">Account Settings</h1>
+    <p class="section-subtitle">Security, identity, and preferences for your Vox OS profile.</p>
+
+    <!-- ================= SECURITY ================== -->
+    <div class="settings-panel">
+      <h3>Security</h3>
+      <p>Change your password to keep your account safe.</p>
+
+      <label>Current password</label>
+      <input type="password" id="currentPassword">
+
+      <label>New password</label>
+      <input type="password" id="newPassword">
+
+      <button class="settings-btn" id="savePassword">Update Password</button>
+    </div>
+
+    <!-- ================= USERNAME ================== -->
+    <div class="settings-panel">
+      <h3>Username</h3>
+      <p>Your login name for Vox OS.</p>
+
+      <label>New username</label>
+      <input type="text" id="newUsername">
+
+      <label>Current password</label>
+      <input type="password" id="verifyPassword">
+
+      <button class="settings-btn" id="saveUsername">Update Username</button>
+    </div>
+
+    <!-- ================= PREFERENCES ================== -->
+    <div class="settings-panel">
+      <h3>Preferences</h3>
+      <p>Customize your Vox OS experience.</p>
+
+      <label>Theme</label>
+      <select id="themeSelect" style="padding:10px;border-radius:10px;background:rgba(0,0,0,0.3);color:white;">
+        <option value="dark">Dark (default)</option>
+        <option value="light">Light</option>
+      </select>
+
+      <button class="settings-btn" id="savePreferences">Save Preferences</button>
+    </div>
+
   </div>
 
-  <!-- User shell: header with Vox OS + avatar dropdown -->
-  <script src="js/user.js"></script>
-
-  <script>
-    // Simple helper to show status messages
-    function setStatus(el, msg, ok) {
-      if (!el) return;
-      el.textContent = msg || "";
-      el.classList.remove("ok", "err");
-      if (!msg) return;
-      el.classList.add(ok ? "ok" : "err");
-    }
-
-    // Try to seed display name / username / role from validate()
-    async function hydrateAccountBasics() {
-      try {
-        const res = await fetch("/auth/validate", { credentials: "include" });
-        if (!res.ok) return;
-        const data = await res.json();
-        const user = data?.user;
-        if (!user) return;
-
-        const dn = document.getElementById("displayNameInput");
-        const un = document.getElementById("usernameInput");
-        const info = document.getElementById("sessionUserInfo");
-
-        if (dn && user.displayName) dn.value = user.displayName;
-        if (un && user.username) un.value = user.username;
-
-        if (info) {
-          info.innerHTML = `
-            <div><strong>Username:</strong> ${user.username || "—"}</div>
-            <div><strong>Display name:</strong> ${user.displayName || "—"}</div>
-            <div style="margin-top:6px;">
-              <span class="badge-role">${(user.role || "user").toUpperCase()}</span>
-            </div>
-          `;
-        }
-      } catch (e) {
-        console.warn("hydrateAccountBasics failed:", e);
-      }
-    }
-
-    // Password form
-    (function setupPasswordForm() {
-      const form = document.getElementById("passwordForm");
-      const statusEl = document.getElementById("passwordStatus");
-      if (!form) return;
-
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const currentPassword = document.getElementById("currentPassword")?.value || "";
-        const newPassword = document.getElementById("newPassword")?.value || "";
-        const confirmPassword = document.getElementById("confirmPassword")?.value || "";
-
-        if (!currentPassword || !newPassword || !confirmPassword) {
-          setStatus(statusEl, "Please fill in all password fields.", false);
-          return;
-        }
-        if (newPassword !== confirmPassword) {
-          setStatus(statusEl, "New password and confirmation do not match.", false);
-          return;
-        }
-
-        setStatus(statusEl, "Saving...", true);
-        try {
-          const res = await fetch("/auth/update-password", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ currentPassword, newPassword })
-          });
-
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok || !data.success) {
-            setStatus(statusEl, data.error || "Unable to update password.", false);
-          } else {
-            setStatus(statusEl, data.message || "Password updated.", true);
-            form.reset();
-          }
-        } catch (err) {
-          console.error("Update password error:", err);
-          setStatus(statusEl, "Network error updating password.", false);
-        }
-      });
-    })();
-
-    // Display name form
-    (function setupDisplayNameForm() {
-      const form = document.getElementById("displayNameForm");
-      const statusEl = document.getElementById("displayNameStatus");
-      if (!form) return;
-
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const displayName = document.getElementById("displayNameInput")?.value?.trim() || "";
-        if (!displayName || displayName.length < 2) {
-          setStatus(statusEl, "Display name is too short.", false);
-          return;
-        }
-
-        setStatus(statusEl, "Saving...", true);
-        try {
-          const res = await fetch("/auth/display-name", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ displayName })
-          });
-
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok || !data.success) {
-            setStatus(statusEl, data.error || "Unable to update display name.", false);
-          } else {
-            setStatus(statusEl, data.message || "Display name updated.", true);
-          }
-        } catch (err) {
-          console.error("Update display name error:", err);
-          setStatus(statusEl, "Network error updating display name.", false);
-        }
-      });
-    })();
-
-    // Username form
-    (function setupUsernameForm() {
-      const form = document.getElementById("usernameForm");
-      const statusEl = document.getElementById("usernameStatus");
-      if (!form) return;
-
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const username = document.getElementById("usernameInput")?.value?.trim() || "";
-        const password = document.getElementById("usernamePassword")?.value || "";
-
-        if (!username || username.length < 3) {
-          setStatus(statusEl, "Username is too short.", false);
-          return;
-        }
-        if (!password) {
-          setStatus(statusEl, "Please enter your current password.", false);
-          return;
-        }
-
-        setStatus(statusEl, "Saving...", true);
-        try {
-          const res = await fetch("/auth/username", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ username, password })
-          });
-
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok || !data.success) {
-            setStatus(statusEl, data.error || "Unable to update username.", false);
-          } else {
-            setStatus(statusEl, data.message || "Username updated.", true);
-          }
-        } catch (err) {
-          console.error("Update username error:", err);
-          setStatus(statusEl, "Network error updating username.", false);
-        }
-      });
-    })();
-
-    // Preferences card (theme pills)
-    (function setupPreferences() {
-      const pillsContainer = document.getElementById("themePills");
-      const statusEl = document.getElementById("preferencesStatus");
-      const saveBtn = document.getElementById("savePreferencesBtn");
-      if (!pillsContainer || !saveBtn) return;
-
-      let selectedTheme = "system";
-
-      function setActivePill(theme) {
-        selectedTheme = theme;
-        pillsContainer.querySelectorAll(".pill-toggle").forEach(btn => {
-          btn.classList.toggle("active", btn.dataset.theme === theme);
-        });
-      }
-
-      pillsContainer.addEventListener("click", (e) => {
-        const btn = e.target.closest(".pill-toggle");
-        if (!btn) return;
-        setActivePill(btn.dataset.theme);
-      });
-
-      saveBtn.addEventListener("click", async () => {
-        setStatus(statusEl, "Saving preferences...", true);
-        try {
-          const res = await fetch("/auth/preferences", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ preferences: { theme: selectedTheme } })
-          });
-
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok || !data.success) {
-            setStatus(statusEl, data.error || "Unable to save preferences.", false);
-          } else {
-            setStatus(statusEl, "Preferences saved.", true);
-
-            // If theme.js exposes a hook, nudge it (optional / safe no-op)
-            if (window.__voxApplyThemeFromPreference) {
-              window.__voxApplyThemeFromPreference(selectedTheme);
-            }
-          }
-        } catch (e) {
-          console.error("updatePreferences error:", e);
-          setStatus(statusEl, "Network error saving preferences.", false);
-        }
-      });
-
-      // Default selection
-      setActivePill("system");
-    })();
-
-    // Hydrate basics on load
-    hydrateAccountBasics();
-  </script>
 </body>
+
 </html>
