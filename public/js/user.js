@@ -1,154 +1,58 @@
-// ========================================================================
-//   V O S   O S   —   GLOBAL USER + HEADER HANDLER
-// ========================================================================
-// Injects the global header into every page.
-// Pulls user info from /auth/validate.
-// Displays hex avatar + display name + dropdown.
-// Syncs theme mode.
-// ========================================================================
+/* user.js — Global header loader + user state */
 
-
-// --------------------------------------------
-// Fetch the authenticated user
-// --------------------------------------------
-async function voxFetchUser() {
+async function loadHeader() {
     try {
-        const res = await fetch("/auth/validate", {
-            method: "GET",
-            credentials: "include"
-        });
-        const data = await res.json();
-        return data.user || null;
-    } catch (err) {
-        console.error("validate failed:", err);
-        return null;
+        const headerHtml = await fetch("header.html").then(r => r.text());
+        const mount = document.createElement("div");
+        mount.innerHTML = headerHtml;
+        document.body.prepend(mount);
+
+        initializeHeader();
+    } catch (e) {
+        console.error("Failed to load header:", e);
     }
 }
 
+async function initializeHeader() {
+    const pill = document.getElementById("vos-user-pill");
+    const dropdown = document.getElementById("vos-dropdown");
+    const avatar = document.getElementById("vos-avatar");
+    const displayName = document.getElementById("vos-user-display");
 
-// --------------------------------------------
-// Build the global header HTML
-// --------------------------------------------
-function buildHeaderHTML(user) {
-    const avatar = user?.avatarDataUrl || "";
-    const displayName = user?.displayName || "User";
+    // Fetch user info
+    const res = await fetch("/auth/validate", { credentials: "include" });
+    const data = await res.json();
 
-    return `
-    <header class="vox-header">
-        <!-- Left: Logo -->
-        <div class="vox-logo">Vos OS</div>
+    if (!data.user) return;
 
-        <!-- Right: User Area -->
-        <div class="vox-user-area" id="voxUserArea">
-            <div class="vox-display-name">${displayName}</div>
-            <div class="vox-dropdown-arrow">▼</div>
+    displayName.textContent = data.user.displayName || data.user.username;
 
-            <div class="vox-avatar-hex">
-                ${avatar
-                    ? `<img class="vox-avatar-img" src="${avatar}" alt="avatar">`
-                    : `<img class="vox-avatar-img" src="/img/default-avatar.png" alt="avatar">`
-                }
-            </div>
-
-            <!-- Dropdown -->
-            <div class="vox-dropdown" id="voxDropdown">
-                <div class="vox-dropdown-item" data-nav="/profile.html">Profile</div>
-                <div class="vox-dropdown-item" data-nav="/account-settings.html">Account Settings</div>
-                <div class="vox-dropdown-item" data-nav="/settings.html">Settings</div>
-                <div class="vox-dropdown-item" data-nav="/notifications.html">Notifications</div>
-                <div class="vox-dropdown-item" data-nav="/memory.html">Memory Console</div>
-                <div class="vox-dropdown-item" data-nav="/dashboard.html">Dashboard</div>
-                <div class="vox-dropdown-item" data-nav="/logout">Logout</div>
-            </div>
-        </div>
-    </header>
-    `;
-}
-
-
-// --------------------------------------------
-// Inject header into the page
-// --------------------------------------------
-function injectHeader(html) {
-    const wrap = document.createElement("div");
-    wrap.innerHTML = html;
-    document.body.prepend(wrap.firstElementChild);
-}
-
-
-// --------------------------------------------
-// Dropdown toggle logic
-// --------------------------------------------
-function initDropdown() {
-    const userArea = document.getElementById("voxUserArea");
-    const menu = document.getElementById("voxDropdown");
-
-    if (!userArea || !menu) return;
-
-    let open = false;
-
-    userArea.addEventListener("click", () => {
-        open = !open;
-        menu.style.display = open ? "block" : "none";
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener("click", (e) => {
-        if (!userArea.contains(e.target)) {
-            menu.style.display = "none";
-            open = false;
-        }
-    });
-
-    // Navigation from dropdown
-    menu.querySelectorAll(".vox-dropdown-item").forEach(item => {
-        item.addEventListener("click", () => {
-            const nav = item.getAttribute("data-nav");
-            if (nav === "/logout") {
-                // Logout = destroy session cookie
-                fetch("/auth/logout", { method: "POST", credentials: "include" })
-                    .finally(() => window.location.href = "/login.html");
-            } else {
-                window.location.href = nav;
-            }
-        });
-    });
-}
-
-
-// --------------------------------------------
-// Theme Sync
-// --------------------------------------------
-function applyTheme(mode) {
-    if (!mode) mode = "dark";  // default
-
-    if (mode === "light") {
-        document.body.classList.remove("vox-dark");
-        document.body.classList.add("vox-light");
+    if (data.user.avatarDataUrl) {
+        avatar.src = data.user.avatarDataUrl;
     } else {
-        document.body.classList.remove("vox-light");
-        document.body.classList.add("vox-dark");
+        avatar.src = "img/avatar-default.png";
     }
+
+    // Clicking avatar goes to profile
+    document.getElementById("vos-avatar-wrapper").onclick = () => {
+        window.location.href = "profile.html";
+    };
+
+    // Dropdown toggle
+    pill.addEventListener("click", () => {
+        dropdown.classList.toggle("visible");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!pill.contains(e.target)) dropdown.classList.remove("visible");
+    });
+
+    // Logout
+    document.getElementById("logout-link").onclick = async () => {
+        await fetch("/auth/logout", { method: "POST", credentials: "include" });
+        window.location.href = "login.html";
+    };
 }
 
-
-// --------------------------------------------
-// Load user + initialize header
-// --------------------------------------------
-(async function initUserHeader() {
-    const user = await voxFetchUser();
-
-    // If not logged in → skip header
-    if (!user) return;
-
-    // Inject header
-    const html = buildHeaderHTML(user);
-    injectHeader(html);
-
-    // Initialize dropdown
-    initDropdown();
-
-    // Apply theme (from preferences if available)
-    const prefs = user.preferences || {};
-    applyTheme(prefs.themeMode || "dark");
-})();
+// Load the header as soon as possible
+document.addEventListener("DOMContentLoaded", loadHeader);

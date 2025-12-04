@@ -1,49 +1,31 @@
-<!-- ============================================================
-     GLOBAL VOX OS HEADER
-     ============================================================ -->
-
-<header class="vox-header">
-
-  <!-- Left: Logo -->
-  <div class="vox-header-left">
-    <a href="dashboard.html" class="vox-logo">Vos OS</a>
-  </div>
-
-  <!-- Right: Avatar + User Pill + Dropdown -->
-  <div class="vox-header-right">
-
-    <!-- Avatar Hexagon (clickable to Profile) -->
-    <a href="profile.html" id="avatarOuter" class="avatar-hex">
-      <img id="avatarImg" src="" alt="User Avatar">
-    </a>
-
-    <!-- User Pill -->
-    <div class="user-pill" id="userPill">
-      <span id="userDisplay"></span>
-      <span id="userRole" class="role-tag"></span>
-      <span class="arrow">▾</span>
+<!-- header.html -->
+<div id="vos-header">
+    <div id="vos-header-left">
+        <a href="dashboard.html" id="vos-logo">Vos OS</a>
     </div>
 
-    <!-- Dropdown Menu -->
-    <div class="dropdown-menu" id="dropdownMenu">
-      <a href="dashboard.html">Home</a>
-      <a href="chat.html">Chat</a>
-      <a href="history.html">Chat History</a>
-      <a href="memory.html">Memory Console</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="developer.html">Developer Tools</a>
-      <a href="help.html">Help</a>
-      <a href="support.html">Support</a>
+    <div id="vos-header-right">
+        <!-- Avatar -->
+        <div id="vos-avatar-wrapper">
+            <img id="vos-avatar" src="" alt="avatar">
+        </div>
 
-      <!-- Profile / Settings -->
-      <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0;">
-      <a href="profile.html">Profile</a>
-      <a href="account-settings.html">Account Settings</a>
+        <!-- Dropdown pill -->
+        <div id="vos-user-pill">
+            <span id="vos-user-display">Loading...</span>
+            <span class="pill-caret">▾</span>
 
-      <!-- Logout -->
-      <button id="logoutBtn">Logout</button>
+            <!-- Dropdown menu -->
+            <div id="vos-dropdown" class="hidden">
+                <a href="profile.html">Profile</a>
+                <a href="account-settings.html">Account Settings</a>
+                <a href="notifications.html">Notifications</a>
+                <a href="memory.html">Memory Console</a>
+                <a href="chat.html">Chat</a>
+                <a href="dashboard.html">Dashboard</a>
+                <hr>
+                <a id="logout-link" href="#">Logout</a>
+            </div>
+        </div>
     </div>
-
-  </div>
-
-</header>
+</div>

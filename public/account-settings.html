@@ -1,175 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Account Settings – Vos OS</title>
 
-  <!-- Theme Styles -->
-  <link rel="stylesheet" href="css/vox-theme.css">
+    <link rel="stylesheet" href="css/vox-theme.css">
+    <link rel="stylesheet" href="css/avatar.css">
 
-  <!-- Header & User JS -->
-  <script src="js/user.js" defer></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, sans-serif;
+        }
 
-  <title>Account Settings • Vos OS</title>
+        #settings-container {
+            max-width: 900px;
+            margin: 130px auto 60px auto;
+            padding: 20px;
+        }
+
+        .settings-card {
+            background: var(--panel-bg);
+            border: var(--panel-border);
+            border-radius: 18px;
+            padding: 26px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(16px) brightness(1.15);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: var(--accent-text);
+        }
+
+        .field-group {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field-label {
+            font-size: 15px;
+            margin-bottom: 6px;
+            color: var(--text-soft);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(15,15,28,0.9);
+            color: var(--text-main);
+            font-size: 15px;
+            transition: border .2s, box-shadow .2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px rgba(0,246,255,0.4);
+        }
+
+        .save-btn {
+            margin-top: 10px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+            border: 1px solid transparent;
+            background: linear-gradient(145deg, rgba(5,5,15,.92), rgba(20,20,35,.96)) padding-box,
+                        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            backdrop-filter: blur(10px);
+        }
+
+        .save-btn:hover {
+            box-shadow: 0 0 18px rgba(170,110,255,0.55);
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: .8;
+            color: var(--accent-text);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 
 <body>
 
-  <!-- GLOBAL HEADER -->
-  <!-- (Paste the contents of header.html here OR use server-side include) -->
-  <header class="vox-header">
+<!-- HEADER INJECTED BY user.js -->
 
-    <div class="vox-header-left">
-      <a href="dashboard.html" class="vox-logo">Vos OS</a>
-    </div>
-
-    <div class="vox-header-right">
-      <a href="profile.html" id="avatarOuter" class="avatar-hex">
-        <img id="avatarImg" src="" alt="">
-      </a>
-
-      <div class="user-pill" id="userPill">
-        <span id="userDisplay"></span>
-        <span id="userRole" class="role-tag"></span>
-        <span class="arrow">▾</span>
-      </div>
-
-      <div class="dropdown-menu" id="dropdownMenu">
-        <a href="dashboard.html">Home</a>
-        <a href="chat.html">Chat</a>
-        <a href="history.html">Chat History</a>
-        <a href="memory.html">Memory Console</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="developer.html">Developer Tools</a>
-        <a href="help.html">Help</a>
-        <a href="support.html">Support</a>
-
-        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0;">
-        <a href="profile.html">Profile</a>
-        <a href="account-settings.html">Account Settings</a>
-
-        <button id="logoutBtn">Logout</button>
-      </div>
-    </div>
-
-  </header>
-
-  <!-- PAGE CONTENT -->
-  <main style="max-width: 980px; margin: 40px auto; padding: 20px;">
-
-    <h1 class="section-title">Account Settings</h1>
-    <p class="section-subtitle">
-      Security, identity, and preferences for your Vox OS profile.
-    </p>
-
-    <!-- SECURITY PANEL -->
-    <section class="settings-panel">
-      <h3>Security</h3>
-      <p>Change your password to keep your account safe.</p>
-
-      <label>Current password</label>
-      <input id="currentPassword" type="password">
-
-      <label>New password</label>
-      <input id="newPassword" type="password">
-
-      <button class="settings-btn" id="updatePasswordBtn">Update Password</button>
-    </section>
+<div id="settings-container">
 
     <!-- DISPLAY NAME -->
-    <section class="settings-panel">
-      <h3>Display Name</h3>
-      <label>New Name</label>
-      <input id="newDisplayName" type="text">
-      <button class="settings-btn" id="updateDisplayNameBtn">Save Name</button>
-    </section>
+    <div class="settings-card">
+        <div class="section-title">Display Name</div>
+
+        <div class="field-group">
+            <label class="field-label">New Display Name</label>
+            <input id="displayNameInput" type="text" placeholder="Enter new display name">
+        </div>
+
+        <button id="saveDisplayName" class="save-btn">Save Display Name</button>
+        <div id="statusDisplayName" class="status"></div>
+    </div>
 
     <!-- USERNAME -->
-    <section class="settings-panel">
-      <h3>Username</h3>
+    <div class="settings-card">
+        <div class="section-title">Change Username</div>
 
-      <label>New Username</label>
-      <input id="newUsername" type="text">
+        <div class="field-group">
+            <label class="field-label">New Username</label>
+            <input id="usernameInput" type="text" placeholder="Enter new username">
+        </div>
 
-      <label>Password (required)</label>
-      <input id="usernamePasswordVerify" type="password">
+        <div class="field-group">
+            <label class="field-label">Confirm Password</label>
+            <input id="usernamePasswordInput" type="password" placeholder="Enter password">
+        </div>
 
-      <button class="settings-btn" id="updateUsernameBtn">Save Username</button>
-    </section>
+        <button id="saveUsername" class="save-btn">Save Username</button>
+        <div id="statusUsername" class="status"></div>
+    </div>
 
-    <!-- PROFILE PHOTO -->
-    <section class="settings-panel">
-      <h3>Profile Photo</h3>
-      <input type="file" id="avatarUpload" accept="image/*">
-      <button class="settings-btn" id="updatePhotoBtn">Save Photo</button>
-    </section>
+    <!-- PASSWORD -->
+    <div class="settings-card">
+        <div class="section-title">Change Password</div>
 
-  </main>
+        <div class="field-group">
+            <label class="field-label">Current Password</label>
+            <input id="currentPasswordInput" type="password">
+        </div>
 
-  <script>
-    // Password
-    document.getElementById("updatePasswordBtn").onclick = async () => {
-      const currentPassword = document.getElementById("currentPassword").value;
-      const newPassword = document.getElementById("newPassword").value;
+        <div class="field-group">
+            <label class="field-label">New Password</label>
+            <input id="newPasswordInput" type="password">
+        </div>
 
-      const res = await fetch("/auth/update-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword, newPassword })
-      });
+        <button id="savePassword" class="save-btn">Update Password</button>
+        <div id="statusPassword" class="status"></div>
+    </div>
 
-      const data = await res.json();
-      alert(data.message || data.error);
-    };
+</div>
 
-    // Display Name
-    document.getElementById("updateDisplayNameBtn").onclick = async () => {
-      const displayName = document.getElementById("newDisplayName").value;
+<script src="js/user.js"></script>
 
-      const res = await fetch("/auth/update-display-name", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ displayName })
-      });
+<script>
+/* ------------------------------------------------------
+   Save Display Name
+------------------------------------------------------ */
+document.getElementById("saveDisplayName")
+    .addEventListener("click", async () => {
+        const newName = document.getElementById("displayNameInput").value.trim();
+        const status = document.getElementById("statusDisplayName");
 
-      alert((await res.json()).message);
-    };
+        if (newName.length < 2) {
+            status.textContent = "Display name must be at least 2 characters.";
+            return;
+        }
 
-    // Username
-    document.getElementById("updateUsernameBtn").onclick = async () => {
-      const username = document.getElementById("newUsername").value;
-      const password = document.getElementById("usernamePasswordVerify").value;
-
-      const res = await fetch("/auth/update-username", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
-
-      alert((await res.json()).message);
-    };
-
-    // Profile Photo
-    document.getElementById("updatePhotoBtn").onclick = async () => {
-      const file = document.getElementById("avatarUpload").files[0];
-      if (!file) return alert("Choose an image first.");
-
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const dataUrl = reader.result;
-
-        const res = await fetch("/auth/update-profile-photo", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dataUrl })
+        const res = await fetch("/auth/update-display-name", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ displayName: newName })
         });
 
-        alert((await res.json()).success ? "Saved!" : "Failed.");
-      };
-      reader.readAsDataURL(file);
-    };
-  </script>
+        const data = await res.json();
+        status.textContent = data.message || data.error || "Updated.";
+    });
+
+/* ------------------------------------------------------
+   Save Username
+------------------------------------------------------ */
+document.getElementById("saveUsername")
+    .addEventListener("click", async () => {
+        const username = document.getElementById("usernameInput").value.trim();
+        const password = document.getElementById("usernamePasswordInput").value;
+        const status = document.getElementById("statusUsername");
+
+        if (!username || !password) {
+            status.textContent = "Both fields required.";
+            return;
+        }
+
+        const res = await fetch("/auth/update-username", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        status.textContent = data.message || data.error || "Updated.";
+    });
+
+/* ------------------------------------------------------
+   Save Password
+------------------------------------------------------ */
+document.getElementById("savePassword")
+    .addEventListener("click", async () => {
+        const currentPassword = document.getElementById("currentPasswordInput").value;
+        const newPassword = document.getElementById("newPasswordInput").value;
+        const status = document.getElementById("statusPassword");
+
+        if (!currentPassword || !newPassword) {
+            status.textContent = "Both fields required.";
+            return;
+        }
+
+        const res = await fetch("/auth/update-password", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ currentPassword, newPassword })
+        });
+
+        const data = await res.json();
+        status.textContent = data.message || data.error || "Updated.";
+    });
+</script>
 
 </body>
 </html>

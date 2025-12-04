@@ -1,131 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Notifications – Vos OS</title>
 
-  <script src="js/theme.js"></script>
-  <link rel="stylesheet" href="css/vox-theme.css">
-  <link rel="stylesheet" href="css/vox-header.css">
+    <link rel="stylesheet" href="css/vox-theme.css">
+    <link rel="stylesheet" href="css/avatar.css">
 
-  <title>Notifications</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, sans-serif;
+        }
 
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background: var(--bg-main);
-      color: var(--text-main);
-      overflow-x: hidden;
-    }
+        #notif-container {
+            max-width: 900px;
+            margin: 130px auto 60px auto;
+            padding: 20px;
+        }
 
-    #page-wrapper {
-      padding-top: calc(var(--vox-header-height) + 40px);
-      max-width: 900px;
-      margin: 0 auto;
-      padding-left: 20px;
-      padding-right: 20px;
-    }
+        .notif-card {
+            background: var(--panel-bg);
+            border: var(--panel-border);
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 22px;
+            backdrop-filter: blur(16px) brightness(1.1);
+            animation: fadeIn 0.35s ease;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
 
-    h1 {
-      text-align: center;
-      font-size: 32px;
-      margin-bottom: 24px;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: #fff;
-    }
+        .notif-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(0,246,255,0.25);
+        }
 
-    .notif-card {
-      background:
-        linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.94)) padding-box,
-        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
-      border: 1px solid transparent;
-      padding: 16px 20px;
-      border-radius: 16px;
-      margin-bottom: 20px;
-      background-size: 100% 100%, 220% 220%;
-      animation: borderShift 16s linear infinite;
-    }
+        .notif-title {
+            font-size: 18px;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--accent-text);
+        }
 
-    .notif-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
+        .notif-body {
+            font-size: 15px;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
 
-    .notif-body {
-      font-size: 16px;
-      opacity: 0.9;
-      line-height: 1.45;
-    }
+        .notif-timestamp {
+            font-size: 13px;
+            opacity: 0.65;
+        }
 
-    .notif-time {
-      font-size: 13px;
-      opacity: 0.75;
-      margin-top: 8px;
-    }
+        /* unread glow */
+        .notif-unread {
+            border: 1px solid var(--cyan);
+            box-shadow: 0 0 18px rgba(0, 246, 255, 0.35);
+        }
 
-    .empty-state {
-      text-align: center;
-      margin-top: 40px;
-      opacity: 0.7;
-      font-size: 15px;
-    }
+        /* "no notifications" box */
+        #emptyState {
+            text-align: center;
+            padding: 40px 0;
+            opacity: .7;
+            font-size: 15px;
+        }
 
-    @keyframes borderShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-  </style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 
 <body>
 
-  <div id="vox-header">
-    <div id="vox-title">Vox OS</div>
-    <div id="vox-user-area"></div>
-  </div>
+<!-- HEADER AUTO-INJECTED BY user.js -->
 
-  <div id="page-wrapper">
-    <h1>Notifications</h1>
-    <div id="notif-list"></div>
-  </div>
+<div id="notif-container">
+    <div id="notificationsList"></div>
+    <div id="emptyState" style="display:none;">No notifications to display.</div>
+</div>
 
-  <script>
-    async function loadNotifications() {
-      const container = document.getElementById("notif-list");
+<script src="js/user.js"></script>
 
-      try {
-        const res = await fetch("api/notifications", { credentials: "include" });
+<script>
+/* ------------------------------------------------------
+   Load Notifications from backend
+------------------------------------------------------ */
+
+async function loadNotifications() {
+    const list = document.getElementById("notificationsList");
+    const empty = document.getElementById("emptyState");
+
+    list.innerHTML = "";
+    empty.style.display = "none";
+
+    try {
+        const res = await fetch("/api/notifications", { credentials: "include" });
         const data = await res.json();
 
         if (!Array.isArray(data) || data.length === 0) {
-          container.innerHTML = `<div class="empty-state">No notifications yet.</div>`;
-          return;
+            empty.style.display = "block";
+            return;
         }
 
-        container.innerHTML = "";
         data.forEach(n => {
-          const card = document.createElement("div");
-          card.className = "notif-card";
-          card.innerHTML = `
-            <div class="notif-title">${n.title || "Notification"}</div>
-            <div class="notif-body">${n.body || ""}</div>
-            <div class="notif-time">${new Date(n.timestamp).toLocaleString()}</div>
-          `;
-          container.appendChild(card);
+            const card = document.createElement("div");
+            card.className = "notif-card";
+            if (!n.read) card.classList.add("notif-unread");
+
+            card.innerHTML = `
+                <div class="notif-title">${n.title || "Notification"}</div>
+                <div class="notif-body">${n.message || ""}</div>
+                <div class="notif-timestamp">
+                    ${formatTimestamp(n.created_at)}
+                </div>
+            `;
+
+            // Clicking a notification marks it read
+            card.addEventListener("click", () => markRead(n.id, card));
+
+            list.appendChild(card);
         });
-      } catch {
-        container.innerHTML = `<div class="empty-state">Error loading notifications.</div>`;
-      }
+
+    } catch (err) {
+        console.error("Failed to load notifications:", err);
+        empty.textContent = "Error loading notifications.";
+        empty.style.display = "block";
     }
+}
 
-    loadNotifications();
-  </script>
 
-  <script type="module" src="js/vox-header.js"></script>
+/* ------------------------------------------------------
+   Mark single notification as read
+------------------------------------------------------ */
+async function markRead(id, cardElement) {
+    try {
+        await fetch(`/api/notifications/${id}/read`, {
+            method: "POST",
+            credentials: "include"
+        });
+
+        cardElement.classList.remove("notif-unread");
+    } catch (e) {
+        console.warn("Failed to mark read:", e);
+    }
+}
+
+
+/* ------------------------------------------------------
+   Timestamp formatting
+------------------------------------------------------ */
+function formatTimestamp(ts) {
+    const d = new Date(ts);
+    return d.toLocaleString();
+}
+
+
+/* ------------------------------------------------------
+   Initialize
+------------------------------------------------------ */
+document.addEventListener("DOMContentLoaded", loadNotifications);
+</script>
 
 </body>
 </html>

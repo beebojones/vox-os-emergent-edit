@@ -1,306 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+    <title>Profile – Vos OS</title>
+    <link rel="stylesheet" href="css/vox-theme.css">
+    <link rel="stylesheet" href="css/avatar.css">
 
-  <link rel="stylesheet" href="css/vox-theme.css">
-  <script src="js/theme.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, sans-serif;
+            height: 100vh;
+        }
 
-  <title>Profile</title>
+        /* Main container */
+        #profile-container {
+            margin: 130px auto 40px auto; /* leaves room for header */
+            max-width: 800px;
+            padding: 20px;
+        }
 
-  <style>
-    body {
-      margin: 0;
-      background: var(--bg-main);
-      font-family: system-ui, sans-serif;
-      color: var(--text-main);
-      min-height: 100vh;
-      overflow-x: hidden;
-      padding-top: 80px; /* space for header */
-    }
+        /* Card panels */
+        .profile-card {
+            background: var(--panel-bg);
+            border: var(--panel-border);
+            padding: 26px;
+            border-radius: 18px;
+            margin-bottom: 28px;
+            backdrop-filter: blur(16px) brightness(1.15);
+            animation: fadeIn 0.4s ease;
+        }
 
-    .profile-shell {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 40px 18px 80px;
-    }
+        .card-title {
+            font-size: 22px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: var(--accent-text);
+        }
 
-    .section-title {
-      font-size: 28px;
-      margin: 20px 0 12px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-    }
+        /* Big Hex Avatar */
+        #big-hex-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
 
-    .profile-card {
-      background: rgba(10,10,20,0.8);
-      padding: 22px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
-      margin-bottom: 28px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 18px rgba(0, 246, 255, 0.12);
-    }
+        .big-hex {
+            width: 180px;
+            height: 155px;
+            position: relative;
+            clip-path: polygon(
+                25% 0%, 
+                75% 0%, 
+                100% 50%, 
+                75% 100%, 
+                25% 100%, 
+                0% 50%
+            );
+            border: 3px solid transparent;
+            background: linear-gradient(150deg, rgba(10,10,20,0.85), rgba(25,25,45,0.92)) padding-box,
+                        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 200% 200%;
+            animation: voxBorderShift 18s linear infinite;
+            box-shadow: 0 0 22px rgba(180,120,255,0.32);
+            overflow: hidden;
+        }
 
-    .profile-label {
-      font-size: 14px;
-      opacity: 0.8;
-      margin-bottom: 6px;
-      letter-spacing: 0.05em;
-    }
+        .big-hex img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.12);
-      color: var(--text-main);
-      font-size: 16px;
-      margin-bottom: 14px;
-      backdrop-filter: blur(10px);
-    }
+        /* Upload & Remove buttons */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 12px;
+        }
 
-    input:focus {
-      outline: none;
-      border-color: var(--cyan);
-      box-shadow: 0 0 8px rgba(0,246,255,0.4);
-    }
+        .vox-btn {
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+            border: 1px solid transparent;
+            background: linear-gradient(145deg, rgba(5,5,15,.92), rgba(20,20,35,.96)) padding-box,
+                        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            backdrop-filter: blur(10px);
+        }
 
-    .btn {
-      padding: 12px 18px;
-      border-radius: 12px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      color: white;
-      background:
-        linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.96)) padding-box,
-        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
-      background-size: 100% 100%, 220% 220%;
-      animation: voxBorderShift 14s linear infinite;
-      font-size: 15px;
-      letter-spacing: 0.06em;
-      transition: .2s;
-    }
+        .vox-btn:hover {
+            box-shadow: 0 0 18px rgba(170,110,255,0.55);
+        }
 
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow:
-        0 0 12px rgba(0,246,255,0.4),
-        0 0 18px rgba(255,0,212,0.3);
-    }
+        /* Info fields */
+        .info-row {
+            margin-bottom: 14px;
+            font-size: 18px;
+        }
 
-    .avatar-editor {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      margin-bottom: 20px;
-    }
+        .info-label {
+            font-weight: 600;
+            color: var(--accent-text);
+        }
 
-    #profile-avatar-preview {
-      width: 100px;
-      height: 55px;
-      clip-path: polygon(
-        25% 0%, 75% 0%,
-        100% 50%,
-        75% 100%, 25% 100%,
-        0% 50%
-      );
-      background-size: cover;
-      background-position: center;
-      background-color: rgba(255,255,255,0.1);
-      box-shadow:
-        0 0 10px rgba(0,246,255,0.45),
-        0 0 20px rgba(255,0,212,0.35);
-      border: 1px solid rgba(0,246,255,0.4);
-    }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    .note {
-      opacity: 0.7;
-      font-size: 13px;
-      margin-top: -6px;
-    }
-
-  </style>
+    </style>
 </head>
 
 <body>
 
-  <!-- Global header -->
-  <!-- (Already wired into user.js to populate avatar + dropdown) -->
-  <header id="vox-global-header">
-    <div class="vox-left">
-      <span id="vox-os-title">vos OS</span>
-    </div>
+<!-- HEADER INJECTED BY user.js -->
 
-    <div class="vox-right">
-      <div id="vox-avatar-wrap"><div id="vox-avatar-hex"></div></div>
+<div id="profile-container">
 
-      <button id="vox-user-pill">
-        <span id="vox-displayname">User</span>
-        <span class="arrow">▾</span>
-      </button>
-
-      <div id="vox-dropdown" class="hidden">
-        <a href="profile.html">Profile</a>
-        <a href="account-settings.html">Account Settings</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="memory.html">Memory Console</a>
-        <a href="chat.html">Chat</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a id="logoutLink" href="#">Logout</a>
-      </div>
-    </div>
-  </header>
-
-  <div class="profile-shell">
-
-    <!-- ========================
-         AVATAR
-    ========================= -->
-    <div class="section-title">Profile Photo</div>
-    <div class="profile-card">
-
-      <div class="avatar-editor">
-        <div id="profile-avatar-preview"></div>
-
-        <div>
-          <input type="file" id="avatarFile" accept="image/*">
-          <button id="saveAvatar" class="btn">Upload</button>
-          <button id="clearAvatar" class="btn" style="margin-left:8px;">Remove</button>
-
-          <div class="note">Image is stored safely in the database.</div>
+    <!-- Big Hex Avatar -->
+    <div id="big-hex-wrapper">
+        <div class="big-hex">
+            <img id="big-hex-img" src="/img/default-avatar.png">
         </div>
-      </div>
-
     </div>
 
-    <!-- ========================
-         DISPLAY NAME
-    ========================= -->
-    <div class="section-title">Display Name</div>
+    <div class="btn-row">
+        <label class="vox-btn" for="avatar-input">Upload Photo</label>
+        <button class="vox-btn" id="remove-photo">Remove</button>
+    </div>
+
+    <input type="file" id="avatar-input" accept="image/*" style="display:none">
+
+
+    <!-- Profile Information -->
     <div class="profile-card">
-      <div class="profile-label">Update display name</div>
-      <input id="displayNameInput" type="text" placeholder="Display name">
-      <button id="saveDisplayName" class="btn">Save</button>
+        <div class="card-title">Profile Information</div>
+
+        <div class="info-row"><span class="info-label">Display Name:</span> <span id="info-displayName">—</span></div>
+        <div class="info-row"><span class="info-label">Username:</span> <span id="info-username">—</span></div>
+        <div class="info-row"><span class="info-label">Role:</span> <span id="info-role">—</span></div>
     </div>
 
-    <!-- ========================
-         USERNAME
-    ========================= -->
-    <div class="section-title">Username</div>
-    <div class="profile-card">
-      <div class="profile-label">Change username</div>
-      <input id="usernameInput" type="text" placeholder="New username">
-      <input id="usernamePassword" type="password" placeholder="Current password">
-      <button id="saveUsername" class="btn">Update Username</button>
-    </div>
+</div>
 
-  </div>
 
-  <script src="js/user.js"></script>
+<script src="js/user.js"></script>
 
-  <script>
-    let currentUser = null;
+<script>
+/* ---------------------------------------------------
+   Load profile info + handle photo upload/removal
+--------------------------------------------------- */
 
-    // Load user for form defaults
-    async function loadUser() {
-      const res = await fetch('/auth/validate');
-      const data = await res.json();
-      if (!data?.user) return;
+document.addEventListener("DOMContentLoaded", async () => {
+    let user = null;
 
-      currentUser = data.user;
+    // Fetch user
+    try {
+        const res = await fetch("/auth/validate", { credentials: "include" });
+        const data = await res.json();
+        user = data.user || null;
+    } catch {}
 
-      document.getElementById('displayNameInput').value = currentUser.displayName || "";
+    const bigHexImg = document.getElementById("big-hex-img");
+    const infoDisplayName = document.getElementById("info-displayName");
+    const infoUsername = document.getElementById("info-username");
+    const infoRole = document.getElementById("info-role");
 
-      if (currentUser.avatarDataUrl) {
-        document.getElementById('profile-avatar-preview').style.backgroundImage =
-          `url('${currentUser.avatarDataUrl}')`;
-      }
+    if (user) {
+        bigHexImg.src = user.avatarDataUrl || "/img/default-avatar.png";
+        infoDisplayName.textContent = user.displayName || "—";
+        infoUsername.textContent = user.username || "—";
+        infoRole.textContent = user.role || "—";
     }
 
-    // Upload avatar
-    document.getElementById('saveAvatar').onclick = async () => {
-      const f = document.getElementById('avatarFile').files[0];
-      if (!f) return alert("Choose a file first");
+    // Upload handler
+    const input = document.getElementById("avatar-input");
+    input.addEventListener("change", async () => {
+        const file = input.files[0];
+        if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const dataUrl = reader.result;
+        const reader = new FileReader();
+        reader.onload = async e => {
+            const dataUrl = e.target.result;
 
-        const res = await fetch('/auth/update-photo', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dataUrl })
+            await fetch("/auth/update-photo", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ dataUrl })
+            });
+
+            bigHexImg.src = dataUrl;
+            document.getElementById("vox-avatar-img").src = dataUrl;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Remove handler
+    document.getElementById("remove-photo").addEventListener("click", async () => {
+        await fetch("/auth/update-photo", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ dataUrl: "" })
         });
 
-        const out = await res.json();
-        if (!out.success) return alert(out.error || "Upload failed");
-
-        document.getElementById('profile-avatar-preview').style.backgroundImage =
-          `url('${dataUrl}')`;
-
-        // Immediately refresh global header
-        if (window.refreshUserHeader) window.refreshUserHeader();
-      };
-
-      reader.readAsDataURL(f);
-    };
-
-    // Remove avatar
-    document.getElementById('clearAvatar').onclick = async () => {
-      const res = await fetch('/auth/update-photo', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dataUrl: "" })
-      });
-
-      const out = await res.json();
-      if (!out.success) return alert(out.error || "Removal failed");
-
-      document.getElementById('profile-avatar-preview').style.backgroundImage = "none";
-
-      if (window.refreshUserHeader) window.refreshUserHeader();
-    };
-
-    // Save display name
-    document.getElementById('saveDisplayName').onclick = async () => {
-      const newName = document.getElementById('displayNameInput').value.trim();
-      const res = await fetch('/auth/display-name', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ displayName: newName })
-      });
-      const out = await res.json();
-      if (!out.success) return alert(out.error || "Could not update");
-      if (window.refreshUserHeader) window.refreshUserHeader();
-      alert("Display name updated!");
-    };
-
-    // Save username
-    document.getElementById('saveUsername').onclick = async () => {
-      const u = document.getElementById('usernameInput').value.trim();
-      const pw = document.getElementById('usernamePassword').value.trim();
-
-      const res = await fetch('/auth/username', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: u, password: pw })
-      });
-
-      const out = await res.json();
-      if (!out.success) return alert(out.error || "Could not update username");
-
-      alert("Username updated! Log in again if needed.");
-    };
-
-    loadUser();
-  </script>
+        const fallback = "/img/default-avatar.png";
+        bigHexImg.src = fallback;
+        document.getElementById("vox-avatar-img").src = fallback;
+    });
+});
+</script>
 
 </body>
 </html>
