@@ -1,9 +1,9 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Request, UploadFile, File
+from fastapi import FastAPI, APIRouter, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorClient
 from google_auth_oauthlib.flow import Flow
 
 import os
@@ -34,7 +34,7 @@ if not mongo_url or not db_name:
     raise RuntimeError("Missing required environment variables: MONGO_URL and/or DB_NAME")
 
 client = AsyncIOMotorClient(mongo_url)
-db: AsyncIOMotorDatabase = client[db_name]
+db = client[db_name]
 
 # ====================
 # APP
@@ -87,7 +87,7 @@ async def root():
     return {"message": "Vox OS API", "status": "online"}
 
 # ====================
-# GOOGLE OAUTH (LOGIN ONLY)
+# GOOGLE OAUTH (LOGIN + CALLBACK)
 # ====================
 
 def build_google_flow() -> Flow:
@@ -126,17 +126,41 @@ async def google_login(request: Request):
     request.session["google_oauth_state"] = state
     return RedirectResponse(authorization_url)
 
+@api_router.get("/auth/google/callback")
+async def google_callback(request: Request):
+    state_in_session = request.session.get("google_oauth_state")
+    state_returned = request.query_params.get("state")
+
+    if not state_in_session or state_in_session != state_returned:
+        raise HTTPException(status_code=400, detail="Invalid OAuth state")
+
+    flow = build_google_flow()
+
+    try:
+        flow.fetch_token(authorization_response=str(request.url))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Token exchange failed: {e}")
+
+    credentials = flow.credentials
+
+    request.session["google_tokens"] = {
+        "token": credentials.token,
+        "refresh_token": credentials.refresh_token,
+        "scopes": list(credentials.scopes or []),
+    }
+
+    return RedirectResponse("https://www.voxconsole.com")
+
 # ====================
-# PLACEHOLDER ENDPOINTS
+# AUTH DEBUG (TEMPORARY)
 # ====================
 
-@api_router.post("/chat")
-async def chat_placeholder():
-    return {"message": "Chat endpoint placeholder"}
-
-@api_router.post("/transcribe")
-async def transcribe_placeholder():
-    return {"message": "Transcription endpoint placeholder"}
+@api_router.get("/auth/debug")
+async def auth_debug(request: Request):
+    return {
+        "has_session": bool(request.session),
+        "has_google_tokens": "google_tokens" in request.session,
+    }
 
 # ====================
 # SHUTDOWN
