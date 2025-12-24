@@ -1,0 +1,199 @@
+{
+  "identity": {
+    "name": "Vox OS",
+    "persona": "E1: The Anti-AI Designer",
+    "aesthetic": "Cyber-Console / Retro-Futurist / Neon-Noir",
+    "core_principles": [
+      "Fusion: Terminal aesthetics x Modern Reactivity",
+      "Emotion: Mystery, Depth, Intelligence",
+      "Content: Data is beautiful (Monospace, Scanlines)",
+      "Contrast: Deep Void Black (#050509) vs Neon Lasers"
+    ]
+  },
+  "typography": {
+    "font_family": {
+      "sans": ["Inter", "system-ui", "sans-serif"],
+      "mono": ["JetBrains Mono", "Fira Code", "monospace"],
+      "display": ["Inter", "system-ui", "sans-serif"]
+    },
+    "styles": {
+      "h1": "text-4xl font-bold tracking-[0.18em] uppercase bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-magenta-500 to-purple-500 animate-title-glow",
+      "h2": "text-2xl font-semibold tracking-[0.15em] uppercase text-white/90",
+      "h3": "text-lg font-medium tracking-[0.12em] uppercase text-cyan-400",
+      "body": "text-base text-[#f5f5f5] leading-relaxed",
+      "label": "text-xs uppercase tracking-[0.14em] text-[#a8b0d0] opacity-90",
+      "code": "font-mono text-xs text-cyan-200/90"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": "#050509",
+      "foreground": "#f5f5f5",
+      "card": "rgba(5, 5, 16, 0.96)",
+      "card_foreground": "#f5f5f5",
+      "popover": "#0a0a14",
+      "popover_foreground": "#f5f5f5",
+      "primary": "#00f6ff",
+      "primary_foreground": "#000000",
+      "secondary": "#ff00d4",
+      "secondary_foreground": "#ffffff",
+      "muted": "rgba(255, 255, 255, 0.06)",
+      "muted_foreground": "#a8b0d0",
+      "accent": "#9a4dff",
+      "accent_foreground": "#ffffff",
+      "destructive": "#ff7a00",
+      "destructive_foreground": "#ffffff",
+      "border": "rgba(255, 255, 255, 0.08)",
+      "input": "rgba(5, 5, 12, 0.95)",
+      "ring": "#00f6ff"
+    },
+    "gradients": {
+      "body_bg": "radial-gradient(circle at 0% 0%, rgba(0, 246, 255, 0.06), transparent 55%), radial-gradient(circle at 100% 100%, rgba(255, 0, 212, 0.07), transparent 55%), radial-gradient(circle at 100% 0%, rgba(154, 77, 255, 0.08), transparent 55%), radial-gradient(circle at 0% 100%, rgba(255, 122, 0, 0.05), transparent 55%), #050509",
+      "console_aura": "radial-gradient(circle at 10% 0%, rgba(0, 246, 255, 0.07), transparent 65%), radial-gradient(circle at 90% 100%, rgba(255, 0, 212, 0.07), transparent 65%)"
+    }
+  },
+  "tailwind_config": {
+    "extend": {
+      "colors": {
+        "neon-cyan": "#00f6ff",
+        "neon-magenta": "#ff00d4",
+        "neon-purple": "#9a4dff",
+        "neon-orange": "#ff7a00",
+        "void-black": "#050509"
+      },
+      "borderRadius": {
+        "pill": "999px"
+      },
+      "animation": {
+        "bg-shift": "bgShift 25s linear infinite alternate",
+        "title-glow": "titleGlow 16s linear infinite alternate",
+        "button-hue": "buttonHue 8s linear infinite",
+        "card-hue": "cardHue 8s linear infinite",
+        "console-aura": "consoleAura 18s linear infinite alternate",
+        "scanlines": "scanlines 4s linear infinite",
+        "online-pulse": "onlinePulse 2.2s ease-in-out infinite",
+        "danger-wiggle": "dangerWiggle 0.2s ease"
+      },
+      "keyframes": {
+        "bgShift": {
+          "0%": { "background-position": "0 0, 100% 100%, 100% 0, 0 100%" },
+          "50%": { "background-position": "10% -5%, 95% 110%, 110% 10%, -10% 95%" },
+          "100%": { "background-position": "-5% 10%, 105% 90%, 90% -10%, 5% 105%" }
+        },
+        "titleGlow": {
+          "0%": { "text-shadow": "0 0 8px rgba(0, 246, 255, 0.5)" },
+          "50%": { "text-shadow": "0 0 14px rgba(255, 0, 212, 0.7)" },
+          "100%": { "text-shadow": "0 0 10px rgba(154, 77, 255, 0.6)" }
+        },
+        "buttonHue": {
+          "0%": { "border-color": "rgba(0, 246, 255, 0.5)", "box-shadow": "0 0 8px rgba(0, 246, 255, 0.25)" },
+          "25%": { "border-color": "rgba(255, 0, 212, 0.5)", "box-shadow": "0 0 9px rgba(255, 0, 212, 0.25)" },
+          "50%": { "border-color": "rgba(154, 77, 255, 0.5)", "box-shadow": "0 0 10px rgba(154, 77, 255, 0.25)" },
+          "75%": { "border-color": "rgba(255, 122, 0, 0.5)", "box-shadow": "0 0 8px rgba(255, 122, 0, 0.23)" },
+          "100%": { "border-color": "rgba(0, 246, 255, 0.5)", "box-shadow": "0 0 8px rgba(0, 246, 255, 0.25)" }
+        },
+        "cardHue": {
+          "0%": { "border-color": "rgba(0, 246, 255, 0.5)", "box-shadow": "0 0 10px rgba(0, 246, 255, 0.25)" },
+          "25%": { "border-color": "rgba(255, 0, 212, 0.5)", "box-shadow": "0 0 12px rgba(255, 0, 212, 0.25)" },
+          "50%": { "border-color": "rgba(154, 77, 255, 0.5)", "box-shadow": "0 0 14px rgba(154, 77, 255, 0.25)" },
+          "75%": { "border-color": "rgba(255, 122, 0, 0.5)", "box-shadow": "0 0 12px rgba(255, 122, 0, 0.23)" },
+          "100%": { "border-color": "rgba(0, 246, 255, 0.5)", "box-shadow": "0 0 10px rgba(0, 246, 255, 0.25)" }
+        },
+        "consoleAura": {
+          "0%": { "transform": "translate3d(0, 0, 0)" },
+          "50%": { "transform": "translate3d(-6%, 4%, 0)" },
+          "100%": { "transform": "translate3d(4%, -4%, 0)" }
+        },
+        "scanlines": {
+          "0%": { "transform": "translateY(0)" },
+          "100%": { "transform": "translateY(4px)" }
+        },
+        "onlinePulse": {
+          "0%": { "transform": "scale(1)", "box-shadow": "0 0 6px rgba(0, 246, 255, 0.65)" },
+          "50%": { "transform": "scale(1.2)", "box-shadow": "0 0 12px rgba(255, 0, 212, 0.8)" },
+          "100%": { "transform": "scale(1)", "box-shadow": "0 0 6px rgba(0, 246, 255, 0.65)" }
+        },
+        "dangerWiggle": {
+          "0%": { "transform": "translateX(0)" },
+          "25%": { "transform": "translateX(-1px)" },
+          "50%": { "transform": "translateX(1px)" },
+          "75%": { "transform": "translateX(-1px)" },
+          "100%": { "transform": "translateX(0)" }
+        }
+      }
+    }
+  },
+  "components": {
+    "Button": {
+      "base": "rounded-full border border-white/10 bg-black/90 text-white px-6 py-2 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 active:scale-95",
+      "variants": {
+        "default": "animate-button-hue hover:shadow-[0_0_14px_rgba(0,246,255,0.45),0_0_22px_rgba(255,0,212,0.2)]",
+        "destructive": "border-neon-orange/50 text-neon-orange hover:border-neon-orange hover:shadow-[0_0_14px_rgba(255,122,0,0.6)] hover:animate-danger-wiggle",
+        "ghost": "bg-transparent border-transparent hover:bg-white/5"
+      }
+    },
+    "Card": {
+      "base": "relative overflow-hidden rounded-xl bg-[#050510]/95 border border-neon-cyan/40 shadow-[0_0_10px_rgba(0,246,255,0.12)] animate-card-hue transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,246,255,0.4)]"
+    },
+    "Input": {
+      "base": "rounded-full bg-[#05050c]/95 border border-white/10 px-4 py-2 text-sm text-white placeholder:text-white/30 focus:border-neon-cyan/70 focus:bg-[#080814] focus:shadow-[0_0_14px_rgba(0,246,255,0.35)] focus:outline-none transition-all duration-200"
+    },
+    "Badge": {
+      "base": "rounded-full px-3 py-0.5 text-[11px] font-medium border",
+      "variants": {
+        "default": "bg-[#0a0c1e]/95 border-neon-cyan/45 text-cyan-100 shadow-[0_0_4px_rgba(0,246,255,0.5)]",
+        "outline": "bg-transparent border-white/20 text-white/70"
+      }
+    }
+  },
+  "layout_strategies": {
+    "dashboard": {
+      "grid": "grid grid-cols-1 md:grid-cols-12 gap-6 p-6 max-w-7xl mx-auto",
+      "areas": {
+        "sidebar": "hidden md:block md:col-span-3 lg:col-span-2",
+        "main": "col-span-1 md:col-span-9 lg:col-span-7",
+        "context": "col-span-1 md:col-span-12 lg:col-span-3"
+      }
+    },
+    "console_wrapper": "min-h-screen w-full bg-void-black animate-bg-shift overflow-x-hidden text-foreground p-4 md:p-8"
+  },
+  "image_urls": {
+    "backgrounds": [
+      "https://images.unsplash.com/photo-1645526407847-52de201945f2?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "https://images.unsplash.com/photo-1547218795-a0e23806213b?crop=entropy&cs=srgb&fm=jpg&q=85"
+    ],
+    "avatars": [
+      "https://images.unsplash.com/photo-1619286724177-29b4cc617f6d?crop=entropy&cs=srgb&fm=jpg&q=85"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. UPDATE tailwind.config.js FIRST: Copy the 'extend' object from this JSON exactly. It contains critical animations.",
+    "2. GLOBAL CSS: Add the body background gradient to index.css (layer base body).",
+    "3. SHADCN OVERRIDES: Do not use default Shadcn styles. You must override them with the 'components' classes defined here.",
+    "4. LAYOUT: Wrap the entire app in the 'console_wrapper' class to get the moving background.",
+    "5. DATA-TESTID: Every interactive element (button, input, card) MUST have a data-testid.",
+    "6. ICONS: Use Lucide-React icons but style them with 'text-neon-cyan' or 'text-neon-magenta' to match the vibe.",
+    "7. NO WHITE BACKGROUNDS: The app is strictly dark mode. Never use bg-white.",
+    "8. SCANLINES: Use the 'scanlines' animation for code blocks or data displays."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use sonner for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
+  ]
+}
