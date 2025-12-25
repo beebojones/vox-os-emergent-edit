@@ -43,6 +43,20 @@ db = client[db_name]
 app = FastAPI()
 
 # ====================
+# ROOT ROUTE (FIX)
+# ====================
+
+@app.get("/")
+async def root():
+    return {
+        "name": "Vox Console",
+        "status": "online",
+        "api": "/api/",
+        "health": "/api/health",
+        "docs": "/docs",
+    }
+
+# ====================
 # SESSION MIDDLEWARE
 # ====================
 
@@ -83,7 +97,7 @@ async def health():
     return {"status": "ok"}
 
 @api_router.get("/")
-async def root():
+async def api_root():
     return {"message": "Vox OS API", "status": "online"}
 
 # ====================
