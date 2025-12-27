@@ -52,6 +52,7 @@ app.add_middleware(
     https_only=False,
     same_site="lax",
     session_cookie="vox_session",
+    domain=".voxconsole.com",
 )
 
 # ====================
@@ -184,4 +185,5 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
