@@ -157,7 +157,7 @@ async def google_callback(request: Request):
 
     logger.info("Google OAuth successful")
 
-    return RedirectResponse("https://www.voxconsole.com")
+    return RedirectResponse("https://voxconsole.com")
 
 # ====================
 # AUTH DEBUG
@@ -184,6 +184,7 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
 
 
