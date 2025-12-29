@@ -48,10 +48,11 @@ app = FastAPI(
 
 app.add_middleware(
     SessionMiddleware,
-    secret_key=os.getenv("SESSION_SECRET", "dev-only-change-me"),
+    secret_key=os.getenv("SESSION_SECRET"),
     https_only=True,
     same_site="none",
     session_cookie="vox_session",
+    domain=".voxconsole.com",
 )
 
 # ====================
@@ -184,6 +185,7 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
 
 
