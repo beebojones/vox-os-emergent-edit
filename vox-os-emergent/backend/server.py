@@ -152,6 +152,7 @@ async def google_callback(request: Request):
     flow.fetch_token(code=code)
 
     creds = flow.credentials
+    logger.info(f"Cred scopes: {list(creds.scopes or [])}")
 
     request.session["google_tokens"] = {
         "access_token": creds.token,
@@ -188,5 +189,6 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
 
