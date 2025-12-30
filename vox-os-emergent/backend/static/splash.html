@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vox Console</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: radial-gradient(circle at top, #141427, #07070c);
+      color: #e6e6eb;
+      font-family: system-ui, sans-serif;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .splash {
+      text-align: center;
+      padding: 48px 56px;
+      border-radius: 22px;
+
+      background:
+        linear-gradient(145deg, rgba(10,10,22,0.95), rgba(5,5,12,0.98)) padding-box,
+        linear-gradient(120deg, #00f6ff, #ff00d4, #9a4dff) border-box;
+
+      border: 1px solid transparent;
+      box-shadow: 0 0 40px rgba(120,80,255,0.35);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+
+      background: linear-gradient(90deg, #00f6ff, #ff00d4, #9a4dff);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    p {
+      margin: 0 0 32px;
+      opacity: 0.75;
+      letter-spacing: 0.1em;
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border-radius: 999px;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+
+      background:
+        radial-gradient(circle at 0 0, rgba(0,246,255,0.18), rgba(10,10,22,0.95)) padding-box,
+        linear-gradient(120deg, #00f6ff, #ff00d4, #9a4dff) border-box;
+
+      border: 1px solid transparent;
+      color: #fff;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 16px rgba(0,246,255,0.45);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="splash">
+    <h1>Vox Console</h1>
+    <p>Your personal AI operating system</p>
+
+    <div class="actions">
+      <a class="btn" href="/login">Log in</a>
+      <a class="btn" href="/signup">Create account</a>
+    </div>
+  </div>
+</body>
+</html>
