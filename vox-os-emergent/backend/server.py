@@ -146,6 +146,8 @@ async def google_callback(request: Request):
         raise HTTPException(status_code=400, detail="Invalid OAuth state")
 
     flow = build_google_flow()
+    flow.oauth2session.state = state_returned
+
     code = request.query_params.get("code")
     flow.fetch_token(code=code)
 
@@ -186,6 +188,7 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
 
 
