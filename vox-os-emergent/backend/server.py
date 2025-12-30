@@ -1,14 +1,12 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Request
-from fastapi.responses import RedirectResponse, JSONResponse, FileResponse
+from fastapi.responses import RedirectResponse, FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-from google_auth_oauthlib.flow import Flow
 from pathlib import Path
 import os
 import logging
-import requests
 from passlib.context import CryptContext
 from datetime import datetime
 from bson import ObjectId
@@ -37,6 +35,26 @@ if not mongo_url or not db_name:
 client = AsyncIOMotorClient(mongo_url)
 db = client[db_name]
 users = db["users"]
+
+# ====================
+# MODELS
+# ====================
+
+class SignupRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+# ====================
+# PASSWORD HELPERS
+# ====================
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+def verify_password(password: str, password_hash: str) -> bool:
+    return pwd_context.verify(password, password_hash)
 
 # ====================
 # APP
@@ -80,16 +98,16 @@ app.add_middleware(
 api = APIRouter(prefix="/api")
 
 # ====================
-# SPLASH / ENTRY ROUTES
+# SPLASH / ENTRY
 # ====================
 
 @app.get("/")
 async def root():
     return FileResponse("static/splash.html")
 
-@app.get("/login")
-async def login_page():
-    return {"message": "Login page coming next"}
+# ====================
+# SIGNUP (LOCAL AUTH)
+# ====================
 
 @api.post("/signup")
 async def signup(data: SignupRequest, request: Request):
@@ -114,37 +132,37 @@ async def signup(data: SignupRequest, request: Request):
     request.session["user_id"] = str(result.inserted_id)
     request.session["role"] = role
 
-    return RedirectResponse("/login/success", status_code=303)
-
-
-    # First user becomes admin
-    user_count = await users.count_documents({})
-    role = "admin" if user_count == 0 else "user"
-
-    user = {
-        "email": data.email,
-        "password_hash": hash_password(data.password),
-        "role": role,
-        "created_at": datetime.utcnow(),
-        "last_login": datetime.utcnow(),
-    }
-
-    result = await users.insert_one(user)
-
-    # Log the user in
-    request.session.clear()
-    request.session["user_id"] = str(result.inserted_id)
-    request.session["role"] = role
+    logger.info(f"New user created: {data.email} ({role})")
 
     return RedirectResponse("/login/success", status_code=303)
 
 # ====================
-# DASHBOARD (TEMP)
+# LOGIN SUCCESS (TEMP DASHBOARD)
 # ====================
 
 @app.get("/login/success")
 async def login_success():
     return FileResponse("static/login_success.html")
+
+# ====================
+# SESSION IDENTITY
+# ====================
+
+@api.get("/me")
+async def me(request: Request):
+    user_id = request.session.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    user = await users.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid session")
+
+    return {
+        "authenticated": True,
+        "email": user["email"],
+        "role": user["role"],
+    }
 
 # ====================
 # HEALTH
@@ -159,109 +177,6 @@ async def api_root():
     return {"message": "Vox OS API", "status": "online"}
 
 # ====================
-# USER IDENTITY
-# ====================
-
-@api.get("/me")
-async def me(request: Request):
-    tokens = request.session.get("google_tokens")
-    if not tokens:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-
-    headers = {
-        "Authorization": f"Bearer {tokens['access_token']}"
-    }
-
-    r = requests.get(
-        "https://www.googleapis.com/oauth2/v2/userinfo",
-        headers=headers,
-        timeout=5,
-    )
-
-    profile = r.json()
-
-    return {
-        "authenticated": True,
-        "name": profile.get("name"),
-        "email": profile.get("email"),
-    }
-
-# ====================
-# USER AUTH HELPERS
-# ====================
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
-def verify_password(password: str, password_hash: str) -> bool:
-    return pwd_context.verify(password, password_hash)
-
-class SignupRequest(BaseModel):
-    email: EmailStr
-    password: str
-
-# ====================
-# GOOGLE OAUTH (INTEGRATION)
-# ====================
-
-GOOGLE_SCOPES = ["openid", "email", "profile"]
-
-def build_google_flow():
-    return Flow.from_client_config(
-        {
-            "web": {
-                "client_id": os.environ["GOOGLE_CLIENT_ID"],
-                "client_secret": os.environ["GOOGLE_CLIENT_SECRET"],
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://oauth2.googleapis.com/token",
-            }
-        },
-        scopes=GOOGLE_SCOPES,
-        redirect_uri="https://voxconsole.com/api/auth/google/callback",
-    )
-
-@api.get("/auth/google/login")
-async def google_login(request: Request):
-    flow = build_google_flow()
-    auth_url, state = flow.authorization_url(
-        access_type="offline",
-        prompt="consent",
-    )
-    request.session.clear()
-    request.session["oauth_state"] = state
-    return RedirectResponse(auth_url)
-
-@api.get("/auth/google/callback")
-async def google_callback(request: Request):
-    state_expected = request.session.get("oauth_state")
-    state_returned = request.query_params.get("state")
-
-    if not state_expected or state_expected != state_returned:
-        raise HTTPException(status_code=400, detail="Invalid OAuth state")
-
-    code = request.query_params.get("code")
-    if not code:
-        raise HTTPException(status_code=400, detail="Missing authorization code")
-
-    flow = build_google_flow()
-    flow.oauth2session.state = state_returned
-    flow.fetch_token(code=code)
-
-    creds = flow.credentials
-
-    request.session["google_tokens"] = {
-        "access_token": creds.token,
-        "refresh_token": creds.refresh_token,
-        "scopes": list(creds.scopes or []),
-    }
-
-    logger.info("Google OAuth successful")
-
-    return RedirectResponse("/login/success")
-
-# ====================
 # REGISTER ROUTER
 # ====================
 
@@ -274,6 +189,3 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
-
-
-
