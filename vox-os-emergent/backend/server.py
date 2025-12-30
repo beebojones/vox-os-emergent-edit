@@ -108,6 +108,17 @@ async def health():
 async def api_root():
     return {"message": "Vox OS API", "status": "online"}
 
+@api.get("/me")
+async def me(request: Request):
+    tokens = request.session.get("google_tokens")
+    if not tokens:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    return {
+        "authenticated": True,
+        "scopes": tokens.get("scopes", []),
+    }
+
 # ====================
 # GOOGLE OAUTH
 # ====================
@@ -196,4 +207,5 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
