@@ -79,15 +79,11 @@ api = APIRouter(prefix="/api")
 # ROOT
 # ====================
 
+from fastapi.responses import FileResponse
+
 @app.get("/")
 async def root():
-    return {
-        "name": "Vox Console",
-        "status": "online",
-        "api": "/api/",
-        "health": "/api/health",
-        "docs": "/docs",
-    }
+    return FileResponse("static/login_success.html")
 
 # ====================
 # LOGIN SUCCESS PAGE
@@ -221,6 +217,7 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
 
 
