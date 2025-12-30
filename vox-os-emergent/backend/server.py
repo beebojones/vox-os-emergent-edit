@@ -9,6 +9,9 @@ from pathlib import Path
 import os
 import logging
 import requests
+from passlib.context import CryptContext
+from datetime import datetime
+from bson import ObjectId
 
 # ====================
 # ENV + LOGGING
@@ -32,6 +35,7 @@ if not mongo_url or not db_name:
 
 client = AsyncIOMotorClient(mongo_url)
 db = client[db_name]
+users = db["users"]
 
 # ====================
 # APP
@@ -139,6 +143,18 @@ async def me(request: Request):
     }
 
 # ====================
+# USER AUTH HELPERS
+# ====================
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+def verify_password(password: str, password_hash: str) -> bool:
+    return pwd_context.verify(password, password_hash)
+
+# ====================
 # GOOGLE OAUTH (INTEGRATION)
 # ====================
 
@@ -210,3 +226,4 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
