@@ -1,3 +1,4 @@
+from fastapi.responses import FileResponse
 from fastapi import FastAPI, APIRouter, HTTPException, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 from dotenv import load_dotenv
@@ -92,12 +93,8 @@ async def root():
 # ====================
 
 @app.get("/login/success")
-async def login_success(request: Request):
-    return {
-        "message": "Welcome to Vox Console",
-        "logged_in": "google_tokens" in request.session,
-        "session_keys": list(request.session.keys()),
-    }
+async def login_success():
+    return FileResponse("static/login_success.html")
 
 # ====================
 # HEALTH
@@ -199,3 +196,4 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
