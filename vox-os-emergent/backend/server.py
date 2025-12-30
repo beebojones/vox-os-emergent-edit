@@ -156,7 +156,10 @@ async def signup(data: SignupRequest, request: Request):
 # ====================
 
 @app.get("/login/success")
-async def login_success():
+async def login_success(request: Request):
+    if not request.session.get("user_id"):
+        return RedirectResponse("/", status_code=302)
+
     return FileResponse(str(ROOT_DIR / "static" / "login_success.html"))
 
 # ====================
@@ -209,3 +212,4 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
