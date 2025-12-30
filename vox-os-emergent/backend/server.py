@@ -9,6 +9,7 @@ from google_auth_oauthlib.flow import Flow
 from pathlib import Path
 import os
 import logging
+import requests
 
 # ====================
 # ENV + LOGGING
@@ -114,9 +115,22 @@ async def me(request: Request):
     if not tokens:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
+    headers = {
+        "Authorization": f"Bearer {tokens['access_token']}"
+    }
+
+    r = requests.get(
+        "https://www.googleapis.com/oauth2/v2/userinfo",
+        headers=headers,
+        timeout=5,
+    )
+
+    profile = r.json()
+
     return {
         "authenticated": True,
-        "scopes": tokens.get("scopes", []),
+        "name": profile.get("name"),
+        "email": profile.get("email"),
     }
 
 # ====================
@@ -207,5 +221,6 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
 
