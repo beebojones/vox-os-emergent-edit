@@ -88,6 +88,18 @@ async def root():
     }
 
 # ====================
+# LOGIN SUCCESS PAGE
+# ====================
+
+@app.get("/login/success")
+async def login_success(request: Request):
+    return {
+        "message": "Welcome to Vox Console",
+        "logged_in": "google_tokens" in request.session,
+        "session_keys": list(request.session.keys()),
+    }
+
+# ====================
 # HEALTH
 # ====================
 
@@ -123,13 +135,12 @@ def build_google_flow():
 async def google_login(request: Request):
     flow = build_google_flow()
     auth_url, state = flow.authorization_url(
-    access_type="offline",
-    prompt="consent",
+        access_type="offline",
+        prompt="consent",
     )
     request.session.clear()
     request.session["oauth_state"] = state
     return RedirectResponse(auth_url)
-
 
 @api.get("/auth/google/callback")
 async def google_callback(request: Request):
@@ -142,17 +153,15 @@ async def google_callback(request: Request):
     if not state_expected or state_expected != state_returned:
         raise HTTPException(status_code=400, detail="Invalid OAuth state")
 
-    flow = build_google_flow()
-    flow.oauth2session.state = state_returned
-
     code = request.query_params.get("code")
     if not code:
         raise HTTPException(status_code=400, detail="Missing authorization code")
 
+    flow = build_google_flow()
+    flow.oauth2session.state = state_returned
     flow.fetch_token(code=code)
 
     creds = flow.credentials
-    logger.info(f"Cred scopes: {list(creds.scopes or [])}")
 
     request.session["google_tokens"] = {
         "access_token": creds.token,
@@ -161,8 +170,9 @@ async def google_callback(request: Request):
     }
 
     logger.info("Google OAuth successful")
+    logger.info(f"Cred scopes: {list(creds.scopes or [])}")
 
-    return RedirectResponse("https://voxconsole.com")
+    return RedirectResponse("https://voxconsole.com/login/success")
 
 # ====================
 # AUTH DEBUG
@@ -189,6 +199,3 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
-
-
-
