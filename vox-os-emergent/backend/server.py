@@ -91,16 +91,31 @@ async def root():
 async def login_page():
     return {"message": "Login page coming next"}
 
-@app.get("/signup")
-async def signup_page():
-    return {"message": "Account creation coming next"}
-
-@app.post("/signup")
+@api.post("/signup")
 async def signup(data: SignupRequest, request: Request):
-    # Check if the email already exists
     existing = await users.find_one({"email": data.email})
     if existing:
         raise HTTPException(status_code=400, detail="User already exists")
+
+    user_count = await users.count_documents({})
+    role = "admin" if user_count == 0 else "user"
+
+    user = {
+        "email": data.email,
+        "password_hash": hash_password(data.password),
+        "role": role,
+        "created_at": datetime.utcnow(),
+        "last_login": datetime.utcnow(),
+    }
+
+    result = await users.insert_one(user)
+
+    request.session.clear()
+    request.session["user_id"] = str(result.inserted_id)
+    request.session["role"] = role
+
+    return RedirectResponse("/login/success", status_code=303)
+
 
     # First user becomes admin
     user_count = await users.count_documents({})
@@ -259,5 +274,6 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
 
