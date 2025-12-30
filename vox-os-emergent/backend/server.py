@@ -74,7 +74,7 @@ app.add_middleware(
 api = APIRouter(prefix="/api")
 
 # ====================
-# ROOT (IMPORTANT)
+# ROOT
 # ====================
 
 @app.get("/")
@@ -113,7 +113,13 @@ def build_google_flow():
                 "token_uri": "https://oauth2.googleapis.com/token",
             }
         },
-        scopes=["openid", "email", "profile"],
+        scopes=[
+            "openid",
+            "email",
+            "profile",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+        ],
         redirect_uri="https://voxconsole.com/api/auth/google/callback",
     )
 
@@ -149,6 +155,9 @@ async def google_callback(request: Request):
     flow.oauth2session.state = state_returned
 
     code = request.query_params.get("code")
+    if not code:
+        raise HTTPException(status_code=400, detail="Missing authorization code")
+
     flow.fetch_token(code=code)
 
     creds = flow.credentials
@@ -188,10 +197,3 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
-
-
-
-
-
-
-
