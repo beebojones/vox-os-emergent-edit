@@ -149,18 +149,18 @@ async def signup(data: SignupRequest, request: Request):
 
     logger.info(f"New user created: {email} ({role})")
 
-    return RedirectResponse("/login/success", status_code=303)
+    return RedirectResponse("/dashboard", status_code=303)
 
 # ====================
 # LOGIN SUCCESS (TEMP DASHBOARD)
 # ====================
 
-@app.get("/login/success")
-async def login_success(request: Request):
+@app.get("/dashboard")
+async def dashboard(request: Request):
     if not request.session.get("user_id"):
         return RedirectResponse("/", status_code=302)
 
-    return FileResponse(str(ROOT_DIR / "static" / "login_success.html"))
+    return FileResponse(str(ROOT_DIR / "static" / "dashboard.html"))
 
 # ====================
 # SESSION IDENTITY
@@ -212,4 +212,5 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
