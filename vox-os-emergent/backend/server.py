@@ -10,7 +10,7 @@ import logging
 from passlib.context import CryptContext
 from datetime import datetime
 from bson import ObjectId
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 # ====================
 # ENV + LOGGING
@@ -23,17 +23,30 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("vox")
 
 # ====================
+# REQUIRED ENV
+# ====================
+
+SESSION_SECRET = os.getenv("SESSION_SECRET")
+MONGO_URL = os.getenv("MONGO_URL")
+DB_NAME = os.getenv("DB_NAME")
+
+missing = []
+if not SESSION_SECRET:
+    missing.append("SESSION_SECRET")
+if not MONGO_URL:
+    missing.append("MONGO_URL")
+if not DB_NAME:
+    missing.append("DB_NAME")
+
+if missing:
+    raise RuntimeError(f"Missing required env var(s): {', '.join(missing)}")
+
+# ====================
 # DATABASE
 # ====================
 
-mongo_url = os.getenv("MONGO_URL")
-db_name = os.getenv("DB_NAME")
-
-if not mongo_url or not db_name:
-    raise RuntimeError("Missing MONGO_URL or DB_NAME")
-
-client = AsyncIOMotorClient(mongo_url)
-db = client[db_name]
+client = AsyncIOMotorClient(MONGO_URL)
+db = client[DB_NAME]
 users = db["users"]
 
 # ====================
@@ -41,7 +54,7 @@ users = db["users"]
 # ====================
 
 class SignupRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 # ====================
@@ -72,11 +85,11 @@ app = FastAPI(
 
 app.add_middleware(
     SessionMiddleware,
-    secret_key=os.getenv("SESSION_SECRET"),
+    secret_key=SESSION_SECRET,
     https_only=True,
     same_site="none",
     session_cookie="vox_session",
-    domain=".voxconsole.com",
+    # domain=".voxconsole.com",  # keep this OFF until everything is stable
 )
 
 # ====================
@@ -103,7 +116,7 @@ api = APIRouter(prefix="/api")
 
 @app.get("/")
 async def root():
-    return FileResponse("static/splash.html")
+    return FileResponse(str(ROOT_DIR / "static" / "splash.html"))
 
 # ====================
 # SIGNUP (LOCAL AUTH)
@@ -111,7 +124,9 @@ async def root():
 
 @api.post("/signup")
 async def signup(data: SignupRequest, request: Request):
-    existing = await users.find_one({"email": data.email})
+    email = data.email.strip().lower()
+
+    existing = await users.find_one({"email": email})
     if existing:
         raise HTTPException(status_code=400, detail="User already exists")
 
@@ -119,7 +134,7 @@ async def signup(data: SignupRequest, request: Request):
     role = "admin" if user_count == 0 else "user"
 
     user = {
-        "email": data.email,
+        "email": email,
         "password_hash": hash_password(data.password),
         "role": role,
         "created_at": datetime.utcnow(),
@@ -132,7 +147,7 @@ async def signup(data: SignupRequest, request: Request):
     request.session["user_id"] = str(result.inserted_id)
     request.session["role"] = role
 
-    logger.info(f"New user created: {data.email} ({role})")
+    logger.info(f"New user created: {email} ({role})")
 
     return RedirectResponse("/login/success", status_code=303)
 
@@ -142,7 +157,7 @@ async def signup(data: SignupRequest, request: Request):
 
 @app.get("/login/success")
 async def login_success():
-    return FileResponse("static/login_success.html")
+    return FileResponse(str(ROOT_DIR / "static" / "login_success.html"))
 
 # ====================
 # SESSION IDENTITY
@@ -154,7 +169,12 @@ async def me(request: Request):
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
-    user = await users.find_one({"_id": ObjectId(user_id)})
+    try:
+        oid = ObjectId(user_id)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid session")
+
+    user = await users.find_one({"_id": oid})
     if not user:
         raise HTTPException(status_code=401, detail="Invalid session")
 
