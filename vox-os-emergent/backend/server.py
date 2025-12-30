@@ -103,6 +103,8 @@ async def api_root():
 # GOOGLE OAUTH
 # ====================
 
+GOOGLE_SCOPES = ["openid", "email", "profile"]
+
 def build_google_flow():
     return Flow.from_client_config(
         {
@@ -113,13 +115,7 @@ def build_google_flow():
                 "token_uri": "https://oauth2.googleapis.com/token",
             }
         },
-        scopes=[
-            "openid",
-            "email",
-            "profile",
-            "https://www.googleapis.com/auth/userinfo.email",
-            "https://www.googleapis.com/auth/userinfo.profile",
-        ],
+        scopes=GOOGLE_SCOPES,
         redirect_uri="https://voxconsole.com/api/auth/google/callback",
     )
 
@@ -197,3 +193,4 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
