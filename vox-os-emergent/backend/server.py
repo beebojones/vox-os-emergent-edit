@@ -122,19 +122,14 @@ def build_google_flow():
 @api.get("/auth/google/login")
 async def google_login(request: Request):
     flow = build_google_flow()
-
     auth_url, state = flow.authorization_url(
-        access_type="offline",
-        prompt="consent",
-        include_granted_scopes="true",
+    access_type="offline",
+    prompt="consent",
     )
-
     request.session.clear()
     request.session["oauth_state"] = state
-
-    logger.info(f"OAuth state set: {state}")
-
     return RedirectResponse(auth_url)
+
 
 @api.get("/auth/google/callback")
 async def google_callback(request: Request):
@@ -193,4 +188,5 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
