@@ -1,6 +1,5 @@
-from fastapi.responses import FileResponse
 from fastapi import FastAPI, APIRouter, HTTPException, Request
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse, FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -76,17 +75,23 @@ app.add_middleware(
 api = APIRouter(prefix="/api")
 
 # ====================
-# ROOT
+# SPLASH / ENTRY ROUTES
 # ====================
-
-from fastapi.responses import FileResponse
 
 @app.get("/")
 async def root():
-    return FileResponse("static/login_success.html")
+    return FileResponse("static/splash.html")
+
+@app.get("/login")
+async def login_page():
+    return {"message": "Login page coming next"}
+
+@app.get("/signup")
+async def signup_page():
+    return {"message": "Account creation coming next"}
 
 # ====================
-# LOGIN SUCCESS PAGE
+# DASHBOARD (TEMP)
 # ====================
 
 @app.get("/login/success")
@@ -104,6 +109,10 @@ async def health():
 @api.get("/")
 async def api_root():
     return {"message": "Vox OS API", "status": "online"}
+
+# ====================
+# USER IDENTITY
+# ====================
 
 @api.get("/me")
 async def me(request: Request):
@@ -130,7 +139,7 @@ async def me(request: Request):
     }
 
 # ====================
-# GOOGLE OAUTH
+# GOOGLE OAUTH (INTEGRATION)
 # ====================
 
 GOOGLE_SCOPES = ["openid", "email", "profile"]
@@ -165,9 +174,6 @@ async def google_callback(request: Request):
     state_expected = request.session.get("oauth_state")
     state_returned = request.query_params.get("state")
 
-    logger.info(f"Expected state: {state_expected}")
-    logger.info(f"Returned state: {state_returned}")
-
     if not state_expected or state_expected != state_returned:
         raise HTTPException(status_code=400, detail="Invalid OAuth state")
 
@@ -188,21 +194,8 @@ async def google_callback(request: Request):
     }
 
     logger.info("Google OAuth successful")
-    logger.info(f"Cred scopes: {list(creds.scopes or [])}")
 
-    return RedirectResponse("https://voxconsole.com/login/success")
-
-# ====================
-# AUTH DEBUG
-# ====================
-
-@api.get("/auth/debug")
-async def auth_debug(request: Request):
-    return {
-        "has_session": bool(request.session),
-        "has_google_tokens": "google_tokens" in request.session,
-        "session_keys": list(request.session.keys()),
-    }
+    return RedirectResponse("/login/success")
 
 # ====================
 # REGISTER ROUTER
@@ -217,7 +210,3 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
-
-
-
-
