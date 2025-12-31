@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import logger from "@/utils/logger";
+axios.defaults.withCredentials = true;
 import {
   Send,
   RefreshCw,
@@ -1665,4 +1666,5 @@ export default function VoxDashboard() {
     </div>
   );
 }
+
 
