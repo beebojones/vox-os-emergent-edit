@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vox OS</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Space Grotesk for title only -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,10 +12,14 @@
 
   <style>
     :root {
-      --bg-main: #05060b;
-      --card-bg: rgba(8, 10, 18, 0.88);
-      --text-main: #e6e8f2;
-      --text-muted: rgba(200, 210, 255, 0.8);
+      --bg-dark: #07090f;
+      --card-dark: #0b0e17;
+      --text-main: #f2f4ff;
+      --text-muted: #b9c0e0;
+
+      --glow-cyan: #5ee7ff;
+      --glow-purple: #b26cff;
+      --glow-pink: #ff6ec7;
     }
 
     * {
@@ -24,158 +28,161 @@
 
     body {
       margin: 0;
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background:
-        radial-gradient(circle at 20% 20%, rgba(90, 160, 255, 0.18), transparent 55%),
-        radial-gradient(circle at 80% 70%, rgba(190, 80, 255, 0.18), transparent 55%),
-        var(--bg-main);
+        radial-gradient(circle at 20% 10%, rgba(94,231,255,0.12), transparent 40%),
+        radial-gradient(circle at 80% 30%, rgba(178,108,255,0.15), transparent 45%),
+        radial-gradient(circle at 60% 80%, rgba(255,110,199,0.12), transparent 40%),
+        var(--bg-dark);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text-main);
+      overflow: hidden;
     }
 
     /* === CARD === */
-    .splash-card {
+
+    .card {
       position: relative;
-      width: 520px;
-      max-width: 90vw;
-      padding: 64px 56px;
-      background: var(--card-bg);
+      width: 560px;
+      max-width: 92%;
+      padding: 56px 48px 52px;
       border-radius: 28px;
-      text-align: center;
-      isolation: isolate;
-    }
-
-    /* Feathered chromatic glow */
-    .splash-card::before {
-      content: "";
-      position: absolute;
-      inset: -3px;
-      border-radius: inherit;
       background: linear-gradient(
-        120deg,
-        #7cf6ff,
-        #b88cff,
-        #ff4fd8
+        135deg,
+        rgba(16,18,32,0.92),
+        rgba(10,12,24,0.94)
       );
-      filter: blur(22px);
-      opacity: 0.45;
-      z-index: -1;
-      animation: glowShift 14s linear infinite;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04),
+        0 0 60px rgba(94,231,255,0.12),
+        0 0 90px rgba(178,108,255,0.10);
+      animation: cardGlow 14s ease-in-out infinite alternate;
     }
 
-    @keyframes glowShift {
-      0% { filter: blur(22px) hue-rotate(0deg); }
-      100% { filter: blur(22px) hue-rotate(360deg); }
+    @keyframes cardGlow {
+      0% {
+        box-shadow:
+          0 0 0 1px rgba(255,255,255,0.04),
+          0 0 60px rgba(94,231,255,0.10),
+          0 0 90px rgba(178,108,255,0.08);
+      }
+      100% {
+        box-shadow:
+          0 0 0 1px rgba(255,255,255,0.04),
+          0 0 70px rgba(178,108,255,0.14),
+          0 0 110px rgba(255,110,199,0.10);
+      }
     }
 
     /* === TITLE === */
-    .title {
-      font-family: "Space Grotesk", system-ui, sans-serif;
-      font-size: 68px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin: 0;
 
+    .title {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 3.2rem;
+      letter-spacing: 0.08em;
+      margin: 0;
+      text-align: center;
+      color: transparent;
       background: linear-gradient(
         90deg,
-        #7cf6ff,
-        #b88cff,
-        #ff4fd8
+        var(--glow-cyan),
+        var(--glow-purple),
+        var(--glow-pink)
       );
-      -webkit-background-clip: text;
       background-clip: text;
-      color: transparent;
-
-      -webkit-text-stroke: 0.8px rgba(180, 220, 255, 0.35);
-
+      -webkit-background-clip: text;
       text-shadow:
-        0 0 10px rgba(124, 246, 255, 0.35),
-        0 0 18px rgba(184, 140, 255, 0.25),
-        0 0 26px rgba(255, 79, 216, 0.18);
+        0 0 10px rgba(94,231,255,0.35),
+        0 0 18px rgba(178,108,255,0.25);
     }
 
     /* === TAGLINE === */
+
     .tagline {
-      max-width: 360px;
-      margin: 18px auto 0;
-      font-size: 16px;
-      letter-spacing: 0.22em;
+      margin-top: 18px;
+      text-align: center;
+      font-size: 1.05rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--text-muted);
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    /* === BUTTON STACK === */
-    .button-stack {
-      margin-top: 42px;
+    /* === BUTTONS === */
+
+    .actions {
+      margin-top: 44px;
       display: flex;
       flex-direction: column;
       gap: 18px;
       align-items: center;
     }
 
-    .button {
+    .btn {
       position: relative;
-      width: 260px;
-      padding: 11px 0;
+      width: 240px;
+      padding: 14px 0;
       border-radius: 999px;
-      background: rgba(12, 14, 24, 0.85);
-      border: 1px solid rgba(140, 160, 255, 0.25);
-      color: #ffffff;
-      font-size: 13px;
-      letter-spacing: 0.16em;
+      background: #0e1220;
+      color: var(--text-main);
+      text-decoration: none;
+      text-align: center;
+      font-size: 0.95rem;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      cursor: pointer;
-      overflow: hidden;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.06),
+        0 0 24px rgba(94,231,255,0.12);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
 
-    /* Chromatic edge glow */
-    .button::before {
+    .btn::before {
       content: "";
       position: absolute;
       inset: -2px;
       border-radius: inherit;
       background: linear-gradient(
-        120deg,
-        #7cf6ff,
-        #b88cff,
-        #ff4fd8
+        90deg,
+        var(--glow-cyan),
+        var(--glow-purple),
+        var(--glow-pink)
       );
-      opacity: 0.55;
       filter: blur(10px);
+      opacity: 0.6;
       z-index: -1;
-      animation: glowShift 10s linear infinite;
+      animation: buttonGlow 10s linear infinite;
     }
 
-    .button:hover {
-      color: #ffffff;
+    @keyframes buttonGlow {
+      0% { filter: blur(10px) hue-rotate(0deg); }
+      100% { filter: blur(10px) hue-rotate(360deg); }
     }
 
-    /* === RESPONSIVE === */
-    @media (max-width: 600px) {
-      .title {
-        font-size: 50px;
-      }
-
-      .splash-card {
-        padding: 52px 36px;
-      }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.10),
+        0 0 36px rgba(178,108,255,0.25);
     }
+
   </style>
 </head>
-
 <body>
-  <div class="splash-card">
-    <h1 class="title">Vox OS</h1>
+
+  <div class="card">
+    <h1 class="title">VOX OS</h1>
     <div class="tagline">Your Personal AI Assistant</div>
 
-    <div class="button-stack">
-      <button class="button">Log In</button>
-      <button class="button">Create Account</button>
+    <div class="actions">
+      <a class="btn" href="/login">Log In</a>
+      <a class="btn" href="/signup">Create Account</a>
     </div>
   </div>
+
 </body>
 </html>
