@@ -128,6 +128,10 @@ async def login_page():
 async def dashboard():
     return RedirectResponse("/static/dashboard.html")
 
+@app.get("/signup")
+async def signup_page():
+    return FileResponse("static/signup.html")
+
 # ====================
 # AUTH API
 # ====================
@@ -223,3 +227,4 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
