@@ -201,7 +201,7 @@
           throw new Error(data.detail || "Login failed");
         }
 
-        window.location.href = "http://localhost:3000";
+        window.location.href = data.redirect;
 
       } catch (err) {
         errorBox.textContent = err.message;
