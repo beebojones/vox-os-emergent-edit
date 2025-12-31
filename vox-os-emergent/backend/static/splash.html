@@ -12,14 +12,14 @@
 
   <style>
     :root {
-      --bg: #0b0b10;
-      --card: #12121a;
-      --text-main: #e8e8f0;
-      --text-sub: #a9acc7;
+      --bg: #08080c;
+      --card: #0f1018;
+      --text-main: #f2f3ff;
+      --text-sub: #b6bbff;
 
-      --cyan: #66e0ff;
+      --cyan: #4df0ff;
       --violet: #8b7bff;
-      --teal: #4dffd2;
+      --teal: #3cffc7;
     }
 
     * {
@@ -31,8 +31,9 @@
       height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background:
-        radial-gradient(1200px 600px at 20% 10%, rgba(102, 224, 255, 0.06), transparent 60%),
-        radial-gradient(1000px 600px at 80% 30%, rgba(139, 123, 255, 0.06), transparent 60%),
+        radial-gradient(900px 500px at 15% 10%, rgba(77,240,255,0.12), transparent 60%),
+        radial-gradient(900px 500px at 85% 30%, rgba(139,123,255,0.14), transparent 60%),
+        radial-gradient(700px 400px at 50% 80%, rgba(60,255,199,0.10), transparent 60%),
         var(--bg);
       display: flex;
       align-items: center;
@@ -42,31 +43,31 @@
 
     .card {
       position: relative;
-      background: linear-gradient(180deg, #141420, #0f0f16);
+      background: linear-gradient(180deg, #131424, #0b0c14);
       border-radius: 22px;
-      padding: 3.2rem 3.5rem 3.6rem;
+      padding: 3.6rem 3.8rem 3.8rem;
       text-align: center;
       max-width: 520px;
       width: 100%;
       box-shadow:
-        0 0 0 1px rgba(255,255,255,0.04),
-        0 0 60px rgba(102, 224, 255, 0.12),
-        0 0 90px rgba(139, 123, 255, 0.12);
+        0 0 0 1px rgba(255,255,255,0.06),
+        0 0 80px rgba(77,240,255,0.35),
+        0 0 120px rgba(139,123,255,0.35);
     }
 
     .card::before {
       content: "";
       position: absolute;
-      inset: -1px;
-      border-radius: 24px;
+      inset: -2px;
+      border-radius: 26px;
       background: linear-gradient(
         135deg,
-        rgba(102,224,255,0.45),
-        rgba(139,123,255,0.45),
-        rgba(77,255,210,0.45)
+        rgba(77,240,255,0.8),
+        rgba(139,123,255,0.8),
+        rgba(60,255,199,0.8)
       );
-      filter: blur(28px);
-      opacity: 0.55;
+      filter: blur(36px);
+      opacity: 0.85;
       z-index: -1;
     }
 
@@ -74,25 +75,26 @@
       margin: 0;
       font-family: "Space Grotesk", system-ui, sans-serif;
       font-weight: 700;
-      font-size: 3.2rem;
-      letter-spacing: 0.04em;
-      color: #eaeaff;
+      font-size: 3.8rem;
+      letter-spacing: 0.02em;
+      color: #f5f6ff;
+      -webkit-text-stroke: 0.7px rgba(255,255,255,0.45);
       text-shadow:
-        0 0 10px rgba(139,123,255,0.35),
-        0 0 24px rgba(102,224,255,0.25);
-      -webkit-text-stroke: 0.5px rgba(255,255,255,0.35);
+        0 0 12px rgba(77,240,255,0.45),
+        0 0 28px rgba(139,123,255,0.45),
+        0 0 48px rgba(60,255,199,0.25);
     }
 
     .tagline {
-      margin-top: 0.9rem;
-      font-size: 1.05rem;
+      margin-top: 1.1rem;
+      font-size: 1.15rem;
       letter-spacing: 0.12em;
       color: var(--text-sub);
       text-transform: uppercase;
     }
 
     .actions {
-      margin-top: 3rem;
+      margin-top: 3.4rem;
       display: flex;
       flex-direction: column;
       gap: 1.2rem;
@@ -101,50 +103,47 @@
 
     .btn {
       position: relative;
+      width: 220px;
       font-family: "Space Grotesk", system-ui, sans-serif;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: #f0f0ff;
-      padding: 0.85rem 2.1rem;
-      background: linear-gradient(180deg, #161620, #101018);
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.08);
+      color: #f3f4ff;
+      padding: 0.85rem 0;
+      background: linear-gradient(180deg, #15162a, #0e0f1a);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
       box-shadow:
         0 0 0 1px rgba(255,255,255,0.04),
-        0 0 22px rgba(102,224,255,0.18),
-        0 0 30px rgba(139,123,255,0.14);
+        0 0 26px rgba(77,240,255,0.35),
+        0 0 40px rgba(139,123,255,0.30);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .btn::after {
       content: "";
       position: absolute;
-      inset: -1px;
-      border-radius: inherit;
+      inset: -2px;
+      border-radius: 14px;
       background: linear-gradient(
         135deg,
-        rgba(102,224,255,0.8),
-        rgba(139,123,255,0.8),
-        rgba(77,255,210,0.8)
+        rgba(77,240,255,0.9),
+        rgba(139,123,255,0.9),
+        rgba(60,255,199,0.9)
       );
-      opacity: 0.18;
-      filter: blur(12px);
+      opacity: 0.35;
+      filter: blur(16px);
       z-index: -1;
     }
 
     .btn:hover {
       transform: translateY(-1px);
       box-shadow:
-        0 0 0 1px rgba(255,255,255,0.08),
-        0 0 30px rgba(102,224,255,0.28),
-        0 0 44px rgba(139,123,255,0.22);
-    }
-
-    .btn.secondary {
-      opacity: 0.9;
+        0 0 0 1px rgba(255,255,255,0.14),
+        0 0 40px rgba(77,240,255,0.55),
+        0 0 60px rgba(139,123,255,0.45);
     }
   </style>
 </head>
@@ -158,7 +157,7 @@
       <button class="btn" onclick="location.href='/login'">
         Log In
       </button>
-      <button class="btn secondary" onclick="location.href='/signup'">
+      <button class="btn" onclick="location.href='/signup'">
         Create Account
       </button>
     </div>
