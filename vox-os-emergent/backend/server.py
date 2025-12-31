@@ -164,7 +164,10 @@ async def signup(data: SignupRequest, request: Request):
 
     logger.info(f"User created: {data.email} ({role})")
 
-    return JSONResponse({"success": True})
+    return JSONResponse({
+    "success": True,
+    "redirect": "https://vox-os-emergent-edit.vercel.app"
+})
 
 @api.post("/login")
 async def login(data: LoginRequest, request: Request):
@@ -230,3 +233,4 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
