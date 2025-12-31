@@ -136,6 +136,13 @@ async def signup_page():
 async def dashboard():
     return FileResponse("static/dashboard.html")
 
+@api.get("/seed")
+async def seed():
+    return {
+        "ok": True,
+        "message": "Seed already initialized"
+    }
+
 # ====================
 # AUTH API
 # ====================
@@ -301,6 +308,7 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
 
 
