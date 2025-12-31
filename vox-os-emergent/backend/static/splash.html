@@ -5,72 +5,99 @@
   <title>Vox OS</title>
 
   <style>
+    :root {
+      --bg-main: #0e0e11;
+      --card-bg: rgba(24, 24, 31, 0.85);
+      --text-main: #e6e6eb;
+      --accent: #b8a7ff;
+      --glow: rgba(120, 80, 255, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      background: #0e0e11;
-      color: #e6e6eb;
+      height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(120,80,255,0.12), transparent 40%),
+        radial-gradient(circle at 80% 90%, rgba(80,200,255,0.08), transparent 45%),
+        var(--bg-main);
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      color: var(--text-main);
     }
 
-    .card {
-      background: #18181f;
-      padding: 3rem 3.5rem;
-      border-radius: 18px;
-      box-shadow: 0 0 60px rgba(120, 80, 255, 0.35);
+    .panel {
+      background: var(--card-bg);
+      border-radius: 22px;
+      padding: 3.5rem 4rem;
+      width: 460px;
+      max-width: 92%;
       text-align: center;
-      width: 420px;
-      max-width: 90%;
+      box-shadow:
+        0 0 40px var(--glow),
+        inset 0 0 0 1px rgba(255,255,255,0.08);
+      backdrop-filter: blur(16px);
     }
 
     h1 {
       margin: 0;
-      font-size: 3rem;
-      letter-spacing: 0.08em;
-      color: #b8a7ff;
+      font-size: 3.2rem;
+      letter-spacing: 0.12em;
+      color: var(--accent);
     }
 
     .tagline {
       margin-top: 0.75rem;
-      margin-bottom: 2.5rem;
+      margin-bottom: 3rem;
+      font-size: 1.15rem;
       opacity: 0.8;
-      font-size: 1.1rem;
     }
 
     button {
       width: 100%;
-      padding: 0.9rem;
-      margin-top: 1rem;
-      border-radius: 10px;
+      padding: 0.95rem 1rem;
+      margin-top: 1.2rem;
+      border-radius: 14px;
       border: none;
-      background: linear-gradient(135deg, #7b5cff, #a78bfa);
-      color: #0e0e11;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
-    button.secondary {
+    .primary {
+      background: linear-gradient(135deg, #7b5cff, #a78bfa);
+      color: #0e0e11;
+      box-shadow: 0 0 22px rgba(120,80,255,0.5);
+    }
+
+    .primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 30px rgba(120,80,255,0.65);
+    }
+
+    .secondary {
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #e6e6eb;
-    }
-
-    button:hover {
-      opacity: 0.9;
+      color: var(--text-main);
+      border: 1px solid rgba(255,255,255,0.25);
+      opacity: 0.7;
+      cursor: default;
     }
   </style>
 </head>
+
 <body>
 
-  <div class="card">
-    <h1>Vox OS</h1>
+  <div class="panel">
+    <h1>VOX OS</h1>
     <div class="tagline">An operating system for your mind</div>
 
-    <button id="signupBtn">Create Account</button>
+    <button class="primary" id="signupBtn">Create Account</button>
     <button class="secondary" disabled>Log In (coming next)</button>
   </div>
 
