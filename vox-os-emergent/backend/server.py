@@ -1,17 +1,17 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Request
-from fastapi.responses import RedirectResponse, FileResponse, JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pathlib import Path
-import os
-import logging
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
 from passlib.hash import pbkdf2_sha256
-from fastapi.staticfiles import StaticFiles
-
+from bson import ObjectId
+import os
+import logging
 
 # ====================
 # ENV + LOGGING
@@ -46,6 +46,10 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url=None,
 )
+
+# ====================
+# STATIC FILES (REQUIRED)
+# ====================
 
 app.mount(
     "/static",
@@ -109,7 +113,7 @@ def verify_password(password: str, password_hash: str) -> bool:
     return pbkdf2_sha256.verify(password, password_hash)
 
 # ====================
-# SPLASH / AUTH PAGES
+# PAGE ROUTES
 # ====================
 
 @app.get("/")
@@ -120,9 +124,9 @@ async def splash():
 async def login_page():
     return RedirectResponse("/static/login.html")
 
-@app.get("/login/success")
-async def login_success():
-    return RedirectResponse("/static/login_success.html")
+@app.get("/dashboard")
+async def dashboard():
+    return RedirectResponse("/static/dashboard.html")
 
 # ====================
 # AUTH API
@@ -184,10 +188,11 @@ async def logout(request: Request):
 
 @api.get("/me")
 async def me(request: Request):
-    if "user_id" not in request.session:
+    user_id = request.session.get("user_id")
+    if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
-    user = await users.find_one({"_id": request.session["user_id"]})
+    user = await users.find_one({"_id": ObjectId(user_id)})
     if not user:
         raise HTTPException(status_code=401, detail="Invalid session")
 
@@ -218,4 +223,3 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
-
