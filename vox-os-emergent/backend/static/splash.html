@@ -5,15 +5,23 @@
   <title>Vox OS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Theme + Shared Styles -->
+  <!-- If you have these already (recommended), keep them -->
   <script src="/static/js/theme.js"></script>
   <link rel="stylesheet" href="/static/css/vox-theme.css">
   <link rel="stylesheet" href="/static/css/vox-header.css">
 
   <style>
-    :root {
-      --panel-radius: 26px;
-      --panel-border: linear-gradient(
+    :root{
+      --bg0:#05060c;
+      --bg1:#0a0c18;
+      --panel: rgba(18, 20, 36, 0.78);
+      --panel2: rgba(10, 12, 28, 0.9);
+      --text:#e8ebff;
+      --muted: rgba(200, 210, 255, 0.65);
+
+      --gradText: linear-gradient(90deg, #9aa0ff, #d56bff, #ff5fd1);
+
+      --ring: linear-gradient(
         135deg,
         rgba(100, 255, 255, 0.55),
         rgba(200, 120, 255, 0.75),
@@ -21,136 +29,162 @@
       );
     }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at 0% 0%, rgba(120, 80, 255, 0.12), transparent 40%),
-        radial-gradient(circle at 100% 100%, rgba(255, 80, 200, 0.12), transparent 40%),
-        linear-gradient(135deg, #05060c, #0a0c18 55%, #05060c);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    * { box-sizing: border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #e8ebff;
-    }
+      color: var(--text);
 
-    .panel-wrapper {
-      position: relative;
-      padding: 2px;
-      border-radius: var(--panel-radius);
-      background: var(--panel-border);
-      box-shadow:
-        0 0 40px rgba(150, 120, 255, 0.25),
-        inset 0 0 40px rgba(255, 255, 255, 0.04);
-    }
-
-    .panel {
       background:
-        linear-gradient(180deg, rgba(20, 22, 45, 0.92), rgba(10, 12, 28, 0.96));
-      border-radius: calc(var(--panel-radius) - 2px);
-      padding: 64px 72px;
-      text-align: center;
-      min-width: 360px;
-      backdrop-filter: blur(12px);
+        radial-gradient(circle at 15% 15%, rgba(120, 80, 255, 0.18), transparent 42%),
+        radial-gradient(circle at 85% 80%, rgba(255, 80, 200, 0.16), transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(90, 220, 255, 0.08), transparent 55%),
+        linear-gradient(135deg, var(--bg0), var(--bg1) 55%, var(--bg0));
     }
 
-    .title {
-      font-size: 48px;
-      font-weight: 700;
-      letter-spacing: 0.35em;
-      margin: 0;
-      background: linear-gradient(90deg, #9aa0ff, #d56bff, #ff5fd1);
-      -webkit-background-clip: text;
+    /* Outer glow halo */
+    .halo{
+      position:absolute;
+      inset:-80px;
+      background:
+        radial-gradient(circle at 40% 35%, rgba(170, 140, 255, 0.22), transparent 55%),
+        radial-gradient(circle at 70% 65%, rgba(255, 120, 210, 0.18), transparent 60%);
+      filter: blur(18px);
+      opacity: 0.9;
+      pointer-events:none;
+    }
+
+    .wrap{
+      position: relative;
+      width: min(820px, 92vw);
+      padding: 2px;
+      border-radius: 28px;
+      background: var(--ring);
+      box-shadow:
+        0 0 55px rgba(160, 140, 255, 0.25),
+        0 0 120px rgba(255, 100, 210, 0.12);
+    }
+
+    .card{
+      position: relative;
+      overflow:hidden;
+      border-radius: 26px;
+      background:
+        linear-gradient(180deg, var(--panel), var(--panel2));
+      backdrop-filter: blur(14px);
+      padding: 72px 80px;
+      text-align:center;
+    }
+
+    /* Subtle internal sheen */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255,255,255,0.10), transparent 35%),
+        radial-gradient(circle at 100% 100%, rgba(255,255,255,0.06), transparent 40%);
+      pointer-events:none;
+      opacity: 0.65;
+    }
+
+    .title{
+      margin:0;
+      font-size: 62px;
+      font-weight: 750;
+      letter-spacing: 0.12em; /* FIXED: not huge spacing */
+      background: var(--gradText);
+      -webkit-background-clip:text;
       -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
     }
 
-    .tagline {
-      margin-top: 16px;
+    .tagline{
+      margin-top: 18px;
+      font-size: 18px;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .actions{
+      margin-top: 52px;
+      display:flex;
+      flex-direction: column;   /* FIXED: stacked */
+      align-items:center;
+      gap: 18px;
+    }
+
+    .btn{
+      width: min(520px, 78vw);
+      padding: 16px 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor:pointer;
       font-size: 16px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: rgba(200, 210, 255, 0.65);
-    }
-
-    .actions {
-      margin-top: 48px;
-      display: flex;
-      gap: 24px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .action-btn {
-      padding: 14px 32px;
-      font-size: 15px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      color: #fff;
-      background: linear-gradient(
-        135deg,
-        rgba(120, 200, 255, 0.9),
-        rgba(180, 120, 255, 0.9),
-        rgba(255, 120, 200, 0.9)
-      );
+      color: #ffffff;
+      background:
+        linear-gradient(135deg,
+          rgba(120, 200, 255, 0.9),
+          rgba(180, 120, 255, 0.92),
+          rgba(255, 120, 200, 0.9)
+        );
       box-shadow:
-        0 0 18px rgba(160, 140, 255, 0.45),
-        inset 0 0 12px rgba(255, 255, 255, 0.25);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+        0 0 22px rgba(160, 140, 255, 0.45),
+        inset 0 0 14px rgba(255,255,255,0.22);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
     }
 
-    .action-btn.secondary {
-      background: linear-gradient(
-        135deg,
-        rgba(160, 160, 200, 0.25),
-        rgba(120, 120, 180, 0.35)
-      );
+    .btn.secondary{
+      color: rgba(235, 238, 255, 0.92);
+      background:
+        linear-gradient(135deg,
+          rgba(160, 160, 210, 0.18),
+          rgba(120, 120, 190, 0.26)
+        );
       box-shadow:
-        inset 0 0 12px rgba(255, 255, 255, 0.15),
-        0 0 14px rgba(120, 140, 255, 0.25);
+        0 0 16px rgba(120, 140, 255, 0.22),
+        inset 0 0 14px rgba(255,255,255,0.10);
     }
 
-    .action-btn:hover {
+    .btn:hover{
       transform: translateY(-1px);
+      filter: brightness(1.02);
       box-shadow:
-        0 0 26px rgba(180, 160, 255, 0.7),
-        inset 0 0 14px rgba(255, 255, 255, 0.35);
+        0 0 34px rgba(190, 170, 255, 0.70),
+        inset 0 0 16px rgba(255,255,255,0.28);
     }
 
-    .action-btn:active {
-      transform: translateY(0);
+    .btn:active{
+      transform: translateY(0px);
     }
 
-    @media (max-width: 480px) {
-      .panel {
-        padding: 48px 32px;
-      }
-
-      .title {
-        font-size: 36px;
-        letter-spacing: 0.28em;
-      }
+    @media (max-width: 520px){
+      .card{ padding: 56px 28px; }
+      .title{ font-size: 44px; letter-spacing: 0.10em; }
+      .tagline{ font-size: 14px; letter-spacing: 0.12em; }
+      .btn{ width: min(520px, 86vw); }
     }
   </style>
 </head>
 
 <body>
-  <div class="panel-wrapper">
-    <div class="panel">
-      <h1 class="title">VOX OS</h1>
+  <div class="wrap">
+    <div class="halo"></div>
+    <div class="card">
+      <h1 class="title">Vox OS</h1>
       <div class="tagline">Your Personal AI Assistant</div>
 
       <div class="actions">
-        <button class="action-btn" onclick="location.href='/login'">
-          Log In
-        </button>
-
-        <button class="action-btn secondary" onclick="location.href='/signup'">
-          Create Account
-        </button>
+        <button class="btn" onclick="location.href='/login'">Log In</button>
+        <button class="btn secondary" onclick="location.href='/signup'">Create Account</button>
       </div>
     </div>
   </div>
