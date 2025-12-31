@@ -213,6 +213,73 @@ async def me(request: Request):
     }
 
 # ====================
+# DASHBOARD API (STUBS)
+# ====================
+
+@api.get("/calendar")
+async def get_calendar():
+    return []
+
+@api.get("/tasks")
+async def get_tasks():
+    return []
+
+@api.get("/memories")
+async def get_memories():
+    return []
+
+@api.get("/chat/history/{session_id}")
+async def chat_history(session_id: str):
+    return []
+
+@api.delete("/chat/history/{session_id}")
+async def clear_chat(session_id: str):
+    return {"success": True}
+
+@api.post("/chat")
+async def chat_stub(payload: dict):
+    message = payload.get("message", "")
+    return {
+        "response": f"Vox heard you say: {message}"
+    }
+
+@api.get("/auth/calendar/providers")
+async def calendar_providers():
+    return {
+        "providers": [
+            {
+                "id": "google",
+                "name": "Google",
+                "configured": False,
+                "enabled": True,
+                "message": "Google Calendar is not configured yet."
+            },
+            {
+                "id": "outlook",
+                "name": "Outlook",
+                "configured": False,
+                "enabled": False,
+                "message": "Coming soon."
+            }
+        ]
+    }
+
+@api.get("/auth/google/status")
+async def google_status():
+    return {
+        "connected": False,
+        "email": ""
+    }
+
+@api.get("/auth/outlook/status")
+async def outlook_status():
+    return {
+        "connected": False,
+        "email": ""
+    }
+
+
+# ====================
 # HEALTH
 # ====================
 
@@ -233,4 +300,5 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
