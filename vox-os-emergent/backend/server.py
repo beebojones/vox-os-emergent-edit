@@ -138,29 +138,38 @@ async def dashboard():
 
 @api.post("/signup")
 async def signup(data: SignupRequest, request: Request):
-    if await users.find_one({"email": data.email}):
+    existing = await users.find_one({"email": data.email})
+    if existing:
         raise HTTPException(status_code=400, detail="User already exists")
 
-    role = "admin" if await users.count_documents({}) == 0 else "user"
+    user_count = await users.count_documents({})
+    role = "admin" if user_count == 0 else "user"
 
-    result = await users.insert_one({
+    user = {
         "email": data.email,
         "password_hash": hash_password(data.password),
         "role": role,
         "created_at": datetime.utcnow(),
         "last_login": datetime.utcnow(),
-    })
+    }
+
+    result = await users.insert_one(user)
 
     request.session.clear()
     request.session["user_id"] = str(result.inserted_id)
     request.session["role"] = role
+
+    logger.info(f"User created: {data.email} ({role})")
 
     return JSONResponse({"success": True})
 
 @api.post("/login")
 async def login(data: LoginRequest, request: Request):
     user = await users.find_one({"email": data.email})
-    if not user or not verify_password(data.password, user["password_hash"]):
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    if not verify_password(data.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     request.session.clear()
@@ -171,6 +180,8 @@ async def login(data: LoginRequest, request: Request):
         {"_id": user["_id"]},
         {"$set": {"last_login": datetime.utcnow()}}
     )
+
+    logger.info(f"User logged in: {data.email}")
 
     return JSONResponse({"success": True})
 
@@ -196,7 +207,7 @@ async def me(request: Request):
     }
 
 # ====================
-# DASHBOARD STUB APIs (IMPORTANT)
+# DASHBOARD DATA CONTRACTS
 # ====================
 
 @api.get("/calendar")
@@ -211,17 +222,17 @@ async def tasks():
 async def memories():
     return {"items": []}
 
-@api.get("/providers")
-async def providers():
-    return {"items": []}
-
-@api.get("/status")
+@api.api_route("/status", methods=["GET", "POST"])
 async def status():
     return {"status": "ok"}
 
-@api.post("/seed")
-async def seed():
-    return {"seeded": True}
+@api.api_route("/providers", methods=["GET", "POST"])
+async def providers():
+    return {"items": []}
+
+@api.get("/default")
+async def default():
+    return {"ok": True}
 
 # ====================
 # HEALTH
