@@ -3,126 +3,156 @@
 <head>
   <meta charset="UTF-8" />
   <title>Vox OS</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Theme + Shared Styles -->
+  <script src="/static/js/theme.js"></script>
+  <link rel="stylesheet" href="/static/css/vox-theme.css">
+  <link rel="stylesheet" href="/static/css/vox-header.css">
 
   <style>
     :root {
-      --bg-main: #0b0c10;
-      --panel-bg: rgba(24, 24, 31, 0.72);
-      --panel-border: rgba(184, 167, 255, 0.25);
-      --text-main: #e6e6eb;
-      --text-muted: #a7a7b3;
-      --accent: #b8a7ff;
-      --accent-soft: rgba(184, 167, 255, 0.35);
-    }
-
-    * {
-      box-sizing: border-box;
+      --panel-radius: 26px;
+      --panel-border: linear-gradient(
+        135deg,
+        rgba(100, 255, 255, 0.55),
+        rgba(200, 120, 255, 0.75),
+        rgba(255, 80, 200, 0.7)
+      );
     }
 
     body {
       margin: 0;
-      height: 100vh;
+      min-height: 100vh;
       background:
-        radial-gradient(circle at 20% 20%, rgba(120, 80, 255, 0.18), transparent 60%),
-        radial-gradient(circle at 80% 80%, rgba(120, 80, 255, 0.12), transparent 60%),
-        var(--bg-main);
-      color: var(--text-main);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        radial-gradient(circle at 0% 0%, rgba(120, 80, 255, 0.12), transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(255, 80, 200, 0.12), transparent 40%),
+        linear-gradient(135deg, #05060c, #0a0c18 55%, #05060c);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #e8ebff;
+    }
+
+    .panel-wrapper {
+      position: relative;
+      padding: 2px;
+      border-radius: var(--panel-radius);
+      background: var(--panel-border);
+      box-shadow:
+        0 0 40px rgba(150, 120, 255, 0.25),
+        inset 0 0 40px rgba(255, 255, 255, 0.04);
     }
 
     .panel {
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      border-radius: 18px;
-      padding: 3rem 3.5rem;
-      backdrop-filter: blur(18px);
-      box-shadow:
-        0 0 40px rgba(120, 80, 255, 0.25),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+      background:
+        linear-gradient(180deg, rgba(20, 22, 45, 0.92), rgba(10, 12, 28, 0.96));
+      border-radius: calc(var(--panel-radius) - 2px);
+      padding: 64px 72px;
       text-align: center;
-      max-width: 420px;
-      width: 90%;
+      min-width: 360px;
+      backdrop-filter: blur(12px);
     }
 
-    h1 {
+    .title {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: 0.35em;
       margin: 0;
-      font-size: 3.2rem;
-      letter-spacing: 0.04em;
-      color: var(--accent);
+      background: linear-gradient(90deg, #9aa0ff, #d56bff, #ff5fd1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .tagline {
-      margin-top: 0.6rem;
-      margin-bottom: 2.4rem;
-      font-size: 1.05rem;
-      color: var(--text-muted);
+      margin-top: 16px;
+      font-size: 16px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(200, 210, 255, 0.65);
     }
 
     .actions {
+      margin-top: 48px;
       display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
-    .btn {
-      padding: 0.65rem 1rem;
-      border-radius: 10px;
-      border: 1px solid var(--panel-border);
-      background: transparent;
-      color: var(--text-main);
-      font-size: 0.95rem;
+    .action-btn {
+      padding: 14px 32px;
+      font-size: 15px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      border: none;
       cursor: pointer;
-      transition:
-        background 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.1s ease;
+      color: #fff;
+      background: linear-gradient(
+        135deg,
+        rgba(120, 200, 255, 0.9),
+        rgba(180, 120, 255, 0.9),
+        rgba(255, 120, 200, 0.9)
+      );
+      box-shadow:
+        0 0 18px rgba(160, 140, 255, 0.45),
+        inset 0 0 12px rgba(255, 255, 255, 0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .btn.primary {
-      border-color: var(--accent);
-      color: var(--accent);
-      box-shadow: 0 0 0 rgba(184, 167, 255, 0);
+    .action-btn.secondary {
+      background: linear-gradient(
+        135deg,
+        rgba(160, 160, 200, 0.25),
+        rgba(120, 120, 180, 0.35)
+      );
+      box-shadow:
+        inset 0 0 12px rgba(255, 255, 255, 0.15),
+        0 0 14px rgba(120, 140, 255, 0.25);
     }
 
-    .btn:hover {
-      background: rgba(184, 167, 255, 0.08);
-      box-shadow: 0 0 18px var(--accent-soft);
+    .action-btn:hover {
       transform: translateY(-1px);
+      box-shadow:
+        0 0 26px rgba(180, 160, 255, 0.7),
+        inset 0 0 14px rgba(255, 255, 255, 0.35);
     }
 
-    .footer {
-      margin-top: 2rem;
-      font-size: 0.75rem;
-      color: rgba(167, 167, 179, 0.6);
+    .action-btn:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 480px) {
+      .panel {
+        padding: 48px 32px;
+      }
+
+      .title {
+        font-size: 36px;
+        letter-spacing: 0.28em;
+      }
     }
   </style>
 </head>
+
 <body>
+  <div class="panel-wrapper">
+    <div class="panel">
+      <h1 class="title">VOX OS</h1>
+      <div class="tagline">Your Personal AI Assistant</div>
 
-  <div class="panel">
-    <h1>Vox OS</h1>
-    <div class="tagline">Your Personal AI Assistant</div>
+      <div class="actions">
+        <button class="action-btn" onclick="location.href='/login'">
+          Log In
+        </button>
 
-    <div class="actions">
-      <button class="btn primary" onclick="goLogin()">Log In</button>
-      <button class="btn" onclick="goLogin()">Create Account</button>
-    </div>
-
-    <div class="footer">
-      Vox Console · Initializing intelligence
+        <button class="action-btn secondary" onclick="location.href='/signup'">
+          Create Account
+        </button>
+      </div>
     </div>
   </div>
-
-  <script>
-    function goLogin() {
-      window.location.href = "/login";
-    }
-  </script>
-
 </body>
 </html>
