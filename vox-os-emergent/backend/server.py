@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Request
-from fastapi.responses import RedirectResponse, JSONResponse, FileResponse  # ✅ FileResponse FIX
+from fastapi.responses import RedirectResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -122,26 +122,19 @@ def verify_password(password: str, password_hash: str) -> bool:
 
 @app.get("/")
 async def splash():
-    return FileResponse("static/splash.html")
+    return RedirectResponse("/static/splash.html")
 
 @app.get("/login")
 async def login_page():
-    return FileResponse("static/login.html")
+    return RedirectResponse("/static/login.html")
 
 @app.get("/signup")
 async def signup_page():
-    return FileResponse("static/signup.html")
+    return RedirectResponse("/static/signup.html")
 
 @app.get("/dashboard")
 async def dashboard():
     return FileResponse("static/dashboard.html")
-
-@api.get("/seed")
-async def seed():
-    return {
-        "ok": True,
-        "message": "Seed already initialized"
-    }
 
 # ====================
 # AUTH API
@@ -173,9 +166,9 @@ async def signup(data: SignupRequest, request: Request):
     logger.info(f"User created: {data.email} ({role})")
 
     return JSONResponse({
-    "success": True,
-    "redirect": "https://vox-os-emergent-edit.vercel.app"
-})
+        "success": True,
+        "redirect": "https://vox-os-emergent-edit.vercel.app"
+    })
 
 @api.post("/login")
 async def login(data: LoginRequest, request: Request):
@@ -197,7 +190,10 @@ async def login(data: LoginRequest, request: Request):
 
     logger.info(f"User logged in: {data.email}")
 
-    return JSONResponse({"success": True})
+    return JSONResponse({
+        "success": True,
+        "redirect": "https://vox-os-emergent-edit.vercel.app"
+    })
 
 @api.post("/logout")
 async def logout(request: Request):
@@ -221,71 +217,22 @@ async def me(request: Request):
     }
 
 # ====================
-# DASHBOARD API (STUBS)
+# SEED ENDPOINT (FIX)
 # ====================
 
-@api.get("/calendar")
-async def get_calendar():
-    return []
-
-@api.get("/tasks")
-async def get_tasks():
-    return []
-
-@api.get("/memories")
-async def get_memories():
-    return []
-
-@api.get("/chat/history/{session_id}")
-async def chat_history(session_id: str):
-    return []
-
-@api.delete("/chat/history/{session_id}")
-async def clear_chat(session_id: str):
-    return {"success": True}
-
-@api.post("/chat")
-async def chat_stub(payload: dict):
-    message = payload.get("message", "")
+@api.post("/seed")
+async def seed(request: Request):
     return {
-        "response": f"Vox heard you say: {message}"
+        "ok": True,
+        "message": "Seed endpoint acknowledged"
     }
 
-@api.get("/auth/calendar/providers")
-async def calendar_providers():
+@api.get("/seed")
+async def seed_get():
     return {
-        "providers": [
-            {
-                "id": "google",
-                "name": "Google",
-                "configured": False,
-                "enabled": True,
-                "message": "Google Calendar is not configured yet."
-            },
-            {
-                "id": "outlook",
-                "name": "Outlook",
-                "configured": False,
-                "enabled": False,
-                "message": "Coming soon."
-            }
-        ]
+        "ok": True,
+        "message": "Seed already initialized"
     }
-
-@api.get("/auth/google/status")
-async def google_status():
-    return {
-        "connected": False,
-        "email": ""
-    }
-
-@api.get("/auth/outlook/status")
-async def outlook_status():
-    return {
-        "connected": False,
-        "email": ""
-    }
-
 
 # ====================
 # HEALTH
@@ -308,7 +255,3 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
-
-
-
-
