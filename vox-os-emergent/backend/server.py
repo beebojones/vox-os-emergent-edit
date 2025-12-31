@@ -79,6 +79,7 @@ app.add_middleware(
     allow_origins=[
         "https://voxconsole.com",
         "https://www.voxconsole.com",
+        "https://vox-os-emergent-edit.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -300,5 +301,6 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
 
 
