@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Request
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse, FileResponse  # ✅ FileResponse FIX
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -48,7 +48,7 @@ app = FastAPI(
 )
 
 # ====================
-# STATIC FILES (REQUIRED)
+# STATIC FILES
 # ====================
 
 app.mount(
@@ -76,7 +76,10 @@ app.add_middleware(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://voxconsole.com", "https://www.voxconsole.com"],
+    allow_origins=[
+        "https://voxconsole.com",
+        "https://www.voxconsole.com",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -118,19 +121,19 @@ def verify_password(password: str, password_hash: str) -> bool:
 
 @app.get("/")
 async def splash():
-    return RedirectResponse("/static/splash.html")
+    return FileResponse("static/splash.html")
 
 @app.get("/login")
 async def login_page():
-    return RedirectResponse("/static/login.html")
-
-@app.get("/dashboard")
-async def dashboard():
-    return RedirectResponse("/static/dashboard.html")
+    return FileResponse("static/login.html")
 
 @app.get("/signup")
 async def signup_page():
     return FileResponse("static/signup.html")
+
+@app.get("/dashboard")
+async def dashboard():
+    return FileResponse("static/dashboard.html")
 
 # ====================
 # AUTH API
@@ -227,4 +230,3 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
-
