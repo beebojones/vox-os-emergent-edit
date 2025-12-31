@@ -5,212 +5,162 @@
   <title>Vox OS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    :root{
-      --bg0:#05060c;
-      --bg1:#0a0c18;
+    :root {
+      --bg: #0b0b10;
+      --card: #12121a;
+      --text-main: #e8e8f0;
+      --text-sub: #a9acc7;
 
-      --panelA: rgba(14, 16, 30, 0.78);
-      --panelB: rgba(8, 10, 22, 0.88);
-
-      --text:#eef0ff;
-      --muted: rgba(205, 212, 255, 0.68);
-
-      --gradText: linear-gradient(90deg, #a6adff 0%, #d77bff 45%, #ff66d2 90%);
+      --cyan: #66e0ff;
+      --violet: #8b7bff;
+      --teal: #4dffd2;
     }
 
-    * { box-sizing: border-box; }
-    html, body { height:100%; }
+    * {
+      box-sizing: border-box;
+    }
 
-    body{
-      margin:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
-
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background:
-        radial-gradient(circle at 15% 15%, rgba(120, 80, 255, 0.18), transparent 42%),
-        radial-gradient(circle at 85% 80%, rgba(255, 80, 200, 0.16), transparent 45%),
-        linear-gradient(135deg, var(--bg0), var(--bg1) 55%, var(--bg0));
+        radial-gradient(1200px 600px at 20% 10%, rgba(102, 224, 255, 0.06), transparent 60%),
+        radial-gradient(1000px 600px at 80% 30%, rgba(139, 123, 255, 0.06), transparent 60%),
+        var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
     }
 
-    /* outer glow frame */
-    .shell{
+    .card {
       position: relative;
-      width: min(820px, 92vw);
-      padding: 2px;
-      border-radius: 28px;
+      background: linear-gradient(180deg, #141420, #0f0f16);
+      border-radius: 22px;
+      padding: 3.2rem 3.5rem 3.6rem;
+      text-align: center;
+      max-width: 520px;
+      width: 100%;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04),
+        0 0 60px rgba(102, 224, 255, 0.12),
+        0 0 90px rgba(139, 123, 255, 0.12);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 24px;
       background: linear-gradient(
         135deg,
-        rgba(90, 220, 255, 0.55),
-        rgba(200, 120, 255, 0.65),
-        rgba(255, 90, 200, 0.55)
+        rgba(102,224,255,0.45),
+        rgba(139,123,255,0.45),
+        rgba(77,255,210,0.45)
       );
-      box-shadow:
-        0 0 46px rgba(160, 140, 255, 0.22),
-        0 0 110px rgba(255, 100, 210, 0.12);
-      overflow:hidden;
+      filter: blur(28px);
+      opacity: 0.55;
+      z-index: -1;
     }
 
-    .shell::before{
-      content:"";
-      position:absolute;
-      inset:-40px;
-      background: conic-gradient(
-        from 0deg,
-        rgba(90,220,255,0),
-        rgba(90,220,255,.55),
-        rgba(200,120,255,.6),
-        rgba(255,90,200,.55),
-        rgba(90,220,255,.55),
-        rgba(90,220,255,0)
-      );
-      filter: blur(22px);
-      animation: spin 8s linear infinite;
-      pointer-events:none;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .card{
-      position:relative;
-      border-radius:26px;
-      padding:72px 84px;
-      background: linear-gradient(180deg, var(--panelA), var(--panelB));
-      backdrop-filter: blur(14px);
-      text-align:center;
-    }
-
-    /* ===== TITLE ===== */
-    .title{
-      margin:0;
-      font-size:72px;
-      font-weight:820;
-      letter-spacing:0.04em;
-      text-transform:uppercase;
-
-      background: var(--gradText);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-
-      /* stroke + subtle glow */
-      -webkit-text-stroke: 1px rgba(240,240,255,0.28);
+    h1 {
+      margin: 0;
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 3.2rem;
+      letter-spacing: 0.04em;
+      color: #eaeaff;
       text-shadow:
-        0 0 10px rgba(200,140,255,0.22),
-        0 0 22px rgba(255,110,210,0.14);
+        0 0 10px rgba(139,123,255,0.35),
+        0 0 24px rgba(102,224,255,0.25);
+      -webkit-text-stroke: 0.5px rgba(255,255,255,0.35);
     }
 
-    .tagline{
-      margin-top:14px;
-      font-size:16px;
-      letter-spacing:0.16em;
-      text-transform:uppercase;
-      color: var(--muted);
+    .tagline {
+      margin-top: 0.9rem;
+      font-size: 1.05rem;
+      letter-spacing: 0.12em;
+      color: var(--text-sub);
+      text-transform: uppercase;
     }
 
-    /* ===== ACTIONS ===== */
-    .actions{
-      margin-top:52px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:14px;
+    .actions {
+      margin-top: 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      align-items: center;
     }
 
-    .btnWrap{
-      position:relative;
-      padding:1px;
-      border-radius:999px;
-      background: rgba(255,255,255,0.05);
+    .btn {
+      position: relative;
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #f0f0ff;
+      padding: 0.85rem 2.1rem;
+      background: linear-gradient(180deg, #161620, #101018);
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04),
+        0 0 22px rgba(102,224,255,0.18),
+        0 0 30px rgba(139,123,255,0.14);
     }
 
-    .btnWrap::before{
-      content:"";
-      position:absolute;
-      inset:-24px;
-      background: conic-gradient(
-        rgba(90,220,255,0),
-        rgba(200,120,255,.6),
-        rgba(255,90,200,.6),
-        rgba(90,220,255,0)
-      );
-      filter: blur(12px);
-      opacity:.55;
-      animation: spin 7s linear infinite;
-      pointer-events:none;
-    }
-
-    .btn{
-      position:relative;
-      padding:10px 18px; /* tighter */
-      min-width: 220px;  /* narrower */
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,0.08);
-
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
       background: linear-gradient(
-        180deg,
-        rgba(10,12,26,0.95),
-        rgba(6,8,18,0.95)
+        135deg,
+        rgba(102,224,255,0.8),
+        rgba(139,123,255,0.8),
+        rgba(77,255,210,0.8)
       );
-
-      color: rgba(245,247,255,0.95);
-      font-size:13px;
-      font-weight:650;
-      letter-spacing:0.22em;
-      text-transform:uppercase;
-
-      box-shadow:
-        inset 0 0 14px rgba(255,255,255,0.06),
-        0 0 14px rgba(160,140,255,0.22);
-
-      cursor:pointer;
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+      opacity: 0.18;
+      filter: blur(12px);
+      z-index: -1;
     }
 
-    .btn.primary{
-      box-shadow:
-        inset 0 0 16px rgba(255,255,255,0.08),
-        0 0 20px rgba(190,170,255,0.35);
-    }
-
-    .btn:hover{
+    .btn:hover {
       transform: translateY(-1px);
-      border-color: rgba(255,255,255,0.16);
       box-shadow:
-        inset 0 0 18px rgba(255,255,255,0.1),
-        0 0 26px rgba(200,180,255,0.45);
+        0 0 0 1px rgba(255,255,255,0.08),
+        0 0 30px rgba(102,224,255,0.28),
+        0 0 44px rgba(139,123,255,0.22);
     }
 
-    @media (max-width:520px){
-      .card{ padding:60px 26px; }
-      .title{ font-size:52px; }
-      .tagline{ font-size:13px; }
-      .btn{ min-width: 200px; }
+    .btn.secondary {
+      opacity: 0.9;
     }
   </style>
 </head>
 
 <body>
-  <div class="shell">
-    <div class="card">
-      <h1 class="title">Vox OS</h1>
-      <div class="tagline">Your Personal AI Assistant</div>
+  <div class="card">
+    <h1>Vox OS</h1>
+    <div class="tagline">Your Personal AI Assistant</div>
 
-      <div class="actions">
-        <div class="btnWrap">
-          <button class="btn primary" onclick="location.href='/login'">Log In</button>
-        </div>
-
-        <div class="btnWrap">
-          <button class="btn" onclick="location.href='/signup'">Create Account</button>
-        </div>
-      </div>
+    <div class="actions">
+      <button class="btn" onclick="location.href='/login'">
+        Log In
+      </button>
+      <button class="btn secondary" onclick="location.href='/signup'">
+        Create Account
+      </button>
     </div>
   </div>
 </body>
