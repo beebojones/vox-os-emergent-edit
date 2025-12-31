@@ -51,11 +51,7 @@ app = FastAPI(
 # STATIC FILES
 # ====================
 
-app.mount(
-    "/static",
-    StaticFiles(directory="static"),
-    name="static",
-)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # ====================
 # SESSION MIDDLEWARE
@@ -130,7 +126,7 @@ async def login_page():
 
 @app.get("/signup")
 async def signup_page():
-    return RedirectResponse("/static/signup.html")
+    return FileResponse("static/signup.html")
 
 @app.get("/dashboard")
 async def dashboard():
@@ -142,41 +138,29 @@ async def dashboard():
 
 @api.post("/signup")
 async def signup(data: SignupRequest, request: Request):
-    existing = await users.find_one({"email": data.email})
-    if existing:
+    if await users.find_one({"email": data.email}):
         raise HTTPException(status_code=400, detail="User already exists")
 
-    user_count = await users.count_documents({})
-    role = "admin" if user_count == 0 else "user"
+    role = "admin" if await users.count_documents({}) == 0 else "user"
 
-    user = {
+    result = await users.insert_one({
         "email": data.email,
         "password_hash": hash_password(data.password),
         "role": role,
         "created_at": datetime.utcnow(),
         "last_login": datetime.utcnow(),
-    }
-
-    result = await users.insert_one(user)
+    })
 
     request.session.clear()
     request.session["user_id"] = str(result.inserted_id)
     request.session["role"] = role
 
-    logger.info(f"User created: {data.email} ({role})")
-
-    return JSONResponse({
-        "success": True,
-        "redirect": "https://vox-os-emergent-edit.vercel.app"
-    })
+    return JSONResponse({"success": True})
 
 @api.post("/login")
 async def login(data: LoginRequest, request: Request):
     user = await users.find_one({"email": data.email})
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    if not verify_password(data.password, user["password_hash"]):
+    if not user or not verify_password(data.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     request.session.clear()
@@ -188,12 +172,7 @@ async def login(data: LoginRequest, request: Request):
         {"$set": {"last_login": datetime.utcnow()}}
     )
 
-    logger.info(f"User logged in: {data.email}")
-
-    return JSONResponse({
-        "success": True,
-        "redirect": "https://vox-os-emergent-edit.vercel.app"
-    })
+    return JSONResponse({"success": True})
 
 @api.post("/logout")
 async def logout(request: Request):
@@ -217,22 +196,32 @@ async def me(request: Request):
     }
 
 # ====================
-# SEED ENDPOINT (FIX)
+# DASHBOARD STUB APIs (IMPORTANT)
 # ====================
 
-@api.post("/seed")
-async def seed(request: Request):
-    return {
-        "ok": True,
-        "message": "Seed endpoint acknowledged"
-    }
+@api.get("/calendar")
+async def calendar():
+    return {"items": []}
 
-@api.get("/seed")
-async def seed_get():
-    return {
-        "ok": True,
-        "message": "Seed already initialized"
-    }
+@api.get("/tasks")
+async def tasks():
+    return {"items": []}
+
+@api.get("/memories")
+async def memories():
+    return {"items": []}
+
+@api.get("/providers")
+async def providers():
+    return {"items": []}
+
+@api.get("/status")
+async def status():
+    return {"status": "ok"}
+
+@api.post("/seed")
+async def seed():
+    return {"seeded": True}
 
 # ====================
 # HEALTH
