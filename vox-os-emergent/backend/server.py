@@ -210,27 +210,15 @@ async def me(request: Request):
 # DASHBOARD DATA CONTRACTS
 # ====================
 
-@api.get("/calendar")
-async def calendar():
-    return {"items": []}
-
-@api.get("/tasks")
-async def tasks():
-    return {"items": []}
-
-@api.get("/memories")
-async def memories():
-    return {"items": []}
-
-@api.api_route("/status", methods=["GET", "POST"])
+@api.api_route("/status", methods=["GET", "POST", "OPTIONS"])
 async def status():
     return {"status": "ok"}
 
-@api.api_route("/providers", methods=["GET", "POST"])
+@api.api_route("/providers", methods=["GET", "POST", "OPTIONS"])
 async def providers():
     return {"items": []}
 
-@api.get("/default")
+@api.api_route("/default", methods=["GET", "POST", "OPTIONS"])
 async def default():
     return {"ok": True}
 
@@ -255,3 +243,4 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
