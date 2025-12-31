@@ -5,7 +5,7 @@
   <title>Vox OS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- If you have these already (recommended), keep them -->
+  <!-- Optional: if you already use these, keep them -->
   <script src="/static/js/theme.js"></script>
   <link rel="stylesheet" href="/static/css/vox-theme.css">
   <link rel="stylesheet" href="/static/css/vox-header.css">
@@ -14,22 +14,24 @@
     :root{
       --bg0:#05060c;
       --bg1:#0a0c18;
-      --panel: rgba(18, 20, 36, 0.78);
-      --panel2: rgba(10, 12, 28, 0.9);
-      --text:#e8ebff;
-      --muted: rgba(200, 210, 255, 0.65);
 
-      --gradText: linear-gradient(90deg, #9aa0ff, #d56bff, #ff5fd1);
+      --panelA: rgba(14, 16, 30, 0.78);
+      --panelB: rgba(8, 10, 22, 0.88);
 
-      --ring: linear-gradient(
-        135deg,
-        rgba(100, 255, 255, 0.55),
-        rgba(200, 120, 255, 0.75),
-        rgba(255, 80, 200, 0.7)
-      );
+      --text:#eef0ff;
+      --muted: rgba(205, 212, 255, 0.68);
+
+      --gradText: linear-gradient(90deg, #a6adff 0%, #d77bff 45%, #ff66d2 90%);
+
+      /* technicolor ring */
+      --ringA: rgba(90, 220, 255, 0.65);
+      --ringB: rgba(200, 120, 255, 0.75);
+      --ringC: rgba(255, 90, 200, 0.70);
     }
 
     * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
 
     body{
       margin:0;
@@ -40,6 +42,11 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
 
+      /* crispness helpers */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+
       background:
         radial-gradient(circle at 15% 15%, rgba(120, 80, 255, 0.18), transparent 42%),
         radial-gradient(circle at 85% 80%, rgba(255, 80, 200, 0.16), transparent 45%),
@@ -47,144 +54,223 @@
         linear-gradient(135deg, var(--bg0), var(--bg1) 55%, var(--bg0));
     }
 
-    /* Outer glow halo */
-    .halo{
+    .shell{
+      position: relative;
+      width: min(860px, 92vw);
+      padding: 2px;
+      border-radius: 30px;
+
+      background: linear-gradient(
+        135deg,
+        rgba(90, 220, 255, 0.60),
+        rgba(200, 120, 255, 0.70),
+        rgba(255, 90, 200, 0.62)
+      );
+
+      box-shadow:
+        0 0 46px rgba(160, 140, 255, 0.22),
+        0 0 120px rgba(255, 100, 210, 0.10);
+      overflow: hidden;
+    }
+
+    /* animated technicolor aura around the card */
+    .shell::before{
+      content:"";
       position:absolute;
-      inset:-80px;
+      inset:-40px;
       background:
-        radial-gradient(circle at 40% 35%, rgba(170, 140, 255, 0.22), transparent 55%),
-        radial-gradient(circle at 70% 65%, rgba(255, 120, 210, 0.18), transparent 60%);
-      filter: blur(18px);
-      opacity: 0.9;
+        conic-gradient(
+          from 0deg,
+          rgba(90, 220, 255, 0.0),
+          rgba(90, 220, 255, 0.55),
+          rgba(200, 120, 255, 0.60),
+          rgba(255, 90, 200, 0.55),
+          rgba(90, 220, 255, 0.55),
+          rgba(90, 220, 255, 0.0)
+        );
+      filter: blur(22px);
+      opacity: 0.85;
+      animation: hueSpin 7.5s linear infinite;
       pointer-events:none;
     }
 
-    .wrap{
-      position: relative;
-      width: min(820px, 92vw);
-      padding: 2px;
-      border-radius: 28px;
-      background: var(--ring);
-      box-shadow:
-        0 0 55px rgba(160, 140, 255, 0.25),
-        0 0 120px rgba(255, 100, 210, 0.12);
+    /* subtle moving grainy glow */
+    .shell::after{
+      content:"";
+      position:absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08), transparent 35%),
+        radial-gradient(circle at 85% 75%, rgba(255,255,255,0.06), transparent 40%);
+      mix-blend-mode: screen;
+      opacity: 0.35;
+      pointer-events:none;
     }
 
     .card{
       position: relative;
-      overflow:hidden;
-      border-radius: 26px;
-      background:
-        linear-gradient(180deg, var(--panel), var(--panel2));
+      border-radius: 28px;
+      background: linear-gradient(180deg, var(--panelA), var(--panelB));
       backdrop-filter: blur(14px);
-      padding: 72px 80px;
-      text-align:center;
+      padding: 78px 86px;
+      text-align: center;
+      overflow: hidden;
     }
 
-    /* Subtle internal sheen */
+    /* internal glossy sheen */
     .card::before{
       content:"";
       position:absolute;
       inset:0;
       background:
-        radial-gradient(circle at 10% 0%, rgba(255,255,255,0.10), transparent 35%),
-        radial-gradient(circle at 100% 100%, rgba(255,255,255,0.06), transparent 40%);
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.10), transparent 36%),
+        radial-gradient(circle at 100% 100%, rgba(255,255,255,0.06), transparent 42%);
+      opacity: 0.7;
       pointer-events:none;
-      opacity: 0.65;
     }
 
+    /* header hierarchy */
     .title{
       margin:0;
-      font-size: 62px;
-      font-weight: 750;
-      letter-spacing: 0.12em; /* FIXED: not huge spacing */
+      font-weight: 820;
+      font-size: 72px;
+      letter-spacing: 0.06em; /* tighter */
+      text-transform: uppercase;
+
       background: var(--gradText);
       -webkit-background-clip:text;
       -webkit-text-fill-color: transparent;
-      text-transform: uppercase;
+
+      /* pop without looking blurry */
+      text-shadow:
+        0 0 10px rgba(200, 140, 255, 0.22),
+        0 0 22px rgba(255, 110, 210, 0.14);
     }
 
     .tagline{
-      margin-top: 18px;
-      font-size: 18px;
-      letter-spacing: 0.12em;
-      color: var(--muted);
+      margin-top: 14px;
+      font-size: 17px;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
+      color: var(--muted);
+      text-shadow: 0 1px 0 rgba(0,0,0,0.35);
     }
 
     .actions{
-      margin-top: 52px;
+      margin-top: 54px;
       display:flex;
-      flex-direction: column;   /* FIXED: stacked */
+      flex-direction: column;
       align-items:center;
-      gap: 18px;
+      gap: 14px;
+    }
+
+    /* button frame with animated aura */
+    .btnWrap{
+      position: relative;
+      width: min(360px, 76vw);  /* smaller than title */
+      border-radius: 999px;
+      padding: 1px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .btnWrap::before{
+      content:"";
+      position:absolute;
+      inset:-30px;
+      background:
+        conic-gradient(
+          from 180deg,
+          rgba(90, 220, 255, 0.0),
+          rgba(90, 220, 255, 0.65),
+          rgba(200, 120, 255, 0.70),
+          rgba(255, 90, 200, 0.65),
+          rgba(90, 220, 255, 0.65),
+          rgba(90, 220, 255, 0.0)
+        );
+      filter: blur(12px);
+      opacity: 0.60;
+      animation: hueSpin 6.8s linear infinite;
+      pointer-events:none;
     }
 
     .btn{
-      width: min(520px, 78vw);
-      padding: 16px 22px;
+      position: relative;
+      width: 100%;
+      padding: 12px 18px; /* smaller, sleeker */
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,0.08);
       cursor:pointer;
-      font-size: 16px;
-      letter-spacing: 0.18em;
+
+      font-size: 14px;
+      font-weight: 650;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #ffffff;
-      background:
-        linear-gradient(135deg,
-          rgba(120, 200, 255, 0.9),
-          rgba(180, 120, 255, 0.92),
-          rgba(255, 120, 200, 0.9)
-        );
+
+      color: rgba(245, 247, 255, 0.96);
+      background: linear-gradient(
+        135deg,
+        rgba(14, 16, 30, 0.92),
+        rgba(18, 20, 44, 0.88)
+      );
+
       box-shadow:
-        0 0 22px rgba(160, 140, 255, 0.45),
-        inset 0 0 14px rgba(255,255,255,0.22);
-      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+        0 0 18px rgba(160, 140, 255, 0.26),
+        inset 0 0 12px rgba(255,255,255,0.10);
+
+      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease, filter 0.14s ease;
     }
 
-    .btn.secondary{
-      color: rgba(235, 238, 255, 0.92);
-      background:
-        linear-gradient(135deg,
-          rgba(160, 160, 210, 0.18),
-          rgba(120, 120, 190, 0.26)
-        );
-      box-shadow:
-        0 0 16px rgba(120, 140, 255, 0.22),
-        inset 0 0 14px rgba(255,255,255,0.10);
+    .btn.primary{
+      background: linear-gradient(
+        135deg,
+        rgba(90, 220, 255, 0.26),
+        rgba(200, 120, 255, 0.24),
+        rgba(255, 90, 200, 0.20)
+      );
+      border-color: rgba(255,255,255,0.10);
     }
 
     .btn:hover{
       transform: translateY(-1px);
-      filter: brightness(1.02);
+      filter: brightness(1.04);
       box-shadow:
-        0 0 34px rgba(190, 170, 255, 0.70),
-        inset 0 0 16px rgba(255,255,255,0.28);
+        0 0 26px rgba(190, 170, 255, 0.46),
+        inset 0 0 14px rgba(255,255,255,0.14);
+      border-color: rgba(255,255,255,0.16);
     }
 
-    .btn:active{
-      transform: translateY(0px);
+    .btn:active{ transform: translateY(0px); }
+
+    @keyframes hueSpin{
+      0%   { transform: rotate(0deg); filter: blur(22px) hue-rotate(0deg); }
+      100% { transform: rotate(360deg); filter: blur(22px) hue-rotate(360deg); }
     }
 
     @media (max-width: 520px){
-      .card{ padding: 56px 28px; }
-      .title{ font-size: 44px; letter-spacing: 0.10em; }
-      .tagline{ font-size: 14px; letter-spacing: 0.12em; }
-      .btn{ width: min(520px, 86vw); }
+      .card{ padding: 60px 26px; }
+      .title{ font-size: 52px; letter-spacing: 0.05em; }
+      .tagline{ font-size: 13px; letter-spacing: 0.16em; }
+      .actions{ margin-top: 42px; }
+      .btnWrap{ width: min(360px, 84vw); }
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="halo"></div>
+  <div class="shell">
     <div class="card">
       <h1 class="title">Vox OS</h1>
       <div class="tagline">Your Personal AI Assistant</div>
 
       <div class="actions">
-        <button class="btn" onclick="location.href='/login'">Log In</button>
-        <button class="btn secondary" onclick="location.href='/signup'">Create Account</button>
+        <div class="btnWrap">
+          <button class="btn primary" onclick="location.href='/login'">Log In</button>
+        </div>
+
+        <div class="btnWrap">
+          <button class="btn" onclick="location.href='/signup'">Create Account</button>
+        </div>
       </div>
     </div>
   </div>
