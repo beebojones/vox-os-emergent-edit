@@ -39,7 +39,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_API_URL}/api`;
 
 export default function VoxDashboard() {
   const [messages, setMessages] = useState([]);
@@ -1665,3 +1665,4 @@ export default function VoxDashboard() {
     </div>
   );
 }
+
