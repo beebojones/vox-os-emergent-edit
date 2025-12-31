@@ -5,110 +5,112 @@
   <title>Vox OS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Space Grotesk for title -->
+  <!-- Space Grotesk for title only -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #05060d;
-      --card-bg: rgba(6, 7, 18, 0.96);
-      --text-main: #f6f7ff;
-      --text-muted: rgba(200, 210, 255, 0.75);
+      --bg-main: #05060b;
+      --card-bg: rgba(8, 10, 18, 0.88);
+      --text-main: #e6e8f2;
+      --text-muted: rgba(200, 210, 255, 0.8);
     }
 
     * {
       box-sizing: border-box;
     }
 
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: var(--bg);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text-main);
-    }
-
     body {
+      margin: 0;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background:
-        radial-gradient(circle at 0% 0%, rgba(0, 246, 255, 0.12), transparent 60%),
-        radial-gradient(circle at 100% 100%, rgba(255, 0, 212, 0.12), transparent 60%),
-        radial-gradient(circle at 100% 0%, rgba(154, 77, 255, 0.12), transparent 60%),
-        #05060d;
+        radial-gradient(circle at 20% 20%, rgba(90, 160, 255, 0.18), transparent 55%),
+        radial-gradient(circle at 80% 70%, rgba(190, 80, 255, 0.18), transparent 55%),
+        var(--bg-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text-main);
     }
 
-    /* ===== CARD ===== */
-
-    .card {
+    /* === CARD === */
+    .splash-card {
       position: relative;
-      width: min(90vw, 720px);
-      padding: 56px 48px 52px;
+      width: 520px;
+      max-width: 90vw;
+      padding: 64px 56px;
       background: var(--card-bg);
-      border-radius: 26px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 28px;
       text-align: center;
-      overflow: hidden;
-      box-shadow:
-        0 0 22px rgba(0, 246, 255, 0.12),
-        0 0 34px rgba(154, 77, 255, 0.10),
-        0 0 48px rgba(255, 0, 212, 0.08);
+      isolation: isolate;
     }
 
-    .card::before {
+    /* Feathered chromatic glow */
+    .splash-card::before {
       content: "";
       position: absolute;
-      inset: -30%;
-      background:
-        radial-gradient(circle at 0% 0%, rgba(0, 246, 255, 0.18), transparent 60%),
-        radial-gradient(circle at 100% 100%, rgba(255, 0, 212, 0.18), transparent 60%),
-        radial-gradient(circle at 100% 0%, rgba(154, 77, 255, 0.18), transparent 60%);
-      opacity: 0.6;
-      animation: auraShift 18s linear infinite alternate;
-      pointer-events: none;
+      inset: -3px;
+      border-radius: inherit;
+      background: linear-gradient(
+        120deg,
+        #7cf6ff,
+        #b88cff,
+        #ff4fd8
+      );
+      filter: blur(22px);
+      opacity: 0.45;
+      z-index: -1;
+      animation: glowShift 14s linear infinite;
     }
 
-    @keyframes auraShift {
-      0% { transform: translate(0, 0); }
-      50% { transform: translate(-4%, 3%); }
-      100% { transform: translate(3%, -4%); }
+    @keyframes glowShift {
+      0% { filter: blur(22px) hue-rotate(0deg); }
+      100% { filter: blur(22px) hue-rotate(360deg); }
     }
 
-    /* ===== TITLE ===== */
-
+    /* === TITLE === */
     .title {
       font-family: "Space Grotesk", system-ui, sans-serif;
+      font-size: 68px;
       font-weight: 600;
-      font-size: 60px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       margin: 0;
 
-      color: #f8f7ff;
-      -webkit-text-stroke: 0.6px rgba(160, 200, 255, 0.35);
+      background: linear-gradient(
+        90deg,
+        #7cf6ff,
+        #b88cff,
+        #ff4fd8
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+
+      -webkit-text-stroke: 0.8px rgba(180, 220, 255, 0.35);
 
       text-shadow:
-        0 0 10px rgba(0, 246, 255, 0.35),
-        0 0 18px rgba(154, 77, 255, 0.25),
-        0 0 26px rgba(255, 0, 212, 0.18);
+        0 0 10px rgba(124, 246, 255, 0.35),
+        0 0 18px rgba(184, 140, 255, 0.25),
+        0 0 26px rgba(255, 79, 216, 0.18);
     }
 
+    /* === TAGLINE === */
     .tagline {
-      max-width: 420px;
-      margin: 14px auto 0;
-      font-size: 14px;
-      letter-spacing: 0.18em;
+      max-width: 360px;
+      margin: 18px auto 0;
+      font-size: 16px;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--text-muted);
     }
 
-    /* ===== BUTTONS ===== */
-
-    .buttons {
-      margin-top: 44px;
+    /* === BUTTON STACK === */
+    .button-stack {
+      margin-top: 42px;
       display: flex;
       flex-direction: column;
       gap: 18px;
@@ -116,69 +118,63 @@
     }
 
     .button {
-      width: 260px;
-      padding: 12px 0;
-      background: rgba(8, 8, 20, 0.95);
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #f5f6ff;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      font-size: 14px;
-      text-decoration: none;
-      cursor: pointer;
       position: relative;
-      transition: transform 0.2s ease;
-      animation: buttonHue 10s linear infinite;
+      width: 260px;
+      padding: 11px 0;
+      border-radius: 999px;
+      background: rgba(12, 14, 24, 0.85);
+      border: 1px solid rgba(140, 160, 255, 0.25);
+      color: #ffffff;
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    /* Chromatic edge glow */
+    .button::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: linear-gradient(
+        120deg,
+        #7cf6ff,
+        #b88cff,
+        #ff4fd8
+      );
+      opacity: 0.55;
+      filter: blur(10px);
+      z-index: -1;
+      animation: glowShift 10s linear infinite;
     }
 
     .button:hover {
-      transform: translateY(-1px);
+      color: #ffffff;
     }
 
-    @keyframes buttonHue {
-      0% {
-        box-shadow:
-          0 0 12px rgba(0, 246, 255, 0.35),
-          0 0 24px rgba(0, 246, 255, 0.15);
-        border-color: rgba(0, 246, 255, 0.5);
-      }
-      33% {
-        box-shadow:
-          0 0 14px rgba(154, 77, 255, 0.35),
-          0 0 26px rgba(154, 77, 255, 0.15);
-        border-color: rgba(154, 77, 255, 0.5);
-      }
-      66% {
-        box-shadow:
-          0 0 14px rgba(255, 0, 212, 0.35),
-          0 0 26px rgba(255, 0, 212, 0.15);
-        border-color: rgba(255, 0, 212, 0.5);
-      }
-      100% {
-        box-shadow:
-          0 0 12px rgba(0, 246, 255, 0.35),
-          0 0 24px rgba(0, 246, 255, 0.15);
-        border-color: rgba(0, 246, 255, 0.5);
-      }
-    }
-
+    /* === RESPONSIVE === */
     @media (max-width: 600px) {
       .title {
-        font-size: 44px;
+        font-size: 50px;
+      }
+
+      .splash-card {
+        padding: 52px 36px;
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="card">
+  <div class="splash-card">
     <h1 class="title">Vox OS</h1>
     <div class="tagline">Your Personal AI Assistant</div>
 
-    <div class="buttons">
-      <a href="/login" class="button">Log In</a>
-      <a href="/signup" class="button">Create Account</a>
+    <div class="button-stack">
+      <button class="button">Log In</button>
+      <button class="button">Create Account</button>
     </div>
   </div>
 </body>
