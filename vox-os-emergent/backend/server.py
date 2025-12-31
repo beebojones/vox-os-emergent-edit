@@ -10,6 +10,8 @@ import logging
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
 from passlib.hash import pbkdf2_sha256
+from fastapi.staticfiles import StaticFiles
+
 
 # ====================
 # ENV + LOGGING
@@ -43,6 +45,12 @@ app = FastAPI(
     title="Vox Console",
     docs_url="/docs",
     redoc_url=None,
+)
+
+app.mount(
+    "/static",
+    StaticFiles(directory="static"),
+    name="static",
 )
 
 # ====================
@@ -106,15 +114,15 @@ def verify_password(password: str, password_hash: str) -> bool:
 
 @app.get("/")
 async def splash():
-    return FileResponse("static/splash.html")
+    return RedirectResponse("/static/splash.html")
 
 @app.get("/login")
 async def login_page():
-    return FileResponse("static/login.html")
+    return RedirectResponse("/static/login.html")
 
 @app.get("/login/success")
 async def login_success():
-    return FileResponse("static/login_success.html")
+    return RedirectResponse("/static/login_success.html")
 
 # ====================
 # AUTH API
@@ -210,3 +218,4 @@ app.include_router(api)
 @app.on_event("shutdown")
 async def shutdown():
     client.close()
+
