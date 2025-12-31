@@ -3,123 +3,169 @@
 <head>
   <meta charset="UTF-8" />
   <title>Vox OS</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Title font -->
+  <!-- Space Grotesk for title -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
 
-  <!-- Base font (matches memory.html style) -->
   <style>
     :root {
-      --bg: #05060a;
-      --card-bg: rgba(10, 12, 20, 0.92);
-
-      --cyan: #6ff3ff;
-      --blue: #5b8cff;
-      --violet: #8a6bff;
-      --magenta: #ff5bd7;
-
-      --text-main: #e6e9f0;
-      --text-muted: #a9afc4;
+      --bg: #05060d;
+      --card-bg: rgba(6, 7, 18, 0.96);
+      --text-main: #f6f7ff;
+      --text-muted: rgba(200, 210, 255, 0.75);
     }
 
     * {
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(91,140,255,0.15), transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(255,91,215,0.12), transparent 40%),
-        var(--bg);
+      height: 100%;
+      background: var(--bg);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text-main);
     }
 
-    .card {
-      position: relative;
-      width: min(92vw, 720px);
-      padding: 64px 56px 56px;
-      border-radius: 28px;
-      background: var(--card-bg);
-      box-shadow:
-        0 0 0 1px rgba(138,107,255,0.35),
-        0 0 60px rgba(91,140,255,0.25),
-        0 0 90px rgba(255,91,215,0.18);
-      text-align: center;
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0, 246, 255, 0.12), transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(255, 0, 212, 0.12), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(154, 77, 255, 0.12), transparent 60%),
+        #05060d;
     }
 
+    /* ===== CARD ===== */
+
+    .card {
+      position: relative;
+      width: min(90vw, 720px);
+      padding: 56px 48px 52px;
+      background: var(--card-bg);
+      border-radius: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: center;
+      overflow: hidden;
+      box-shadow:
+        0 0 22px rgba(0, 246, 255, 0.12),
+        0 0 34px rgba(154, 77, 255, 0.10),
+        0 0 48px rgba(255, 0, 212, 0.08);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0, 246, 255, 0.18), transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(255, 0, 212, 0.18), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(154, 77, 255, 0.18), transparent 60%);
+      opacity: 0.6;
+      animation: auraShift 18s linear infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes auraShift {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(-4%, 3%); }
+      100% { transform: translate(3%, -4%); }
+    }
+
+    /* ===== TITLE ===== */
+
     .title {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: clamp(48px, 6vw, 64px);
-      font-weight: 700;
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      font-weight: 600;
+      font-size: 60px;
       letter-spacing: 0.08em;
-      margin: 0 0 12px;
-      color: #f5f7ff;
+      text-transform: uppercase;
+      margin: 0;
+
+      color: #f8f7ff;
+      -webkit-text-stroke: 0.6px rgba(160, 200, 255, 0.35);
+
       text-shadow:
-        0 0 6px rgba(138,107,255,0.5),
-        0 0 14px rgba(91,140,255,0.4);
-      -webkit-text-stroke: 0.6px rgba(255,255,255,0.35);
+        0 0 10px rgba(0, 246, 255, 0.35),
+        0 0 18px rgba(154, 77, 255, 0.25),
+        0 0 26px rgba(255, 0, 212, 0.18);
     }
 
     .tagline {
       max-width: 420px;
-      margin: 0 auto 40px;
-      font-size: 15px;
-      letter-spacing: 0.14em;
+      margin: 14px auto 0;
+      font-size: 14px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--text-muted);
     }
 
-    .actions {
+    /* ===== BUTTONS ===== */
+
+    .buttons {
+      margin-top: 44px;
       display: flex;
       flex-direction: column;
       gap: 18px;
       align-items: center;
     }
 
-    .btn {
+    .button {
       width: 260px;
-      padding: 14px 0;
-      font-size: 14px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
+      padding: 12px 0;
+      background: rgba(8, 8, 20, 0.95);
       border-radius: 999px;
-      background: rgba(8, 10, 18, 0.95);
-      color: var(--text-main);
-      border: 1px solid rgba(138,107,255,0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #f5f6ff;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 14px;
+      text-decoration: none;
       cursor: pointer;
-      transition: box-shadow 0.25s ease, transform 0.15s ease;
-      box-shadow:
-        0 0 0 rgba(0,0,0,0);
+      position: relative;
+      transition: transform 0.2s ease;
+      animation: buttonHue 10s linear infinite;
     }
 
-    .btn:hover {
+    .button:hover {
       transform: translateY(-1px);
-      box-shadow:
-        0 0 10px rgba(111,243,255,0.45),
-        0 0 18px rgba(91,140,255,0.35),
-        0 0 26px rgba(255,91,215,0.25);
     }
 
-    .btn:active {
-      transform: translateY(0);
-    }
-
-    @media (max-width: 520px) {
-      .card {
-        padding: 48px 28px 44px;
+    @keyframes buttonHue {
+      0% {
+        box-shadow:
+          0 0 12px rgba(0, 246, 255, 0.35),
+          0 0 24px rgba(0, 246, 255, 0.15);
+        border-color: rgba(0, 246, 255, 0.5);
       }
+      33% {
+        box-shadow:
+          0 0 14px rgba(154, 77, 255, 0.35),
+          0 0 26px rgba(154, 77, 255, 0.15);
+        border-color: rgba(154, 77, 255, 0.5);
+      }
+      66% {
+        box-shadow:
+          0 0 14px rgba(255, 0, 212, 0.35),
+          0 0 26px rgba(255, 0, 212, 0.15);
+        border-color: rgba(255, 0, 212, 0.5);
+      }
+      100% {
+        box-shadow:
+          0 0 12px rgba(0, 246, 255, 0.35),
+          0 0 24px rgba(0, 246, 255, 0.15);
+        border-color: rgba(0, 246, 255, 0.5);
+      }
+    }
 
-      .btn {
-        width: 220px;
+    @media (max-width: 600px) {
+      .title {
+        font-size: 44px;
       }
     }
   </style>
@@ -127,12 +173,12 @@
 
 <body>
   <div class="card">
-    <h1 class="title">VOX&nbsp;OS</h1>
+    <h1 class="title">Vox OS</h1>
     <div class="tagline">Your Personal AI Assistant</div>
 
-    <div class="actions">
-      <button class="btn" onclick="location.href='/login'">Log In</button>
-      <button class="btn" onclick="location.href='/signup'">Create Account</button>
+    <div class="buttons">
+      <a href="/login" class="button">Log In</a>
+      <a href="/signup" class="button">Create Account</a>
     </div>
   </div>
 </body>
