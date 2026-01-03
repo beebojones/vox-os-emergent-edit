@@ -33,7 +33,7 @@ async def canary():
 # ====================
 
 BASE_DIR = Path(__file__).parent
-app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # ====================
 # SESSION
@@ -118,13 +118,10 @@ async def login_page():
 async def signup_page():
     return FileResponse(BASE_DIR / "static/signup.html")
 
-@app.get("/dashboard")
-async def dashboard():
-    return FileResponse(BASE_DIR / "static/dashboard.html")
-
 # ====================
 # REGISTER API
 # ====================
 
 app.include_router(api)
+
 
