@@ -68,10 +68,15 @@ app.add_middleware(
 # ====================
 
 api = APIRouter(prefix="/api")
+app.include_router(api)
 
 # ====================
 # SAFE DASHBOARD CONTRACTS
 # ====================
+
+@api.get("/health")
+async def health():
+    return {"status": "ok"}
 
 @api.get("/calendar")
 async def calendar():
@@ -122,3 +127,4 @@ async def dashboard():
 # ====================
 
 app.include_router(api)
+
