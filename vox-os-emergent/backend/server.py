@@ -10,6 +10,7 @@ from passlib.hash import pbkdf2_sha256
 from bson import ObjectId
 import os
 import logging
+from fastapi.responses import RedirectResponse
 
 # ====================
 # BASIC APP (NO DB YET)
@@ -102,6 +103,10 @@ async def providers():
 async def default():
     return {"ok": True}
 
+@app.get("/dashboard")
+def dashboard_redirect():
+    return RedirectResponse("https://vox-os-emergent-edit.vercel.app/")
+    
 # ====================
 # PAGES
 # ====================
@@ -123,5 +128,6 @@ async def signup_page():
 # ====================
 
 app.include_router(api)
+
 
 
