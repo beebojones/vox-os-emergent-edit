@@ -260,14 +260,19 @@ export default function VoxDashboard() {
     }
   };
 
-  const fetchCalendarProviders = async () => {
-    try {
-      const response = await axios.get(`${API}/auth/calendar/providers`);
-      setCalendarProviders(response.data.providers || []);
-    } catch (error) {
-      console.error("Error fetching calendar providers:", error);
-    }
-  };
+const fetchCalendarProviders = async () => {
+  try {
+    const response = await axios.get(`${API}/auth/calendar/providers`);
+    const providers = Array.isArray(response.data?.providers)
+      ? response.data.providers
+      : [];
+    setCalendarProviders(providers);
+  } catch (error) {
+    console.error("Error fetching calendar providers:", error);
+    setCalendarProviders([]); // 🔒 NEVER leave it undefined
+  }
+};
+
 
   const connectGoogleCalendar = async () => {
     try {
@@ -1666,6 +1671,7 @@ export default function VoxDashboard() {
     </div>
   );
 }
+
 
 
 
