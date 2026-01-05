@@ -168,8 +168,11 @@ async def chat_send(payload: Dict[str, Any]):
     session_id = payload.get("session_id", "default")
     user_content = payload.get("content", "").strip()
 
+    from fastapi import HTTPException
+
     if not user_content:
-        return {"error": "Empty message"}
+        raise HTTPException(status_code=400, detail="Empty message")
+
 
     # Store user message
     user_msg = {
@@ -202,4 +205,5 @@ async def status():
 # ====================
 
 app.include_router(router)
+
 
