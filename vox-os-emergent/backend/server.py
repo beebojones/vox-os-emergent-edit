@@ -158,6 +158,37 @@ async def add_chat_history(session_id: str, payload: Dict[str, Any]):
     CHAT_HISTORY.setdefault(session_id, []).append(msg)
     return {"ok": True, "message": msg}
 
+@router.post("/chat/send")
+async def chat_send(payload: Dict[str, Any]):
+    """
+    Temporary Vox brain.
+    This will later call OpenAI / local LLM.
+    """
+
+    session_id = payload.get("session_id", "default")
+    user_content = payload.get("content", "").strip()
+
+    if not user_content:
+        return {"error": "Empty message"}
+
+    # Store user message
+    user_msg = {
+        "id": str(datetime.utcnow().timestamp()),
+        "role": "user",
+        "content": user_content,
+    }
+    CHAT_HISTORY.setdefault(session_id, []).append(user_msg)
+
+    # TEMP brain response
+    assistant_msg = {
+        "id": str(datetime.utcnow().timestamp()) + "-vox",
+        "role": "assistant",
+        "content": f"🧠 Vox heard you say: {user_content}",
+    }
+    CHAT_HISTORY[session_id].append(assistant_msg)
+
+    return assistant_msg
+
 # ====================
 # STATUS
 # ====================
@@ -171,3 +202,4 @@ async def status():
 # ====================
 
 app.include_router(router)
+
