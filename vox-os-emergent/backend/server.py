@@ -1,6 +1,7 @@
-from fastapi import FastAPI, APIRouter, Request
+from fastapi import FastAPI, APIRouter, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+from openai import OpenAI
 import os
 from typing import Dict, List, Any
 from datetime import datetime
@@ -27,6 +28,12 @@ app.add_middleware(
     SessionMiddleware,
     secret_key=os.getenv("SESSION_SECRET", "vox-dev-secret"),
 )
+
+# ====================
+# OPENAI
+# ====================
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # ====================
 # IN-MEMORY STORES
@@ -148,31 +155,17 @@ async def clear_chat_history(session_id: str):
     CHAT_HISTORY[session_id] = []
     return {"ok": True}
 
-@router.post("/chat/history/{session_id}")
-async def add_chat_history(session_id: str, payload: Dict[str, Any]):
-    msg = {
-        "id": str(datetime.utcnow().timestamp()),
-        "role": payload.get("role", "user"),
-        "content": payload.get("content", ""),
-    }
-    CHAT_HISTORY.setdefault(session_id, []).append(msg)
-    return {"ok": True, "message": msg}
+# ====================
+# VOX BRAIN
+# ====================
 
 @router.post("/chat/send")
 async def chat_send(payload: Dict[str, Any]):
-    """
-    Temporary Vox brain.
-    This will later call OpenAI / local LLM.
-    """
-
     session_id = payload.get("session_id", "default")
     user_content = payload.get("content", "").strip()
 
-    from fastapi import HTTPException
-
     if not user_content:
         raise HTTPException(status_code=400, detail="Empty message")
-
 
     # Store user message
     user_msg = {
@@ -182,12 +175,44 @@ async def chat_send(payload: Dict[str, Any]):
     }
     CHAT_HISTORY.setdefault(session_id, []).append(user_msg)
 
-    # TEMP brain response
+    # Build conversation context
+    conversation = [
+        {
+            "role": "system",
+            "content": (
+                "You are Vox, a calm, intelligent personal AI assistant. "
+                "You are concise, thoughtful, and helpful. "
+                "You speak naturally and clearly."
+            ),
+        }
+    ]
+
+    # Add recent history (cap at 20)
+    for msg in CHAT_HISTORY[session_id][-20:]:
+        conversation.append(
+            {
+                "role": msg["role"],
+                "content": msg["content"],
+            }
+        )
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=conversation,
+            temperature=0.7,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    assistant_content = response.choices[0].message.content
+
     assistant_msg = {
         "id": str(datetime.utcnow().timestamp()) + "-vox",
         "role": "assistant",
-        "content": f"🧠 Vox heard you say: {user_content}",
+        "content": assistant_content,
     }
+
     CHAT_HISTORY[session_id].append(assistant_msg)
 
     return assistant_msg
@@ -205,5 +230,3 @@ async def status():
 # ====================
 
 app.include_router(router)
-
-
