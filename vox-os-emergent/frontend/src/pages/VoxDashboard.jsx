@@ -2,19 +2,12 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+
 import {
   Send,
   RefreshCw,
   ChevronDown,
   ChevronUp,
-  Link,
-  Plus,
-  Trash2,
-  Edit2,
-  Save,
-  X,
-  Circle,
-  CheckSquare,
 } from "lucide-react";
 
 import CalendarPanel from "@/components/CalendarPanel";
@@ -73,9 +66,10 @@ export default function VoxDashboard() {
 
   const initializeData = async () => {
     try {
-      const [tasksRes, memoriesRes] = await Promise.allSettled([
+      const [tasksRes, memoriesRes, eventsRes] = await Promise.allSettled([
         axios.get(`${API}/tasks`),
         axios.get(`${API}/memories`),
+        axios.get(`${API}/calendar`),
       ]);
 
       setTasks(
@@ -87,6 +81,12 @@ export default function VoxDashboard() {
       setMemories(
         memoriesRes.status === "fulfilled"
           ? safeArray(memoriesRes.value.data)
+          : []
+      );
+
+      setEvents(
+        eventsRes.status === "fulfilled"
+          ? safeArray(eventsRes.value.data)
           : []
       );
 
@@ -109,12 +109,14 @@ export default function VoxDashboard() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!inputValue.trim() || isLoading) return;
+
+    const content = inputValue.trim();
+    if (!content || isLoading) return;
 
     const userMessage = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       role: "user",
-      content: inputValue.trim(),
+      content,
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -122,40 +124,47 @@ export default function VoxDashboard() {
     setIsLoading(true);
 
     try {
-      const res = await axios.post(`${API}/chat`, {
-        message: userMessage.content,
-        session_id: "default",
+      await axios.post(`${API}/chat/history/default`, {
+        role: "user",
+        content,
       });
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: res.data?.response || "(No response)",
-        },
-      ]);
+      const voxMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "🧠 Vox is listening.",
+      };
+
+      setMessages((prev) => [...prev, voxMessage]);
+
+      await axios.post(`${API}/chat/history/default`, {
+        role: "assistant",
+        content: voxMessage.content,
+      });
     } catch (err) {
-      toast.error("Failed to send message");
+      console.error("Chat send error:", err.response?.data || err);
+      toast.error(
+        err.response?.data?.detail ||
+        err.response?.data?.error ||
+        "Failed to send message"
+      );
     } finally {
       setIsLoading(false);
-      inputRef.current?.focus();
     }
   };
 
   const clearChat = async () => {
-    if (!confirm("Clear all chat history?")) return;
-
     try {
       setMessages([]);
       await axios.delete(`${API}/chat/history/default`);
       toast.success("Chat cleared");
-    } catch {
+    } catch (err) {
+      console.error("Clear chat error:", err);
       toast.error("Failed to clear chat");
     }
   };
 
-  /* ================= TASKS ================= */
+  /* ================= COMPUTED ================= */
 
   const pendingTasks = safeArray(tasks).filter(
     (t) => t.status !== "completed"
@@ -237,6 +246,7 @@ export default function VoxDashboard() {
                     onChange={(e) => setInputValue(e.target.value)}
                     className="console-input flex-1"
                     placeholder="Ask Vox anything..."
+                    disabled={isLoading}
                   />
                   <button
                     type="submit"
