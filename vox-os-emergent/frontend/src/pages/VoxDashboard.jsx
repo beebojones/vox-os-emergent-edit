@@ -1,15 +1,20 @@
-// Build: 1766445068
+// VoxDashboard.jsx
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import logger from "@/utils/logger";
-axios.defaults.withCredentials = true;
-
 import {
   Send,
+  RefreshCw,
   ChevronDown,
   ChevronUp,
   Link,
+  Plus,
+  Trash2,
+  Edit2,
+  Save,
+  X,
+  Circle,
+  CheckSquare,
 } from "lucide-react";
 
 import CalendarPanel from "@/components/CalendarPanel";
@@ -21,31 +26,25 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
+axios.defaults.withCredentials = true;
+
 const API = "https://voxconsole.com/api";
+const safeArray = (v) => (Array.isArray(v) ? v : []);
 
 export default function VoxDashboard() {
-  // ================= STATE =================
+  /* ================= STATE ================= */
+
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const [events, setEvents] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [memories, setMemories] = useState([]);
+  const [events, setEvents] = useState([]);
 
   const [showCalendar, setShowCalendar] = useState(true);
   const [showTasks, setShowTasks] = useState(true);
   const [showMemories, setShowMemories] = useState(false);
-
-  const [calendarStatus, setCalendarStatus] = useState({
-    google: { connected: false, email: "" },
-    outlook: { connected: false, email: "" },
-  });
-
-  const [googleEvents, setGoogleEvents] = useState([]);
-  const [calendarProviders, setCalendarProviders] = useState([]);
-
-  const [showProviderPicker, setShowProviderPicker] = useState(false);
 
   const [calendarEventModal, setCalendarEventModal] = useState({
     isOpen: false,
@@ -53,46 +52,47 @@ export default function VoxDashboard() {
     selectedDate: null,
   });
 
-  // ================= REFS =================
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // ================= HELPERS =================
-  const safeArray = (v) => (Array.isArray(v) ? v : []);
+  /* ================= HELPERS ================= */
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-    });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [messages]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
-  // ================= INIT =================
+  /* ================= INIT ================= */
+
   useEffect(() => {
     initializeData();
-    checkCalendarConnection();
   }, []);
 
   const initializeData = async () => {
     try {
-      const [eventsRes, tasksRes, memoriesRes] = await Promise.all([
-        axios.get(`${API}/calendar`),
+      const [tasksRes, memoriesRes] = await Promise.allSettled([
         axios.get(`${API}/tasks`),
         axios.get(`${API}/memories`),
       ]);
 
-      setEvents(safeArray(eventsRes.data));
-      setTasks(safeArray(tasksRes.data));
-      setMemories(safeArray(memoriesRes.data));
+      setTasks(
+        tasksRes.status === "fulfilled"
+          ? safeArray(tasksRes.value.data)
+          : []
+      );
 
-      await fetchChatHistory();
-    } catch (e) {
-      console.error("Init error:", e);
-      setEvents([]);
-      setTasks([]);
-      setMemories([]);
+      setMemories(
+        memoriesRes.status === "fulfilled"
+          ? safeArray(memoriesRes.value.data)
+          : []
+      );
+
+      fetchChatHistory();
+    } catch (err) {
+      console.error("Init error:", err);
     }
   };
 
@@ -105,17 +105,16 @@ export default function VoxDashboard() {
     }
   };
 
-  // ================= CHAT =================
+  /* ================= CHAT ================= */
+
   const sendMessage = async (e) => {
     e.preventDefault();
-
-    const content = inputValue.trim();
-    if (!content || isLoading) return;
+    if (!inputValue.trim() || isLoading) return;
 
     const userMessage = {
-      id: crypto.randomUUID(),
+      id: Date.now().toString(),
       role: "user",
-      content,
+      content: inputValue.trim(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -123,70 +122,50 @@ export default function VoxDashboard() {
     setIsLoading(true);
 
     try {
-      await axios.post(`${API}/chat/history/default`, {
-        role: "user",
-        content,
+      const res = await axios.post(`${API}/chat`, {
+        message: userMessage.content,
+        session_id: "default",
       });
 
-      const voxReply = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: "🧠 Vox is thinking… (LLM coming next)",
-      };
-
-      setMessages((prev) => [...prev, voxReply]);
-
-      await axios.post(`${API}/chat/history/default`, {
-        role: "assistant",
-        content: voxReply.content,
-      });
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: res.data?.response || "(No response)",
+        },
+      ]);
     } catch (err) {
-      console.error("Chat error:", err);
+      toast.error("Failed to send message");
     } finally {
       setIsLoading(false);
+      inputRef.current?.focus();
     }
   };
 
-  // ================= CALENDAR =================
-  const fetchCalendarProviders = async () => {
+  const clearChat = async () => {
+    if (!confirm("Clear all chat history?")) return;
+
     try {
-      const res = await axios.get(`${API}/auth/calendar/providers`);
-      setCalendarProviders(safeArray(res.data?.providers));
+      setMessages([]);
+      await axios.delete(`${API}/chat/history/default`);
+      toast.success("Chat cleared");
     } catch {
-      setCalendarProviders([]);
+      toast.error("Failed to clear chat");
     }
   };
 
-  const checkCalendarConnection = async () => {
-    let google = { connected: false, email: "" };
-    let outlook = { connected: false, email: "" };
+  /* ================= TASKS ================= */
 
-    try {
-      const r = await axios.get(`${API}/auth/google/status`);
-      google = {
-        connected: !!r.data?.connected,
-        email: r.data?.email || "",
-      };
-    } catch {}
+  const pendingTasks = safeArray(tasks).filter(
+    (t) => t.status !== "completed"
+  ).length;
 
-    try {
-      const r = await axios.get(`${API}/auth/outlook/status`);
-      outlook = {
-        connected: !!r.data?.connected,
-        email: r.data?.email || "",
-      };
-    } catch {}
+  /* ================= RENDER ================= */
 
-    setCalendarStatus({ google, outlook });
-    fetchCalendarProviders();
-  };
-
-  // ================= RENDER =================
   return (
     <div className="console-wrapper">
       <div className="max-w-7xl mx-auto">
-
-        {/* HEADER */}
         <header className="mb-8">
           <h1 className="title-gradient text-4xl font-bold tracking-[0.18em] uppercase">
             VOX OS
@@ -194,68 +173,56 @@ export default function VoxDashboard() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
           {/* LEFT */}
           <div className="lg:col-span-3 space-y-6">
-
-            {/* CALENDAR */}
             <Collapsible open={showCalendar} onOpenChange={setShowCalendar}>
               <div className="console-card p-4">
                 <CollapsibleTrigger className="flex justify-between w-full mb-4">
-                  <span className="uppercase text-sm tracking-wider">Calendar</span>
+                  <span className="uppercase text-sm">Calendar</span>
                   {showCalendar ? <ChevronUp /> : <ChevronDown />}
                 </CollapsibleTrigger>
-
                 <CollapsibleContent>
-                  {!calendarStatus.google.connected &&
-                  !calendarStatus.outlook.connected ? (
-                    <>
-                      <button
-                        className="console-button w-full text-xs"
-                        onClick={() => setShowProviderPicker((v) => !v)}
-                      >
-                        <Link className="w-3 h-3" /> Connect Calendar
-                      </button>
-
-                      {showProviderPicker &&
-                        safeArray(calendarProviders)
-                          .filter(
-                            (p) =>
-                              (p.id === "google" &&
-                                !calendarStatus.google.connected) ||
-                              (p.id === "outlook" &&
-                                !calendarStatus.outlook.connected)
-                          )
-                          .map((p) => (
-                            <button
-                              key={p.id}
-                              className="console-button w-full text-xs mt-2"
-                            >
-                              {p.name}
-                            </button>
-                          ))}
-                    </>
-                  ) : (
-                    <CalendarPanel
-                      events={safeArray(googleEvents)}
-                      isConnected
-                    />
-                  )}
+                  <CalendarPanel
+                    events={safeArray(events)}
+                    isConnected={false}
+                    onAddEvent={() => {}}
+                    onEditEvent={() => {}}
+                    onDeleteEvent={() => {}}
+                  />
                 </CollapsibleContent>
               </div>
             </Collapsible>
           </div>
 
-          {/* CENTER CHAT */}
+          {/* CENTER */}
           <div className="lg:col-span-6">
             <div className="console-card h-[600px] flex flex-col">
+              <div className="flex justify-between items-center p-4 border-b border-white/10">
+                <span className="text-sm">Chat</span>
+                <button
+                  onClick={clearChat}
+                  className="console-button text-xs"
+                >
+                  <RefreshCw className="w-3 h-3" /> Clear
+                </button>
+              </div>
 
               <ScrollArea className="flex-1 p-4">
-                {safeArray(messages).map((m) => (
-                  <div key={m.id} className={`chat-message ${m.role}`}>
+                {messages.length === 0 && (
+                  <p className="text-soft text-sm text-center py-8">
+                    No messages yet.
+                  </p>
+                )}
+
+                {messages.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`chat-message ${m.role}`}
+                  >
                     {m.content}
                   </div>
                 ))}
+
                 <div ref={messagesEndRef} />
               </ScrollArea>
 
@@ -285,18 +252,14 @@ export default function VoxDashboard() {
 
           {/* RIGHT */}
           <div className="lg:col-span-3 space-y-6">
-
-            {/* TASKS */}
             <Collapsible open={showTasks} onOpenChange={setShowTasks}>
               <div className="console-card p-4">
                 <CollapsibleTrigger className="flex justify-between w-full mb-4">
                   <span>Tasks</span>
-                  <span className="console-badge">
-                    {safeArray(tasks).length}
-                  </span>
+                  <span className="console-badge">{pendingTasks}</span>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  {safeArray(tasks).length === 0 && (
+                  {tasks.length === 0 && (
                     <p className="text-xs text-soft text-center py-4">
                       No tasks yet
                     </p>
@@ -305,13 +268,12 @@ export default function VoxDashboard() {
               </div>
             </Collapsible>
 
-            {/* MEMORIES */}
             <Collapsible open={showMemories} onOpenChange={setShowMemories}>
               <div className="console-card p-4">
                 <CollapsibleTrigger className="flex justify-between w-full mb-4">
                   <span>Memory</span>
                   <span className="console-badge orange">
-                    {safeArray(memories).length}
+                    {memories.length}
                   </span>
                 </CollapsibleTrigger>
               </div>
@@ -322,7 +284,11 @@ export default function VoxDashboard() {
 
       <CalendarEventModal
         isOpen={calendarEventModal.isOpen}
-        onClose={() => setCalendarEventModal({ isOpen: false })}
+        onClose={() =>
+          setCalendarEventModal({ isOpen: false, event: null })
+        }
+        onSave={() => {}}
+        onDelete={() => {}}
         event={calendarEventModal.event}
         selectedDate={calendarEventModal.selectedDate}
       />
