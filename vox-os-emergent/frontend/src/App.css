@@ -1,78 +1,94 @@
-/* App.css - Additional app-specific styles */
+/* =========================
+   APP ROOT
+========================= */
 
-/* Ensure the app container doesn't interfere with layout */
 .App {
-  min-height: 100vh;
-}
-
-/* Smooth transitions for interactive elements */
-button, input, a {
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-/* Loading spinner */
-.loading-spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(0, 246, 255, 0.3);
-  border-top-color: #00f6ff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Typing indicator */
-.typing-indicator {
+  height: 100%;
+  width: 100%;
   display: flex;
-  gap: 4px;
-  padding: 0.5rem;
+  flex-direction: column;
 }
 
-.typing-indicator span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #00f6ff;
-  animation: typing 1.4s ease-in-out infinite;
+/* =========================
+   PAGE SAFETY
+========================= */
+
+* {
+  box-sizing: border-box;
 }
 
-.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes typing {
-  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-  30% { transform: translateY(-8px); opacity: 1; }
+body {
+  margin: 0;
+  overflow-x: hidden;
 }
 
-/* Fade in animation */
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
+/* =========================
+   DASHBOARD GRID SAFETY
+========================= */
+
+.max-w-7xl {
+  max-width: 80rem;
+}
+
+/* Prevent collapsed grid columns */
+.grid {
+  align-items: stretch;
+}
+
+/* =========================
+   CARD CONTENT FLOW
+========================= */
+
+.console-card {
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   CHAT LAYOUT FIXES
+========================= */
+
+.chat-message + .chat-message {
+  margin-top: 10px;
+}
+
+/* Ensure chat scroll area behaves */
+[data-radix-scroll-area-viewport] {
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   COLLAPSIBLE FIXES
+========================= */
+
+[data-state="open"] {
+  animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Slide in from right */
-.slide-in-right {
-  animation: slideInRight 0.3s ease-out;
+/* =========================
+   INPUT + BUTTON ALIGNMENT
+========================= */
+
+form {
+  margin: 0;
 }
 
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
+/* =========================
+   MODAL SAFETY
+========================= */
 
-/* Pulse animation for notifications */
-.pulse {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+[role="dialog"] {
+  z-index: 50;
 }
