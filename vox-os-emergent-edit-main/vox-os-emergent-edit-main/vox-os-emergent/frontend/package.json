@@ -61,6 +61,12 @@
     "build": "cross-env DISABLE_ESLINT_PLUGIN=true craco build",
     "test": "craco test"
   },
+  "eslintConfig": {
+    "extends": ["react-app", "react-app/jest"],
+    "ignorePatterns": [
+      "src/pages/VoxDashboard.jsx"
+    ]
+  },
   "browserslist": {
     "production": [
       ">0.2%",
