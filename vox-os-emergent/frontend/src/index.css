@@ -1,103 +1,166 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ================================
+   VOX OS — GLOBAL THEME
+   ================================ */
 
-/* =========================
-   ROOT + GLOBAL
-========================= */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 :root {
-  --bg-main: #0b0f14;
-  --bg-card: rgba(255, 255, 255, 0.04);
-  --border-soft: rgba(255, 255, 255, 0.08);
-  --text-main: #e6e9ef;
-  --text-soft: #9aa4b2;
-  --accent: #6ae3ff;
-  --accent-warm: #ffb86c;
+  --bg-main: radial-gradient(
+    circle at top,
+    #0f172a 0%,
+    #020617 60%,
+    #000000 100%
+  );
+
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.12);
+
+  --accent-cyan: #5eead4;
+  --accent-purple: #a78bfa;
+  --accent-pink: #f472b6;
+  --accent-blue: #38bdf8;
+  --accent-green: #4ade80;
+
+  --text-main: #e5e7eb;
+  --text-soft: rgba(229, 231, 235, 0.65);
+
+  --glow-cyan: 0 0 24px rgba(94, 234, 212, 0.35);
+  --glow-purple: 0 0 28px rgba(167, 139, 250, 0.35);
+  --glow-pink: 0 0 28px rgba(244, 114, 182, 0.35);
+
+  --radius-xl: 18px;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+
+  --blur-lg: blur(18px);
+}
+
+/* ================================
+   BASE RESET
+   ================================ */
+
+* {
+  box-sizing: border-box;
 }
 
 html,
-body {
-  height: 100%;
-  background: radial-gradient(
-    circle at top left,
-    #111827 0%,
-    #0b0f14 60%
-  );
-  color: var(--text-main);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
+body,
 #root {
   height: 100%;
 }
 
-/* =========================
-   LAYOUT
-========================= */
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  overflow: hidden;
+}
+
+/* ================================
+   LAYOUT WRAPPER
+   ================================ */
 
 .console-wrapper {
-  min-height: 100%;
-  padding: 24px;
+  min-height: 100vh;
+  padding: 32px;
+  background: var(--bg-main);
 }
 
-/* =========================
-   TYPOGRAPHY
-========================= */
-
-.title-gradient {
-  background: linear-gradient(90deg, #6ae3ff, #b983ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.text-soft {
-  color: var(--text-soft);
-}
-
-/* =========================
+/* ================================
    CARDS
-========================= */
+   ================================ */
 
 .console-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-soft);
-  border-radius: 14px;
-  backdrop-filter: blur(12px);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+  backdrop-filter: var(--blur-lg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 12px 30px rgba(0, 0, 0, 0.35);
+    0 0 0 transparent;
+  transition:
+    box-shadow 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.2s ease;
 }
 
-/* =========================
-   BUTTONS & INPUTS
-========================= */
-
-.console-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-soft);
-  color: var(--text-main);
-  transition: all 0.2s ease;
+.console-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow:
+    var(--glow-cyan),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-.console-button:hover {
-  background: rgba(255, 255, 255, 0.12);
+/* ================================
+   TITLES
+   ================================ */
+
+.title-gradient {
+  background: linear-gradient(
+    90deg,
+    var(--accent-cyan),
+    var(--accent-purple),
+    var(--accent-pink)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 0 24px rgba(167, 139, 250, 0.35);
 }
+
+/* ================================
+   CHAT
+   ================================ */
+
+.chat-message {
+  max-width: 85%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: var(--radius-lg);
+  line-height: 1.45;
+  font-size: 14px;
+  white-space: pre-wrap;
+  animation: fadeIn 0.25s ease;
+}
+
+.chat-message.user {
+  margin-left: auto;
+  background: linear-gradient(
+    135deg,
+    rgba(56, 189, 248, 0.25),
+    rgba(167, 139, 250, 0.25)
+  );
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  box-shadow: var(--glow-purple);
+}
+
+.chat-message.assistant {
+  margin-right: auto;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 234, 212, 0.22),
+    rgba(56, 189, 248, 0.18)
+  );
+  border: 1px solid rgba(94, 234, 212, 0.35);
+  box-shadow: var(--glow-cyan);
+}
+
+/* ================================
+   INPUTS
+   ================================ */
 
 .console-input {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-soft);
-  border-radius: 10px;
-  padding: 10px 12px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
   color: var(--text-main);
-  font-size: 14px;
+  padding: 10px 14px;
   outline: none;
 }
 
@@ -105,65 +168,69 @@ body {
   color: var(--text-soft);
 }
 
-/* =========================
+.console-input:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* ================================
+   BUTTONS
+   ================================ */
+
+.console-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 234, 212, 0.25),
+    rgba(167, 139, 250, 0.25)
+  );
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.25s ease;
+}
+
+.console-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--glow-purple);
+}
+
+/* ================================
    BADGES
-========================= */
+   ================================ */
 
 .console-badge {
+  padding: 4px 8px;
   font-size: 11px;
-  padding: 2px 8px;
   border-radius: 999px;
-  background: rgba(106, 227, 255, 0.15);
-  color: var(--accent);
+  background: rgba(56, 189, 248, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: var(--glow-cyan);
 }
 
 .console-badge.orange {
-  background: rgba(255, 184, 108, 0.15);
-  color: var(--accent-warm);
+  background: rgba(244, 114, 182, 0.25);
+  border-color: rgba(244, 114, 182, 0.45);
+  box-shadow: var(--glow-pink);
 }
 
-/* =========================
-   CHAT
-========================= */
+/* ================================
+   ANIMATIONS
+   ================================ */
 
-.chat-message {
-  max-width: 85%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-size: 14px;
-  line-height: 1.4;
-  white-space: pre-wrap;
-}
-
-.chat-message.user {
-  align-self: flex-end;
-  background: linear-gradient(
-    135deg,
-    rgba(106, 227, 255, 0.2),
-    rgba(106, 227, 255, 0.08)
-  );
-  border: 1px solid rgba(106, 227, 255, 0.25);
-}
-
-.chat-message.assistant {
-  align-self: flex-start;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-soft);
-}
-
-/* =========================
-   SCROLLBARS
-========================= */
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
