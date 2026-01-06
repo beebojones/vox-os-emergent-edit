@@ -259,10 +259,8 @@ export default function VoxDashboard() {
         </div>
       </div>
 
-      <CalendarEventModal
-        isOpen={calendarEventModal.isOpen}
-        onClose={() => setCalendarEventModal({ isOpen: false })}
-      />
+    {/* CalendarEventModal removed for build isolate */}
+
     </div>
   );
 }
