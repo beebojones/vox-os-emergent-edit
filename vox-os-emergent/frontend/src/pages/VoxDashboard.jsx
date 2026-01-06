@@ -122,6 +122,18 @@ export default function VoxDashboard() {
     content,
   };
 
+    const clearChat = async () => {
+  try {
+    setMessages([]);
+    await axios.delete(`${API}/chat/history/default`);
+    toast.success("Chat cleared");
+  } catch (err) {
+    console.error("Clear chat error:", err);
+    toast.error("Failed to clear chat");
+  }
+};
+
+
   // 👇 SHOW USER MESSAGE IMMEDIATELY
   setMessages((prev) => [...prev, userMessage]);
 
@@ -294,5 +306,6 @@ export default function VoxDashboard() {
     </div>
   );
 }
+
 
 
