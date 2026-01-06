@@ -8,6 +8,7 @@ import {
   RefreshCw,
   ChevronDown,
   ChevronUp,
+  Plus,
 } from "lucide-react";
 
 import CalendarPanel from "@/components/CalendarPanel";
@@ -35,9 +36,10 @@ export default function VoxDashboard() {
   const [memories, setMemories] = useState([]);
   const [events, setEvents] = useState([]);
 
+  const [showBriefing, setShowBriefing] = useState(true);
   const [showCalendar, setShowCalendar] = useState(true);
   const [showTasks, setShowTasks] = useState(true);
-  const [showMemories, setShowMemories] = useState(false);
+  const [showMemories, setShowMemories] = useState(true);
 
   const [calendarEventModal, setCalendarEventModal] = useState({
     isOpen: false,
@@ -56,32 +58,27 @@ export default function VoxDashboard() {
 
   useEffect(scrollToBottom, [messages]);
 
-  /* ================= DATA FETCH ================= */
+  /* ================= INIT ================= */
 
-  const fetchTasks = async () => {
-    try {
-      const res = await axios.get(`${API}/tasks`);
-      setTasks(safeArray(res.data));
-    } catch (err) {
-      console.error("Fetch tasks failed", err);
-    }
-  };
+  useEffect(() => {
+    initializeData();
+  }, []);
 
-  const fetchMemories = async () => {
+  const initializeData = async () => {
     try {
-      const res = await axios.get(`${API}/memories`);
-      setMemories(safeArray(res.data));
-    } catch (err) {
-      console.error("Fetch memories failed", err);
-    }
-  };
+      const [tasksRes, memoriesRes, eventsRes] = await Promise.allSettled([
+        axios.get(`${API}/tasks`),
+        axios.get(`${API}/memories`),
+        axios.get(`${API}/calendar`),
+      ]);
 
-  const fetchEvents = async () => {
-    try {
-      const res = await axios.get(`${API}/calendar`);
-      setEvents(safeArray(res.data));
+      setTasks(tasksRes.status === "fulfilled" ? safeArray(tasksRes.value.data) : []);
+      setMemories(memoriesRes.status === "fulfilled" ? safeArray(memoriesRes.value.data) : []);
+      setEvents(eventsRes.status === "fulfilled" ? safeArray(eventsRes.value.data) : []);
+
+      fetchChatHistory();
     } catch (err) {
-      console.error("Fetch events failed", err);
+      console.error("Init error:", err);
     }
   };
 
@@ -93,13 +90,6 @@ export default function VoxDashboard() {
       setMessages([]);
     }
   };
-
-  useEffect(() => {
-    fetchTasks();
-    fetchMemories();
-    fetchEvents();
-    fetchChatHistory();
-  }, []);
 
   /* ================= CHAT ================= */
 
@@ -127,13 +117,8 @@ export default function VoxDashboard() {
       });
 
       setMessages((prev) => [...prev, res.data]);
-
-      // 🔁 refresh hands-controlled data
-      await fetchTasks();
-      await fetchMemories();
-      await fetchEvents();
     } catch (err) {
-      console.error("Chat send error:", err.response || err);
+      console.error("Chat error:", err);
       toast.error("Failed to send message");
     } finally {
       setIsLoading(false);
@@ -145,28 +130,47 @@ export default function VoxDashboard() {
       setMessages([]);
       await axios.delete(`${API}/chat/history/default`);
       toast.success("Chat cleared");
-    } catch (err) {
-      console.error("Clear chat error:", err);
+    } catch {
       toast.error("Failed to clear chat");
     }
   };
 
   /* ================= COMPUTED ================= */
 
-  const pendingTasks = tasks.filter((t) => t.status !== "completed").length;
+  const pendingTasks = safeArray(tasks).filter(
+    (t) => t.status !== "completed"
+  ).length;
 
   /* ================= RENDER ================= */
 
   return (
     <div className="console-wrapper">
       <div className="max-w-7xl mx-auto">
+
+        {/* HEADER */}
         <header className="mb-8">
           <h1 className="title-gradient text-4xl font-bold tracking-[0.18em] uppercase">
             VOX OS
           </h1>
         </header>
 
+        {/* DAILY BRIEFING */}
+        <Collapsible open={showBriefing} onOpenChange={setShowBriefing}>
+          <div className="console-card p-4 mb-6">
+            <CollapsibleTrigger className="flex justify-between w-full">
+              <span className="uppercase text-sm tracking-wider">
+                Daily Briefing
+              </span>
+              {showBriefing ? <ChevronUp /> : <ChevronDown />}
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-4 text-sm text-soft">
+              You have {pendingTasks} pending tasks today.
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
           {/* LEFT */}
           <div className="lg:col-span-3 space-y-6">
             <Collapsible open={showCalendar} onOpenChange={setShowCalendar}>
@@ -176,49 +180,41 @@ export default function VoxDashboard() {
                   {showCalendar ? <ChevronUp /> : <ChevronDown />}
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <CalendarPanel events={events} isConnected={false} />
+                  <CalendarPanel
+                    events={events}
+                    isConnected={false}
+                    onAddEvent={() => {}}
+                    onEditEvent={() => {}}
+                    onDeleteEvent={() => {}}
+                  />
                 </CollapsibleContent>
               </div>
             </Collapsible>
           </div>
 
-          {/* CENTER */}
+          {/* CENTER CHAT */}
           <div className="lg:col-span-6">
-            <div className="console-card h-[600px] flex flex-col">
+            <div className="console-card h-[620px] flex flex-col">
               <div className="flex justify-between items-center p-4 border-b border-white/10">
-                <span className="text-sm">Chat</span>
+                <span className="text-sm uppercase tracking-wider">Chat</span>
                 <button onClick={clearChat} className="console-button text-xs">
                   <RefreshCw className="w-3 h-3" /> Clear
                 </button>
               </div>
 
               <ScrollArea className="flex-1 p-4 space-y-3">
-                {messages.length === 0 && (
-                  <p className="text-soft text-sm text-center py-8">
-                    No messages yet.
-                  </p>
-                )}
-
                 {messages.map((m) => (
                   <div
                     key={m.id}
-                    className={`max-w-[80%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
-                      m.role === "user"
-                        ? "ml-auto bg-blue-500/20 border border-blue-400/30"
-                        : "mr-auto bg-white/5 border border-white/10"
-                    }`}
+                    className={`chat-message ${m.role}`}
                   >
                     {m.content}
                   </div>
                 ))}
-
                 <div ref={messagesEndRef} />
               </ScrollArea>
 
-              <form
-                onSubmit={sendMessage}
-                className="p-4 border-t border-white/10"
-              >
+              <form onSubmit={sendMessage} className="p-4 border-t border-white/10">
                 <div className="flex gap-2">
                   <input
                     ref={inputRef}
@@ -228,11 +224,7 @@ export default function VoxDashboard() {
                     placeholder="Ask Vox anything..."
                     disabled={isLoading}
                   />
-                  <button
-                    type="submit"
-                    className="console-button"
-                    disabled={isLoading}
-                  >
+                  <button type="submit" className="console-button" disabled={isLoading}>
                     <Send className="w-4 h-4" />
                   </button>
                 </div>
@@ -249,17 +241,9 @@ export default function VoxDashboard() {
                   <span className="console-badge">{pendingTasks}</span>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-2">
-                  {tasks.length === 0 && (
-                    <p className="text-xs text-soft text-center py-4">
-                      No tasks yet
-                    </p>
-                  )}
                   {tasks.map((t) => (
-                    <div
-                      key={t.id}
-                      className="text-sm px-3 py-2 rounded-md bg-white/5 border border-white/10"
-                    >
-                      {t.title}
+                    <div key={t.id} className="text-xs text-soft">
+                      • {t.title}
                     </div>
                   ))}
                 </CollapsibleContent>
@@ -274,14 +258,9 @@ export default function VoxDashboard() {
                     {memories.length}
                   </span>
                 </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-2">
+                <CollapsibleContent className="space-y-2 text-xs text-soft">
                   {memories.map((m) => (
-                    <div
-                      key={m.id}
-                      className="text-xs px-3 py-2 rounded-md bg-white/5 border border-white/10"
-                    >
-                      {m.content}
-                    </div>
+                    <div key={m.id}>• {m.content}</div>
                   ))}
                 </CollapsibleContent>
               </div>
@@ -292,9 +271,7 @@ export default function VoxDashboard() {
 
       <CalendarEventModal
         isOpen={calendarEventModal.isOpen}
-        onClose={() =>
-          setCalendarEventModal({ isOpen: false, event: null })
-        }
+        onClose={() => setCalendarEventModal({ isOpen: false })}
         onSave={() => {}}
         onDelete={() => {}}
         event={calendarEventModal.event}
