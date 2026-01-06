@@ -157,7 +157,7 @@ export default function VoxDashboard() {
   /* ================= COMPUTED ================= */
 
   const pendingTasks = safeArray(tasks).filter((t) => t.status !== "completed").length;
-  const statusLabel = isLoading ? "Thinking…" : "Ready to assist";
+  const statusLabel = isLoading ? "Thinking..." : "Ready to assist";
 
   /* ================= RENDER ================= */
 
