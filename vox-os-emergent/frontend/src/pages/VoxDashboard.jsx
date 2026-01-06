@@ -10,6 +10,8 @@ import {
   ChevronUp,
   Plus,
   Zap,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 import CalendarPanel from "@/components/CalendarPanel";
@@ -175,8 +177,32 @@ export default function VoxDashboard() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Sidebar - Calendar */}
+          {/* Left Sidebar - Briefing & Calendar */}
           <div className="lg:col-span-3 space-y-6">
+            {/* Daily Briefing (summary only to match visual hierarchy) */}
+            <Collapsible open={showBriefing} onOpenChange={setShowBriefing}>
+              <div className="console-card p-4">
+                <CollapsibleTrigger className="flex items-center justify-between w-full">
+                  <span className="uppercase text-sm tracking-wider text-white/90">Daily Briefing</span>
+                  {showBriefing ? <ChevronUp className="w-4 h-4 text-soft" /> : <ChevronDown className="w-4 h-4 text-soft" />}
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="flex gap-2 mb-3 mt-3">
+                    <button type="button" className="console-button flex-1 text-xs" disabled>
+                      <Sun className="w-3 h-3" />
+                      Morning
+                    </button>
+                    <button type="button" className="console-button flex-1 text-xs" disabled>
+                      <Moon className="w-3 h-3" />
+                      Evening
+                    </button>
+                  </div>
+                  <div className="text-xs text-soft">Request a briefing to see Vox’s summary</div>
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
+
+            {/* Calendar */}
             <Collapsible open={showCalendar} onOpenChange={setShowCalendar}>
               <div className="console-card p-4">
                 <CollapsibleTrigger className="flex items-center justify-between w-full mb-4">
@@ -191,21 +217,6 @@ export default function VoxDashboard() {
                     onEditEvent={() => {}}
                     onDeleteEvent={() => {}}
                   />
-                </CollapsibleContent>
-              </div>
-            </Collapsible>
-
-            {/* Daily Briefing (summary only to match visual hierarchy) */}
-            <Collapsible open={showBriefing} onOpenChange={setShowBriefing}>
-              <div className="console-card p-4">
-                <CollapsibleTrigger className="flex items-center justify-between w-full">
-                  <span className="uppercase text-sm tracking-wider text-white/90">Daily Briefing</span>
-                  {showBriefing ? <ChevronUp className="w-4 h-4 text-soft" /> : <ChevronDown className="w-4 h-4 text-soft" />}
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div className="text-sm text-white/80 leading-relaxed mt-3 fade-in">
-                    You have {pendingTasks} pending tasks today.
-                  </div>
                 </CollapsibleContent>
               </div>
             </Collapsible>
@@ -317,14 +328,3 @@ export default function VoxDashboard() {
         </div>
       </div>
 
-      <CalendarEventModal
-        isOpen={calendarEventModal.isOpen}
-        onClose={() => setCalendarEventModal({ isOpen: false })}
-        onSave={() => {}}
-        onDelete={() => {}}
-        event={calendarEventModal.event}
-        selectedDate={calendarEventModal.selectedDate}
-      />
-    </div>
-  );
-}
