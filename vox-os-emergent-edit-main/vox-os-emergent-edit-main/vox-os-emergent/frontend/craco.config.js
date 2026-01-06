@@ -68,6 +68,13 @@ const webpackConfig = {
         webpackConfig.plugins.push(healthPluginInstance);
       }
 
+      // Ensure ESLint doesn't block production builds (we run separate linting)
+      if (process.env.NODE_ENV === 'production' && Array.isArray(webpackConfig.plugins)) {
+        webpackConfig.plugins = webpackConfig.plugins.filter(
+          (plugin) => plugin && plugin.constructor && plugin.constructor.name !== 'ESLintWebpackPlugin'
+        );
+      }
+
       return webpackConfig;
     },
   },
