@@ -58,7 +58,7 @@
     "start": "craco start",
     "normalize": "node scripts/normalize-punctuation.js --write",
     "prebuild": "node scripts/normalize-punctuation.js --write",
-    "build": "cross-env DISABLE_ESLINT_PLUGIN=true craco build",
+    "build": "DISABLE_ESLINT_PLUGIN=true craco build",
     "test": "craco test"
   },
   "eslintConfig": {
@@ -84,7 +84,6 @@
     "@craco/craco": "^7.1.0",
     "@eslint/js": "9.23.0",
     "autoprefixer": "^10.4.20",
-    "cross-env": "^7.0.3",
     "eslint": "9.23.0",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jsx-a11y": "6.10.2",
