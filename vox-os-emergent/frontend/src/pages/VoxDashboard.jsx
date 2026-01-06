@@ -54,31 +54,34 @@ export default function VoxDashboard() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  useEffect(scrollToBottom, [messages]);
 
-  /* ================= INIT ================= */
+  /* ================= DATA FETCH ================= */
 
-  useEffect(() => {
-    initializeData();
-  }, []);
-
-  const initializeData = async () => {
+  const fetchTasks = async () => {
     try {
-      const [tasksRes, memoriesRes, eventsRes] = await Promise.allSettled([
-        axios.get(`${API}/tasks`),
-        axios.get(`${API}/memories`),
-        axios.get(`${API}/calendar`),
-      ]);
-
-      setTasks(tasksRes.status === "fulfilled" ? safeArray(tasksRes.value.data) : []);
-      setMemories(memoriesRes.status === "fulfilled" ? safeArray(memoriesRes.value.data) : []);
-      setEvents(eventsRes.status === "fulfilled" ? safeArray(eventsRes.value.data) : []);
-
-      fetchChatHistory();
+      const res = await axios.get(`${API}/tasks`);
+      setTasks(safeArray(res.data));
     } catch (err) {
-      console.error("Init error:", err);
+      console.error("Fetch tasks failed", err);
+    }
+  };
+
+  const fetchMemories = async () => {
+    try {
+      const res = await axios.get(`${API}/memories`);
+      setMemories(safeArray(res.data));
+    } catch (err) {
+      console.error("Fetch memories failed", err);
+    }
+  };
+
+  const fetchEvents = async () => {
+    try {
+      const res = await axios.get(`${API}/calendar`);
+      setEvents(safeArray(res.data));
+    } catch (err) {
+      console.error("Fetch events failed", err);
     }
   };
 
@@ -90,6 +93,13 @@ export default function VoxDashboard() {
       setMessages([]);
     }
   };
+
+  useEffect(() => {
+    fetchTasks();
+    fetchMemories();
+    fetchEvents();
+    fetchChatHistory();
+  }, []);
 
   /* ================= CHAT ================= */
 
@@ -106,7 +116,6 @@ export default function VoxDashboard() {
       content,
     };
 
-    // Show user message immediately
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
@@ -117,8 +126,12 @@ export default function VoxDashboard() {
         content,
       });
 
-      // Append Vox response
       setMessages((prev) => [...prev, res.data]);
+
+      // 🔁 refresh hands-controlled data
+      await fetchTasks();
+      await fetchMemories();
+      await fetchEvents();
     } catch (err) {
       console.error("Chat send error:", err.response || err);
       toast.error("Failed to send message");
@@ -140,9 +153,7 @@ export default function VoxDashboard() {
 
   /* ================= COMPUTED ================= */
 
-  const pendingTasks = safeArray(tasks).filter(
-    (t) => t.status !== "completed"
-  ).length;
+  const pendingTasks = tasks.filter((t) => t.status !== "completed").length;
 
   /* ================= RENDER ================= */
 
@@ -165,13 +176,7 @@ export default function VoxDashboard() {
                   {showCalendar ? <ChevronUp /> : <ChevronDown />}
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <CalendarPanel
-                    events={safeArray(events)}
-                    isConnected={false}
-                    onAddEvent={() => {}}
-                    onEditEvent={() => {}}
-                    onDeleteEvent={() => {}}
-                  />
+                  <CalendarPanel events={events} isConnected={false} />
                 </CollapsibleContent>
               </div>
             </Collapsible>
@@ -182,15 +187,12 @@ export default function VoxDashboard() {
             <div className="console-card h-[600px] flex flex-col">
               <div className="flex justify-between items-center p-4 border-b border-white/10">
                 <span className="text-sm">Chat</span>
-                <button
-                  onClick={clearChat}
-                  className="console-button text-xs"
-                >
+                <button onClick={clearChat} className="console-button text-xs">
                   <RefreshCw className="w-3 h-3" /> Clear
                 </button>
               </div>
 
-              <ScrollArea className="flex-1 p-4">
+              <ScrollArea className="flex-1 p-4 space-y-3">
                 {messages.length === 0 && (
                   <p className="text-soft text-sm text-center py-8">
                     No messages yet.
@@ -200,7 +202,11 @@ export default function VoxDashboard() {
                 {messages.map((m) => (
                   <div
                     key={m.id}
-                    className={`chat-message ${m.role}`}
+                    className={`max-w-[80%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
+                      m.role === "user"
+                        ? "ml-auto bg-blue-500/20 border border-blue-400/30"
+                        : "mr-auto bg-white/5 border border-white/10"
+                    }`}
                   >
                     {m.content}
                   </div>
@@ -248,32 +254,17 @@ export default function VoxDashboard() {
                       No tasks yet
                     </p>
                   )}
-
-                  {tasks.map((task) => (
+                  {tasks.map((t) => (
                     <div
-                      key={task.id}
-                      className="flex items-center justify-between gap-2 rounded-md bg-white/5 px-3 py-2 text-sm"
+                      key={t.id}
+                      className="text-sm px-3 py-2 rounded-md bg-white/5 border border-white/10"
                     >
-                      <div className="flex flex-col">
-                        <span className="text-white">
-                          {task.title || "Untitled task"}
-                        </span>
-                        <span className="text-[10px] uppercase text-soft">
-                           {task.status || "open"}
-                        </span>
-                      </div>
-
-                      <button
-                        className="text-xs text-red-400 hover:text-red-300"
-                        onClick={() => {
-                          console.log("Delete task", task.id);
-                        }}
-                      >
-                        Delete
-                      </button>
+                      {t.title}
                     </div>
                   ))}
                 </CollapsibleContent>
+              </div>
+            </Collapsible>
 
             <Collapsible open={showMemories} onOpenChange={setShowMemories}>
               <div className="console-card p-4">
@@ -283,6 +274,16 @@ export default function VoxDashboard() {
                     {memories.length}
                   </span>
                 </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2">
+                  {memories.map((m) => (
+                    <div
+                      key={m.id}
+                      className="text-xs px-3 py-2 rounded-md bg-white/5 border border-white/10"
+                    >
+                      {m.content}
+                    </div>
+                  ))}
+                </CollapsibleContent>
               </div>
             </Collapsible>
           </div>
@@ -302,4 +303,3 @@ export default function VoxDashboard() {
     </div>
   );
 }
-
