@@ -1,4 +1,5 @@
 // VoxDashboard.jsx
+throw new Error("VERCEL IS USING THIS FILE");
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "sonner";
