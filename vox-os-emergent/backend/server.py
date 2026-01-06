@@ -4,6 +4,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from typing import Dict, List, Any
 from datetime import datetime
 import os
+import json
 
 from openai import OpenAI
 
@@ -168,7 +169,7 @@ async def chat_send(payload: Dict[str, Any]):
     if msg.tool_calls:
         for call in msg.tool_calls:
             if call.function.name == "create_task":
-                args = call.function.arguments
+                args = json.loads(call.function.arguments)
                 title = args.get("title")
 
                 if not title:
@@ -213,3 +214,4 @@ async def status():
 # ====================
 
 app.include_router(router)
+
