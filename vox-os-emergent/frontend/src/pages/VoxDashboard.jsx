@@ -242,15 +242,38 @@ export default function VoxDashboard() {
                   <span>Tasks</span>
                   <span className="console-badge">{pendingTasks}</span>
                 </CollapsibleTrigger>
-                <CollapsibleContent>
+                <CollapsibleContent className="space-y-2">
                   {tasks.length === 0 && (
                     <p className="text-xs text-soft text-center py-4">
                       No tasks yet
                     </p>
                   )}
+
+                  {tasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className="flex items-center justify-between gap-2 rounded-md bg-white/5 px-3 py-2 text-sm"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-white">
+                          {task.title || "Untitled task"}
+                        </span>
+                        <span className="text-[10px] uppercase text-soft">
+                           {task.status || "open"}
+                        </span>
+                      </div>
+
+                      <button
+                        className="text-xs text-red-400 hover:text-red-300"
+                        onClick={() => {
+                          console.log("Delete task", task.id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
                 </CollapsibleContent>
-              </div>
-            </Collapsible>
 
             <Collapsible open={showMemories} onOpenChange={setShowMemories}>
               <div className="console-card p-4">
@@ -279,3 +302,4 @@ export default function VoxDashboard() {
     </div>
   );
 }
+
