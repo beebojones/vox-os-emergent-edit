@@ -72,23 +72,9 @@ export default function VoxDashboard() {
         axios.get(`${API}/calendar`),
       ]);
 
-      setTasks(
-        tasksRes.status === "fulfilled"
-          ? safeArray(tasksRes.value.data)
-          : []
-      );
-
-      setMemories(
-        memoriesRes.status === "fulfilled"
-          ? safeArray(memoriesRes.value.data)
-          : []
-      );
-
-      setEvents(
-        eventsRes.status === "fulfilled"
-          ? safeArray(eventsRes.value.data)
-          : []
-      );
+      setTasks(tasksRes.status === "fulfilled" ? safeArray(tasksRes.value.data) : []);
+      setMemories(memoriesRes.status === "fulfilled" ? safeArray(memoriesRes.value.data) : []);
+      setEvents(eventsRes.status === "fulfilled" ? safeArray(eventsRes.value.data) : []);
 
       fetchChatHistory();
     } catch (err) {
@@ -108,54 +94,49 @@ export default function VoxDashboard() {
   /* ================= CHAT ================= */
 
   const sendMessage = async (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+    e.preventDefault();
+    if (isLoading) return;
 
-  if (isLoading) return;
+    const content = inputValue.trim();
+    if (!content) return;
 
-  const content = inputValue.trim();
-  if (!content) return;
+    const userMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content,
+    };
 
-  const userMessage = {
-    id: crypto.randomUUID(),
-    role: "user",
-    content,
+    // Show user message immediately
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
+    setIsLoading(true);
+
+    try {
+      const res = await axios.post(`${API}/chat/send`, {
+        session_id: "default",
+        content,
+      });
+
+      // Append Vox response
+      setMessages((prev) => [...prev, res.data]);
+    } catch (err) {
+      console.error("Chat send error:", err.response || err);
+      toast.error("Failed to send message");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-    const clearChat = async () => {
-  try {
-    setMessages([]);
-    await axios.delete(`${API}/chat/history/default`);
-    toast.success("Chat cleared");
-  } catch (err) {
-    console.error("Clear chat error:", err);
-    toast.error("Failed to clear chat");
-  }
-};
-
-
-  // 👇 SHOW USER MESSAGE IMMEDIATELY
-  setMessages((prev) => [...prev, userMessage]);
-
-  setInputValue("");
-  setIsLoading(true);
-
-  try {
-    const res = await axios.post(`${API}/chat/send`, {
-      session_id: "default",
-      content,
-    });
-
-    // 👇 APPEND VOX RESPONSE
-    setMessages((prev) => [...prev, res.data]);
-  } catch (err) {
-    console.error("Chat send error:", err.response || err);
-    toast.error("Failed to send message");
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+  const clearChat = async () => {
+    try {
+      setMessages([]);
+      await axios.delete(`${API}/chat/history/default`);
+      toast.success("Chat cleared");
+    } catch (err) {
+      console.error("Clear chat error:", err);
+      toast.error("Failed to clear chat");
+    }
+  };
 
   /* ================= COMPUTED ================= */
 
@@ -217,27 +198,19 @@ export default function VoxDashboard() {
                 )}
 
                 {messages.map((m) => (
-                  <pre
-                     key={m.id}
-                     style={{
-                     color: "white",
-                     background: "rgba(255,255,255,0.05)",
-                     padding: "8px",
-                     marginBottom: "6px",
-                     fontSize: "12px",
-                    }}
+                  <div
+                    key={m.id}
+                    className={`chat-message ${m.role}`}
                   >
-                    {JSON.stringify(m, null, 2)}
-                  </pre>
+                    {m.content}
+                  </div>
                 ))}
-
 
                 <div ref={messagesEndRef} />
               </ScrollArea>
 
               <form
                 onSubmit={sendMessage}
-                method="post"
                 className="p-4 border-t border-white/10"
               >
                 <div className="flex gap-2">
@@ -306,6 +279,3 @@ export default function VoxDashboard() {
     </div>
   );
 }
-
-
-
