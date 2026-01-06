@@ -205,13 +205,20 @@ export default function VoxDashboard() {
                 )}
 
                 {messages.map((m) => (
-                  <div
-                    key={m.id}
-                    className={`chat-message ${m.role}`}
+                  <pre
+                     key={m.id}
+                     style={{
+                     color: "white",
+                     background: "rgba(255,255,255,0.05)",
+                     padding: "8px",
+                     marginBottom: "6px",
+                     fontSize: "12px",
+                    }}
                   >
-                    {m.content}
-                  </div>
+                    {JSON.stringify(m, null, 2)}
+                  </pre>
                 ))}
+
 
                 <div ref={messagesEndRef} />
               </ScrollArea>
@@ -287,4 +294,5 @@ export default function VoxDashboard() {
     </div>
   );
 }
+
 
