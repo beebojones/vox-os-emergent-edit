@@ -108,42 +108,42 @@ export default function VoxDashboard() {
   /* ================= CHAT ================= */
 
   const sendMessage = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  e.preventDefault();
+  e.stopPropagation();
 
-    if (isLoading) return;
+  if (isLoading) return;
 
-    const content = inputValue.trim();
-    if (!content) return;
+  const content = inputValue.trim();
+  if (!content) return;
 
-    setInputValue("");
-    setIsLoading(true);
-
-    try {
-      const res = await axios.post(`${API}/chat/send`, {
-        session_id: "default",
-        content,
-      });
-
-      setMessages((prev) => [...prev, res.data]);
-    } catch (err) {
-      console.error("Chat send error:", err.response || err);
-      toast.error("Failed to send message");
-    } finally {
-      setIsLoading(false);
-    }
+  const userMessage = {
+    id: crypto.randomUUID(),
+    role: "user",
+    content,
   };
 
-  const clearChat = async () => {
-    try {
-      setMessages([]);
-      await axios.delete(`${API}/chat/history/default`);
-      toast.success("Chat cleared");
-    } catch (err) {
-      console.error("Clear chat error:", err);
-      toast.error("Failed to clear chat");
-    }
-  };
+  // 👇 SHOW USER MESSAGE IMMEDIATELY
+  setMessages((prev) => [...prev, userMessage]);
+
+  setInputValue("");
+  setIsLoading(true);
+
+  try {
+    const res = await axios.post(`${API}/chat/send`, {
+      session_id: "default",
+      content,
+    });
+
+    // 👇 APPEND VOX RESPONSE
+    setMessages((prev) => [...prev, res.data]);
+  } catch (err) {
+    console.error("Chat send error:", err.response || err);
+    toast.error("Failed to send message");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   /* ================= COMPUTED ================= */
 
@@ -287,3 +287,4 @@ export default function VoxDashboard() {
     </div>
   );
 }
+
