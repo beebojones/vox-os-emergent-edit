@@ -197,7 +197,7 @@ export default function VoxDashboard() {
                       Evening
                     </button>
                   </div>
-                  <div className="text-xs text-soft">Request a briefing to see Vox’s summary</div>
+                  <div className="text-xs text-soft">Request a briefing to see Vox&apos;s summary</div>
                 </CollapsibleContent>
               </div>
             </Collapsible>
