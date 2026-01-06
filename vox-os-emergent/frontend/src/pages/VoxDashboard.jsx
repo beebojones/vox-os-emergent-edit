@@ -109,45 +109,26 @@ export default function VoxDashboard() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
+    if (isLoading) return;
 
     const content = inputValue.trim();
-    if (!content || isLoading) return;
+    if (!content) return;
 
-    const userMessage = {
-      id: crypto.randomUUID(),
-      role: "user",
-      content,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
 
     try {
-      await axios.post(`${API}/chat/history/default`, {
-        role: "user",
+      const res = await axios.post(`${API}/chat/send`, {
+        session_id: "default",
         content,
       });
 
-      const voxMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: "🧠 Vox is listening.",
-      };
-
-      setMessages((prev) => [...prev, voxMessage]);
-
-      await axios.post(`${API}/chat/history/default`, {
-        role: "assistant",
-        content: voxMessage.content,
-      });
+      setMessages((prev) => [...prev, res.data]);
     } catch (err) {
-      console.error("Chat send error:", err.response?.data || err);
-      toast.error(
-        err.response?.data?.detail ||
-        err.response?.data?.error ||
-        "Failed to send message"
-      );
+      console.error("Chat send error:", err.response || err);
+      toast.error("Failed to send message");
     } finally {
       setIsLoading(false);
     }
@@ -237,6 +218,7 @@ export default function VoxDashboard() {
 
               <form
                 onSubmit={sendMessage}
+                method="post"
                 className="p-4 border-t border-white/10"
               >
                 <div className="flex gap-2">
