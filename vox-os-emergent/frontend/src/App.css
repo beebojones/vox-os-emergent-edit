@@ -1,72 +1,147 @@
-/* =========================
-   APP ROOT
-========================= */
+/* ===============================
+   VOX OS – APP LAYER STYLES
+   Restores glow, depth, polish
+   =============================== */
 
-.App {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+:root {
+  --vox-purple: #b36bff;
+  --vox-blue: #5cc8ff;
+  --vox-pink: #ff6bdc;
+
+  --panel-bg: rgba(18, 22, 32, 0.85);
+  --panel-border: rgba(180, 120, 255, 0.35);
+  --panel-glow: 0 0 40px rgba(160, 90, 255, 0.25);
+
+  --soft-text: rgba(255, 255, 255, 0.65);
 }
 
-/* =========================
-   PAGE SAFETY
-========================= */
-
-* {
-  box-sizing: border-box;
-}
+/* ====== APP WRAPPER ====== */
 
 body {
-  margin: 0;
-  overflow-x: hidden;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(180, 120, 255, 0.18), transparent 60%),
+    radial-gradient(800px 500px at 20% 20%, rgba(90, 200, 255, 0.12), transparent 55%),
+    #070a12;
 }
 
-/* =========================
-   DASHBOARD GRID SAFETY
-========================= */
-
-.max-w-7xl {
-  max-width: 80rem;
-}
-
-/* Prevent collapsed grid columns */
-.grid {
-  align-items: stretch;
-}
-
-/* =========================
-   CARD CONTENT FLOW
-========================= */
+/* ====== CONSOLE CARDS ====== */
 
 .console-card {
-  display: flex;
-  flex-direction: column;
+  background: var(--panel-bg);
+  border-radius: 18px;
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--panel-glow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
-/* =========================
-   CHAT LAYOUT FIXES
-========================= */
+/* ====== HEADERS ====== */
 
-.chat-message + .chat-message {
-  margin-top: 10px;
+.title-gradient {
+  background: linear-gradient(90deg, var(--vox-blue), var(--vox-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 20px rgba(140, 200, 255, 0.4);
 }
 
-/* Ensure chat scroll area behaves */
-[data-radix-scroll-area-viewport] {
-  display: flex;
-  flex-direction: column;
+/* ====== CHAT ====== */
+
+.chat-message {
+  max-width: 78%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  line-height: 1.4;
+  font-size: 14px;
+  margin-bottom: 14px;
 }
 
-/* =========================
-   COLLAPSIBLE FIXES
-========================= */
+.chat-message.user {
+  margin-left: auto;
+  background: linear-gradient(
+    135deg,
+    rgba(90, 200, 255, 0.35),
+    rgba(120, 120, 255, 0.25)
+  );
+  border: 1px solid rgba(120, 200, 255, 0.45);
+  box-shadow: 0 0 18px rgba(90, 200, 255, 0.25);
+}
+
+.chat-message.ai {
+  margin-right: auto;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* ====== INPUT ====== */
+
+.console-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(160, 120, 255, 0.35);
+  border-radius: 14px;
+  padding: 14px 16px;
+  color: white;
+}
+
+.console-input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ====== BUTTONS ====== */
+
+.console-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(160, 120, 255, 0.18);
+  border: 1px solid rgba(160, 120, 255, 0.4);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.console-button:hover {
+  background: rgba(180, 140, 255, 0.28);
+  box-shadow: 0 0 16px rgba(180, 140, 255, 0.4);
+}
+
+/* ====== BADGES ====== */
+
+.console-badge {
+  min-width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(90, 200, 255, 0.25);
+  border: 1px solid rgba(90, 200, 255, 0.5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.console-badge.orange {
+  background: rgba(255, 170, 90, 0.25);
+  border-color: rgba(255, 170, 90, 0.5);
+}
+
+/* ====== TASKS & MEMORY LIST ====== */
+
+.list-item {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 10px;
+}
+
+/* ====== COLLAPSIBLE ====== */
 
 [data-state="open"] {
-  animation: fadeIn 0.2s ease-out;
+  animation: voxFadeIn 0.25s ease-out;
 }
 
-@keyframes fadeIn {
+@keyframes voxFadeIn {
   from {
     opacity: 0;
     transform: translateY(-4px);
@@ -77,18 +152,13 @@ body {
   }
 }
 
-/* =========================
-   INPUT + BUTTON ALIGNMENT
-========================= */
+/* ====== SCROLL ====== */
 
-form {
-  margin: 0;
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* =========================
-   MODAL SAFETY
-========================= */
-
-[role="dialog"] {
-  z-index: 50;
+::-webkit-scrollbar-thumb {
+  background: rgba(160, 120, 255, 0.35);
+  border-radius: 4px;
 }
