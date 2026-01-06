@@ -1,10 +1,11 @@
 from fastapi import FastAPI, APIRouter, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from openai import OpenAI
-import os
 from typing import Dict, List, Any
 from datetime import datetime
+import os
+
+from openai import OpenAI
 
 # ====================
 # APP SETUP
@@ -40,7 +41,6 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # ====================
 
 CHAT_HISTORY: Dict[str, List[Dict[str, Any]]] = {}
-
 EVENTS: List[Dict[str, Any]] = []
 TASKS: List[Dict[str, Any]] = []
 MEMORIES: List[Dict[str, Any]] = []
@@ -49,17 +49,14 @@ MEMORIES: List[Dict[str, Any]] = []
 # HELPERS
 # ====================
 
-def google_configured() -> bool:
-    return bool(os.getenv("GOOGLE_CLIENT_ID") and os.getenv("GOOGLE_CLIENT_SECRET"))
-
-def outlook_configured() -> bool:
-    return bool(os.getenv("OUTLOOK_CLIENT_ID") and os.getenv("OUTLOOK_CLIENT_SECRET"))
-
-def session_value(request: Request, key: str) -> str:
-    try:
-        return request.session.get(key) or ""
-    except Exception:
-        return ""
+def create_task(title: str) -> Dict[str, Any]:
+    task = {
+        "id": f"tsk-{datetime.utcnow().timestamp()}",
+        "title": title,
+        "status": "open",
+    }
+    TASKS.append(task)
+    return task
 
 # ====================
 # CORE DATA ROUTES
@@ -77,73 +74,8 @@ async def get_tasks():
 async def get_memories():
     return MEMORIES
 
-@router.post("/seed")
-async def seed():
-    if not EVENTS:
-        EVENTS.append({
-            "id": "evt-1",
-            "title": "Welcome to Vox OS",
-            "provider": "system"
-        })
-
-    if not TASKS:
-        TASKS.append({
-            "id": "tsk-1",
-            "title": "Explore the dashboard",
-            "status": "open"
-        })
-
-    if not MEMORIES:
-        MEMORIES.append({
-            "id": "mem-1",
-            "content": "Vox OS initialized successfully"
-        })
-
-    return {"ok": True}
-
 # ====================
-# AUTH STATUS ROUTES
-# ====================
-
-@router.get("/auth/google/status")
-async def google_status(request: Request):
-    tokens = request.session.get("google_tokens")
-    return {
-        "configured": google_configured(),
-        "connected": bool(tokens),
-        "email": session_value(request, "google_email"),
-    }
-
-@router.get("/auth/outlook/status")
-async def outlook_status(request: Request):
-    tokens = request.session.get("outlook_tokens")
-    return {
-        "configured": outlook_configured(),
-        "connected": bool(tokens),
-        "email": session_value(request, "outlook_email"),
-    }
-
-@router.get("/auth/calendar/providers")
-async def calendar_providers():
-    return {
-        "providers": [
-            {
-                "id": "google",
-                "name": "Google Calendar",
-                "enabled": True,
-                "configured": google_configured(),
-            },
-            {
-                "id": "outlook",
-                "name": "Outlook Calendar",
-                "enabled": True,
-                "configured": outlook_configured(),
-            },
-        ]
-    }
-
-# ====================
-# CHAT HISTORY ROUTES
+# CHAT HISTORY
 # ====================
 
 @router.get("/chat/history/{session_id}")
@@ -156,7 +88,31 @@ async def clear_chat_history(session_id: str):
     return {"ok": True}
 
 # ====================
-# VOX BRAIN
+# VOX TOOLS
+# ====================
+
+TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "create_task",
+            "description": "Create a new task for the user",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "The task title",
+                    }
+                },
+                "required": ["title"],
+            },
+        },
+    }
+]
+
+# ====================
+# CHAT SEND
 # ====================
 
 @router.post("/chat/send")
@@ -175,19 +131,18 @@ async def chat_send(payload: Dict[str, Any]):
     }
     CHAT_HISTORY.setdefault(session_id, []).append(user_msg)
 
-    # Build conversation context
+    # Build conversation
     conversation = [
         {
             "role": "system",
             "content": (
                 "You are Vox, a calm, intelligent personal AI assistant. "
-                "You are concise, thoughtful, and helpful. "
-                "You speak naturally and clearly."
+                "You help manage tasks, memories, and plans. "
+                "When the user asks to add a task, you should do it."
             ),
         }
     ]
 
-    # Add recent history (cap at 20)
     for msg in CHAT_HISTORY[session_id][-20:]:
         conversation.append(
             {
@@ -196,25 +151,53 @@ async def chat_send(payload: Dict[str, Any]):
             }
         )
 
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=conversation,
-            temperature=0.7,
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=conversation,
+        tools=TOOLS,
+        tool_choice="auto",
+        temperature=0.6,
+    )
 
-    assistant_content = response.choices[0].message.content
+    msg = response.choices[0].message
+
+    # ====================
+    # TOOL EXECUTION
+    # ====================
+
+    if msg.tool_calls:
+        for call in msg.tool_calls:
+            if call.function.name == "create_task":
+                args = call.function.arguments
+                title = args.get("title")
+
+                if not title:
+                    raise HTTPException(status_code=400, detail="Missing task title")
+
+                task = create_task(title)
+
+                assistant_msg = {
+                    "id": str(datetime.utcnow().timestamp()),
+                    "role": "assistant",
+                    "content": f"✅ Task added: {task['title']}",
+                }
+
+                CHAT_HISTORY[session_id].append(assistant_msg)
+                return assistant_msg
+
+    # ====================
+    # NORMAL RESPONSE
+    # ====================
+
+    assistant_content = msg.content or "Okay."
 
     assistant_msg = {
-        "id": str(datetime.utcnow().timestamp()) + "-vox",
+        "id": str(datetime.utcnow().timestamp()),
         "role": "assistant",
         "content": assistant_content,
     }
 
     CHAT_HISTORY[session_id].append(assistant_msg)
-
     return assistant_msg
 
 # ====================
@@ -226,7 +209,7 @@ async def status():
     return {"status": "ok"}
 
 # ====================
-# MOUNT ROUTER
+# MOUNT
 # ====================
 
 app.include_router(router)
