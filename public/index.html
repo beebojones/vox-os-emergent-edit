@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vox Dashboard</title>
+  <script src="/js/theme.js"></script>
+  <link rel="stylesheet" href="/css/vox-theme.css?v=20251202a">
+  <link rel="stylesheet" href="/css/hex-dashboard.css?v=20251202c">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <!-- Top Bar -->
+  <header class="vox-header">
+    <div class="vox-logo">Vox OS</div>
+  </header>
+
+  <!-- Honeycomb Grid -->
+  <main class="hex-container">
+    <div class="hex-tile" data-link="/chat.html">
+      <div class="hex-inner">
+        <span class="ico"><i class="fa-solid fa-robot"></i></span>
+        <span class="label">Chat</span>
+      </div>
+    </div>
+
+    <div class="hex-tile" data-link="/memory.html">
+      <div class="hex-inner">
+        <span class="ico"><i class="fa-solid fa-brain"></i></span>
+        <span class="label">Memories</span>
+      </div>
+    </div>
+
+    <div class="hex-tile" data-link="/calendar.html">
+      <div class="hex-inner">
+        <span class="ico"><i class="fa-regular fa-calendar-days"></i></span>
+        <span class="label">Calendars</span>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/hex-dashboard.js"></script>
+  <!-- Inject user pill/dropdown to match memory.html -->
+  <script src="/js/user.js"></script>
+</body>
+</html>

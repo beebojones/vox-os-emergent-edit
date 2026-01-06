@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Vox Assistant</title>
+
+    <!-- Tier 1 Styles -->
+    <link rel="stylesheet" href="auth.css">
+
+    <link rel="stylesheet" href="/css/vox-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, sans-serif;
+            overflow: hidden;
+            color: white;
+        }
+
+        .auth-box {
+            width: 420px;
+            margin: 140px auto;
+            padding: 40px;
+            border-radius: 16px;
+
+            /* Glass Chrome */
+            backdrop-filter: blur(24px) brightness(1.18);
+            background: rgba(255,255,255,0.18);
+            border: 3px solid rgba(255,255,255,0.25);
+            box-shadow: 0 0 35px rgba(140,100,255,0.35);
+
+            transition: transform .2s ease, box-shadow .3s ease;
+        }
+
+        .auth-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 50px rgba(180,130,255,0.55);
+        }
+
+        .auth-title {
+            font-size: 34px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+            text-shadow: 0 0 18px rgba(150,100,255,0.9);
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(15,15,28,0.85);
+            color: var(--text-main);
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .light-mode input {
+            background: #ffffff !important;
+            border: 1px solid #c7cfdd !important;
+            color: var(--text-main) !important;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            font-size: 18px;
+            cursor: pointer;
+            color: white;
+            background:
+              linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.96)) padding-box,
+              linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            backdrop-filter: blur(10px);
+            transition: 0.25s;
+        }
+
+        button:hover {
+            box-shadow: 0 0 15px rgba(150,90,255,0.5), 0 0 12px rgba(0,246,255,0.35);
+        }
+
+        .bottom-text {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .bottom-text a {
+            color: #d4b8ff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="auth-box">
+        <div class="auth-title">Welcome Back</div>
+
+        <form id="loginForm">
+            <input type="text" placeholder="Username" id="username">
+            <input type="password" placeholder="Password" id="password">
+            <button type="submit">Login</button>
+        </form>
+
+<button id="adminBtn" type="button" style="display:none; margin-top:12px; width:100%; padding:12px; border-radius:10px; border:none; cursor:pointer; background: rgba(255,255,255,0.25); color:white;" onclick="adminLogin()">
+            🛡️ Admin Login
+        </button>
+
+        <div class="bottom-text">
+            No account? <a href="register.html">Register</a>
+        </div>
+        <div id="adminHint" style="display:none; margin-top:8px; opacity:.8; font-size:14px; text-align:center;">Press Ctrl+Shift+A to reveal Admin Login</div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="auth.js"></script>
+
+    <script>
+    // Keep login visible; do not auto-redirect on load (avoids flicker/loops)
+    (function initAdminShortcut(){
+      fetch('/auth/admin-enabled')
+        .then(r => r.ok ? r.json() : { enabled: false })
+        .then(data => {
+          if (!data.enabled) return;
+          const hint = document.getElementById('adminHint');
+          hint.style.display = 'block';
+          function onKey(e){
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')){
+              document.getElementById('adminBtn').style.display = 'block';
+              hint.textContent = 'Admin Login enabled';
+              window.removeEventListener('keydown', onKey);
+            }
+          }
+          window.addEventListener('keydown', onKey);
+        })
+        .catch(() => {});
+    })();
+
+    async function adminLogin(){
+      const token = prompt('Enter admin token');
+      if (!token) return;
+      try {
+        const res = await fetch('/auth/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        const data = await res.json();
+        if (res.ok && data.success){
+          window.location.href = '/index.html';
+        } else {
+          alert(data.error || 'Admin login failed');
+        }
+      } catch {
+        alert('Admin login failed');
+      }
+    }
+    </script>
+
+
+</body>
+</html>

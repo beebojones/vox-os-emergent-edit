@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications – Vos OS</title>
+
+    <link rel="stylesheet" href="css/vox-theme.css">
+    <link rel="stylesheet" href="css/avatar.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, sans-serif;
+        }
+
+        #notif-container {
+            max-width: 900px;
+            margin: 130px auto 60px auto;
+            padding: 20px;
+        }
+
+        .notif-card {
+            background: var(--panel-bg);
+            border: var(--panel-border);
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 22px;
+            backdrop-filter: blur(16px) brightness(1.1);
+            animation: fadeIn 0.35s ease;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .notif-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(0,246,255,0.25);
+        }
+
+        .notif-title {
+            font-size: 18px;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--accent-text);
+        }
+
+        .notif-body {
+            font-size: 15px;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .notif-timestamp {
+            font-size: 13px;
+            opacity: 0.65;
+        }
+
+        /* unread glow */
+        .notif-unread {
+            border: 1px solid var(--cyan);
+            box-shadow: 0 0 18px rgba(0, 246, 255, 0.35);
+        }
+
+        /* "no notifications" box */
+        #emptyState {
+            text-align: center;
+            padding: 40px 0;
+            opacity: .7;
+            font-size: 15px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER AUTO-INJECTED BY user.js -->
+
+<div id="notif-container">
+    <div id="notificationsList"></div>
+    <div id="emptyState" style="display:none;">No notifications to display.</div>
+</div>
+
+<script src="js/user.js"></script>
+
+<script>
+/* ------------------------------------------------------
+   Load Notifications from backend
+------------------------------------------------------ */
+
+async function loadNotifications() {
+    const list = document.getElementById("notificationsList");
+    const empty = document.getElementById("emptyState");
+
+    list.innerHTML = "";
+    empty.style.display = "none";
+
+    try {
+        const res = await fetch("/api/notifications", { credentials: "include" });
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+            empty.style.display = "block";
+            return;
+        }
+
+        data.forEach(n => {
+            const card = document.createElement("div");
+            card.className = "notif-card";
+            if (!n.read) card.classList.add("notif-unread");
+
+            card.innerHTML = `
+                <div class="notif-title">${n.title || "Notification"}</div>
+                <div class="notif-body">${n.message || ""}</div>
+                <div class="notif-timestamp">
+                    ${formatTimestamp(n.created_at)}
+                </div>
+            `;
+
+            // Clicking a notification marks it read
+            card.addEventListener("click", () => markRead(n.id, card));
+
+            list.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error("Failed to load notifications:", err);
+        empty.textContent = "Error loading notifications.";
+        empty.style.display = "block";
+    }
+}
+
+
+/* ------------------------------------------------------
+   Mark single notification as read
+------------------------------------------------------ */
+async function markRead(id, cardElement) {
+    try {
+        await fetch(`/api/notifications/${id}/read`, {
+            method: "POST",
+            credentials: "include"
+        });
+
+        cardElement.classList.remove("notif-unread");
+    } catch (e) {
+        console.warn("Failed to mark read:", e);
+    }
+}
+
+
+/* ------------------------------------------------------
+   Timestamp formatting
+------------------------------------------------------ */
+function formatTimestamp(ts) {
+    const d = new Date(ts);
+    return d.toLocaleString();
+}
+
+
+/* ------------------------------------------------------
+   Initialize
+------------------------------------------------------ */
+document.addEventListener("DOMContentLoaded", loadNotifications);
+</script>
+
+</body>
+</html>

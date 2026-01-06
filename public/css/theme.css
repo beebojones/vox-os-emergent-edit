@@ -1,0 +1,163 @@
+/* ============================================
+   Vox OS – Global Theme System
+   Supports dark mode (default) and light mode
+   ============================================ */
+
+/* Default Theme: Dark Mode */
+:root {
+  --vox-bg: #0a0a0f;
+  --vox-panel: #111;
+  --vox-border: #8882;
+
+  --vox-text: #eaeaea;
+  --vox-text-dim: #b9b9b9;
+  --vox-text-bright: #ffffff;
+
+  --vox-accent: #ff2f6f;
+
+  --vox-glow-1: rgba(255, 0, 85, 0.9);
+  --vox-glow-2: rgba(0, 140, 255, 0.9);
+
+  --vox-radius: 12px;
+  --vox-space: 14px;
+
+  --vox-transition: 0.25s ease;
+}
+
+/* ============================================
+   Light Mode Overrides
+   Applied when: <html data-theme="light">
+   ============================================ */
+[data-theme="light"] {
+  --vox-bg: #f9f9fb;
+  --vox-panel: #ffffff;
+  --vox-border: #ccc;
+
+  --vox-text: #1a1a1a;
+  --vox-text-dim: #444;
+  --vox-text-bright: #000;
+
+  --vox-accent: #ff1e5a;
+
+  /* Slightly softer glow for light backgrounds */
+  --vox-glow-1: rgba(255, 0, 85, 0.55);
+  --vox-glow-2: rgba(0, 120, 255, 0.55);
+}
+
+/* Global Reset Helpers */
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--vox-bg);
+  color: var(--vox-text);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* Panels / Cards */
+.vox-panel {
+  background: var(--vox-panel);
+  border: 1px solid var(--vox-border);
+  padding: calc(var(--vox-space) * 2);
+  border-radius: var(--vox-radius);
+  box-shadow: 0 0 20px #0003;
+}
+
+/* Inputs */
+.vox-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 1rem;
+  border: 1px solid var(--vox-border);
+  background: #0f0f15;
+  color: var(--vox-text);
+  border-radius: var(--vox-radius);
+  transition: border var(--vox-transition);
+}
+
+[data-theme="light"] .vox-input {
+  background: #fafafa;
+}
+
+.vox-input:focus {
+  outline: none;
+  border-color: var(--vox-accent);
+}
+
+/* Button */
+.vox-button {
+  padding: 12px 20px;
+  background: var(--vox-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--vox-radius);
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: opacity var(--vox-transition);
+}
+
+.vox-button:hover {
+  opacity: 0.85;
+}
+
+/* Glow Border (matches memory console) */
+.vox-glow-border {
+  position: relative;
+}
+
+.vox-glow-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  background: linear-gradient(140deg, var(--vox-glow-1), var(--vox-glow-2));
+  border-radius: inherit;
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.vox-glow-border:hover::before {
+  opacity: 1;
+}
+
+/* Links */
+a {
+  text-decoration: none;
+  color: var(--vox-accent);
+}
+
+a:hover {
+  color: var(--vox-text-bright);
+}
+
+/* Utilities */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pulse animation */
+@keyframes voxPulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.65; }
+  100% { opacity: 1; }
+}
+
+.vox-pulse {
+  animation: voxPulse 2.5s infinite ease-in-out;
+}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/theme.js"></script>
+    <title>Support</title>
+
+    <!-- Tier 2 Chrome -->
+    <link rel="stylesheet" href="/os/chrome.css">
+    <link rel="stylesheet" href="/os/layout.css">
+    <link rel="stylesheet" href="/css/vox-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: var(--bg-main);
+            font-family: system-ui, sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-y: auto;
+            display: block;
+        }
+
+        .support-box {
+            width: 90%;
+            max-width: 900px;
+            padding: 110px 50px 40px; /* headroom for user pill */
+            border-radius: 20px;
+            border: none; /* remove edge border */
+            background: linear-gradient(145deg, rgba(5, 5, 12, 0.95), rgba(10, 10, 22, 0.98));
+            background-size: 100% 100%;
+            box-shadow: 0 0 50px rgba(150,110,255,0.25), 0 0 20px rgba(0,246,255,0.10);
+            animation: fadeIn 0.45s ease-out;
+            overflow-y: auto;
+            max-height: 85vh;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(14px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 35px rgba(170,120,255,0.75);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            text-shadow: 0 0 20px rgba(170,120,255,0.65);
+        }
+
+        .text {
+            font-size: 18px;
+            line-height: 1.55;
+            opacity: 0.92;
+        }
+
+        .link-list a {
+            display: block;
+            margin: 8px 0;
+            padding: 10px 14px;
+            color: #e0d6ff;
+            text-decoration: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(8px);
+            transition: 0.25s;
+        }
+
+        .link-list a:hover {
+            background: rgba(255,255,255,0.26);
+            box-shadow: 0 0 16px rgba(170,120,255,0.55);
+        }
+
+        .btn-back {
+            display: block;
+            margin: 30px auto 20px auto;
+            padding: 14px 24px;
+            font-size: 18px;
+            color: white;
+            border-radius: 14px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background:
+              linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.96)) padding-box,
+              linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            backdrop-filter: blur(12px);
+            transition: 0.25s;
+        }
+
+        .btn-back:hover {
+            box-shadow: 0 0 22px rgba(170,120,255,0.55), 0 0 16px rgba(0,246,255,0.35);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="support-box">
+
+        <div class="title">Support</div>
+
+        <div class="section-title">Troubleshooting</div>
+        <div class="text">
+            If something isn’t working quite right, try the following:
+            <br><br>
+            • Refresh the page  
+            <br>
+            • Reopen the launcher  
+            <br>
+            • Log out and log back in  
+            <br>
+            • Check your server logs for backend errors  
+        </div>
+
+        <div class="section-title">Contact Options</div>
+        <div class="text">
+            Vox OS doesn’t use email or chat support — because you built it locally.  
+            That means your “support contact” is you.
+            <br><br>
+            But here are useful tools:
+        </div>
+
+        <div class="link-list">
+            <a href="tools.html">Developer Tools</a>
+            <a href="notifications.html">View Notifications</a>
+            <a href="help.html">Help Center</a>
+            <a href="about.html">About Vox OS</a>
+        </div>
+
+        <div class="section-title">Server Diagnostics</div>
+        <div class="text">
+            Issues often come from:
+            <br><br>
+            • Database connectivity  
+            <br>
+            • Missing imports  
+            <br>
+            • Path mismatches  
+            <br>
+            • Route errors  
+            <br><br>
+            Use your Tools page to inspect memory, logs, and JSON.
+        </div>
+
+        <button class="btn-back" onclick="location.href='index.html'">
+            Back to Dashboard
+        </button>
+
+    </div>
+
+    <script src="/os/glow_engine.js"></script>
+    <script src="/js/user.js"></script>
+
+</body>
+</html>

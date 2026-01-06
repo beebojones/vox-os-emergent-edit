@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+motor
+python-dotenv
+pydantic
+openai
+python-multipart
+requests
+google-auth
+google-auth-oauthlib
+google-api-python-client
+itsdangerous>=2.2.0
+passlib[bcrypt]
+email-validator
+openai>=1.12.0
+

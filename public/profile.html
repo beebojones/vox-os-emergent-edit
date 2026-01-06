@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile – Vos OS</title>
+    <link rel="stylesheet" href="css/vox-theme.css">
+    <link rel="stylesheet" href="css/avatar.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, sans-serif;
+            height: 100vh;
+        }
+
+        /* Main container */
+        #profile-container {
+            margin: 130px auto 40px auto; /* leaves room for header */
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        /* Card panels */
+        .profile-card {
+            background: var(--panel-bg);
+            border: var(--panel-border);
+            padding: 26px;
+            border-radius: 18px;
+            margin-bottom: 28px;
+            backdrop-filter: blur(16px) brightness(1.15);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .card-title {
+            font-size: 22px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: var(--accent-text);
+        }
+
+        /* Big Hex Avatar */
+        #big-hex-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .big-hex {
+            width: 180px;
+            height: 155px;
+            position: relative;
+            clip-path: polygon(
+                25% 0%, 
+                75% 0%, 
+                100% 50%, 
+                75% 100%, 
+                25% 100%, 
+                0% 50%
+            );
+            border: 3px solid transparent;
+            background: linear-gradient(150deg, rgba(10,10,20,0.85), rgba(25,25,45,0.92)) padding-box,
+                        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 200% 200%;
+            animation: voxBorderShift 18s linear infinite;
+            box-shadow: 0 0 22px rgba(180,120,255,0.32);
+            overflow: hidden;
+        }
+
+        .big-hex img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Upload & Remove buttons */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .vox-btn {
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+            border: 1px solid transparent;
+            background: linear-gradient(145deg, rgba(5,5,15,.92), rgba(20,20,35,.96)) padding-box,
+                        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            backdrop-filter: blur(10px);
+        }
+
+        .vox-btn:hover {
+            box-shadow: 0 0 18px rgba(170,110,255,0.55);
+        }
+
+        /* Info fields */
+        .info-row {
+            margin-bottom: 14px;
+            font-size: 18px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--accent-text);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER INJECTED BY user.js -->
+
+<div id="profile-container">
+
+    <!-- Big Hex Avatar -->
+    <div id="big-hex-wrapper">
+        <div class="big-hex">
+            <img id="big-hex-img" src="/img/default-avatar.png">
+        </div>
+    </div>
+
+    <div class="btn-row">
+        <label class="vox-btn" for="avatar-input">Upload Photo</label>
+        <button class="vox-btn" id="remove-photo">Remove</button>
+    </div>
+
+    <input type="file" id="avatar-input" accept="image/*" style="display:none">
+
+
+    <!-- Profile Information -->
+    <div class="profile-card">
+        <div class="card-title">Profile Information</div>
+
+        <div class="info-row"><span class="info-label">Display Name:</span> <span id="info-displayName">—</span></div>
+        <div class="info-row"><span class="info-label">Username:</span> <span id="info-username">—</span></div>
+        <div class="info-row"><span class="info-label">Role:</span> <span id="info-role">—</span></div>
+    </div>
+
+</div>
+
+
+<script src="js/user.js"></script>
+
+<script>
+/* ---------------------------------------------------
+   Load profile info + handle photo upload/removal
+--------------------------------------------------- */
+
+document.addEventListener("DOMContentLoaded", async () => {
+    let user = null;
+
+    // Fetch user
+    try {
+        const res = await fetch("/auth/validate", { credentials: "include" });
+        const data = await res.json();
+        user = data.user || null;
+    } catch {}
+
+    const bigHexImg = document.getElementById("big-hex-img");
+    const infoDisplayName = document.getElementById("info-displayName");
+    const infoUsername = document.getElementById("info-username");
+    const infoRole = document.getElementById("info-role");
+
+    if (user) {
+        bigHexImg.src = user.avatarDataUrl || "/img/default-avatar.png";
+        infoDisplayName.textContent = user.displayName || "—";
+        infoUsername.textContent = user.username || "—";
+        infoRole.textContent = user.role || "—";
+    }
+
+    // Upload handler
+    const input = document.getElementById("avatar-input");
+    input.addEventListener("change", async () => {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async e => {
+            const dataUrl = e.target.result;
+
+            await fetch("/auth/update-photo", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ dataUrl })
+            });
+
+            bigHexImg.src = dataUrl;
+            document.getElementById("vox-avatar-img").src = dataUrl;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Remove handler
+    document.getElementById("remove-photo").addEventListener("click", async () => {
+        await fetch("/auth/update-photo", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ dataUrl: "" })
+        });
+
+        const fallback = "/img/default-avatar.png";
+        bigHexImg.src = fallback;
+        document.getElementById("vox-avatar-img").src = fallback;
+    });
+});
+</script>
+
+</body>
+</html>

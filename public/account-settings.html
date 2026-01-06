@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Settings – Vos OS</title>
+
+    <link rel="stylesheet" href="css/vox-theme.css">
+    <link rel="stylesheet" href="css/avatar.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, sans-serif;
+        }
+
+        #settings-container {
+            max-width: 900px;
+            margin: 130px auto 60px auto;
+            padding: 20px;
+        }
+
+        .settings-card {
+            background: var(--panel-bg);
+            border: var(--panel-border);
+            border-radius: 18px;
+            padding: 26px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(16px) brightness(1.15);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: var(--accent-text);
+        }
+
+        .field-group {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field-label {
+            font-size: 15px;
+            margin-bottom: 6px;
+            color: var(--text-soft);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(15,15,28,0.9);
+            color: var(--text-main);
+            font-size: 15px;
+            transition: border .2s, box-shadow .2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px rgba(0,246,255,0.4);
+        }
+
+        .save-btn {
+            margin-top: 10px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+            border: 1px solid transparent;
+            background: linear-gradient(145deg, rgba(5,5,15,.92), rgba(20,20,35,.96)) padding-box,
+                        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            backdrop-filter: blur(10px);
+        }
+
+        .save-btn:hover {
+            box-shadow: 0 0 18px rgba(170,110,255,0.55);
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: .8;
+            color: var(--accent-text);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER INJECTED BY user.js -->
+
+<div id="settings-container">
+
+    <!-- DISPLAY NAME -->
+    <div class="settings-card">
+        <div class="section-title">Display Name</div>
+
+        <div class="field-group">
+            <label class="field-label">New Display Name</label>
+            <input id="displayNameInput" type="text" placeholder="Enter new display name">
+        </div>
+
+        <button id="saveDisplayName" class="save-btn">Save Display Name</button>
+        <div id="statusDisplayName" class="status"></div>
+    </div>
+
+    <!-- USERNAME -->
+    <div class="settings-card">
+        <div class="section-title">Change Username</div>
+
+        <div class="field-group">
+            <label class="field-label">New Username</label>
+            <input id="usernameInput" type="text" placeholder="Enter new username">
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Confirm Password</label>
+            <input id="usernamePasswordInput" type="password" placeholder="Enter password">
+        </div>
+
+        <button id="saveUsername" class="save-btn">Save Username</button>
+        <div id="statusUsername" class="status"></div>
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="settings-card">
+        <div class="section-title">Change Password</div>
+
+        <div class="field-group">
+            <label class="field-label">Current Password</label>
+            <input id="currentPasswordInput" type="password">
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">New Password</label>
+            <input id="newPasswordInput" type="password">
+        </div>
+
+        <button id="savePassword" class="save-btn">Update Password</button>
+        <div id="statusPassword" class="status"></div>
+    </div>
+
+</div>
+
+<script src="js/user.js"></script>
+
+<script>
+/* ------------------------------------------------------
+   Save Display Name
+------------------------------------------------------ */
+document.getElementById("saveDisplayName")
+    .addEventListener("click", async () => {
+        const newName = document.getElementById("displayNameInput").value.trim();
+        const status = document.getElementById("statusDisplayName");
+
+        if (newName.length < 2) {
+            status.textContent = "Display name must be at least 2 characters.";
+            return;
+        }
+
+        const res = await fetch("/auth/update-display-name", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ displayName: newName })
+        });
+
+        const data = await res.json();
+        status.textContent = data.message || data.error || "Updated.";
+    });
+
+/* ------------------------------------------------------
+   Save Username
+------------------------------------------------------ */
+document.getElementById("saveUsername")
+    .addEventListener("click", async () => {
+        const username = document.getElementById("usernameInput").value.trim();
+        const password = document.getElementById("usernamePasswordInput").value;
+        const status = document.getElementById("statusUsername");
+
+        if (!username || !password) {
+            status.textContent = "Both fields required.";
+            return;
+        }
+
+        const res = await fetch("/auth/update-username", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        status.textContent = data.message || data.error || "Updated.";
+    });
+
+/* ------------------------------------------------------
+   Save Password
+------------------------------------------------------ */
+document.getElementById("savePassword")
+    .addEventListener("click", async () => {
+        const currentPassword = document.getElementById("currentPasswordInput").value;
+        const newPassword = document.getElementById("newPasswordInput").value;
+        const status = document.getElementById("statusPassword");
+
+        if (!currentPassword || !newPassword) {
+            status.textContent = "Both fields required.";
+            return;
+        }
+
+        const res = await fetch("/auth/update-password", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ currentPassword, newPassword })
+        });
+
+        const data = await res.json();
+        status.textContent = data.message || data.error || "Updated.";
+    });
+</script>
+
+</body>
+</html>

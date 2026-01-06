@@ -1,0 +1,51 @@
+/* ============================================
+   Vox OS – Hexagon Avatar
+   ============================================ */
+
+.vox-avatar-container {
+  position: relative;
+  width: 64px;
+  height: 56px; /* hex height = width * 0.866 */
+  cursor: pointer;
+}
+
+#avatarUpload {
+  display: none;
+}
+
+/* Hexagon shell */
+.vox-avatar {
+  width: 64px;
+  height: 56px;
+  display: block;
+  overflow: hidden;
+  clip-path: polygon(
+    25% 0%,
+    75% 0%,
+    100% 50%,
+    75% 100%,
+    25% 100%,
+    0% 50%
+  );
+  border: 1px solid var(--vox-border);
+  background: var(--vox-panel);
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.vox-avatar:hover {
+  transform: scale(1.05);
+}
+
+/* Glow from your Memory Console system */
+.vox-avatar.vox-glow-border::before {
+  border-radius: 0; /* sharp corners */
+}
+
+/* Profile image inside hex */
+#avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}

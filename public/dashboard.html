@@ -1,0 +1,220 @@
+/* ============================================================
+   Vox OS — Hex Dashboard
+   Matches Memory Console glow, gradients, and frosted styling
+   ============================================================ */
+
+:root {
+    --hex-size: 160px;
+    --hex-gap: 22px;
+
+    /* Glow colors pulled from vox-theme.css */
+    --glow-cyan: var(--cyan);
+    --glow-magenta: var(--magenta);
+    --glow-purple: var(--purple);
+
+    --tile-bg: rgba(10, 10, 22, 0.55);
+    --tile-bg-hover: rgba(20, 20, 36, 0.75);
+}
+
+/* ------------------------------------------------------------
+   Background + Layout
+   ------------------------------------------------------------ */
+
+body {
+    margin: 0;
+    background: radial-gradient(circle at 20% 20%, #111 0%, #06060d 60%, #000 100%);
+    color: white;
+    font-family: system-ui, sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* ------------------------------------------------------------
+   Header
+   ------------------------------------------------------------ */
+
+.vox-header {
+    padding: 18px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 15, 30, 0.55);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.4);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.vox-logo {
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 12px rgba(150, 85, 255, 0.75);
+}
+
+/* Profile area */
+.profile-area {
+    position: relative;
+    cursor: pointer;
+}
+
+.profile-photo {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--glow-purple);
+    box-shadow: 0 0 12px rgba(140, 50, 255, 0.7);
+    transition: 0.25s;
+}
+
+.profile-photo:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 18px rgba(165, 80, 255, 0.85);
+}
+
+/* Dropdown menu */
+.profile-area .dropdown {
+    position: absolute;
+    right: 0;
+    top: 56px;
+    background: rgba(15, 15, 24, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    padding: 6px 0;
+    width: 165px;
+    display: none;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+.profile-area:hover .dropdown {
+    display: block;
+}
+
+.profile-area .dropdown a {
+    display: block;
+    padding: 10px 16px;
+    color: #e4d8ff;
+    text-decoration: none;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.profile-area .dropdown a:hover {
+    background: rgba(140, 80, 255, 0.2);
+    color: white;
+}
+
+/* ------------------------------------------------------------
+   HEX GRID
+   ------------------------------------------------------------ */
+
+.hex-container {
+    width: 100%;
+    margin-top: 60px;
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(var(--hex-size), 1fr));
+    gap: var(--hex-gap);
+    padding-bottom: 80px;
+}
+
+/* ------------------------------------------------------------
+   HEX TILE
+   ------------------------------------------------------------ */
+
+.hex-tile {
+    width: var(--hex-size);
+    height: calc(var(--hex-size) * 1.15);
+    background: var(--tile-bg);
+    clip-path: polygon(
+        25% 0%, 
+        75% 0%, 
+        100% 50%, 
+        75% 100%, 
+        25% 100%, 
+        0% 50%
+    );
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 22px rgba(154, 77, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* Subtle RGB shifting border animation */
+.hex-tile::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(
+        135deg,
+        var(--glow-cyan),
+        var(--glow-magenta),
+        var(--glow-purple),
+        var(--glow-cyan)
+    );
+    background-size: 400% 400%;
+    z-index: -1;
+    animation: glowShift 12s linear infinite;
+    clip-path: inherit; 
+    opacity: 0.5;
+}
+
+@keyframes glowShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 200% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.hex-tile:hover {
+    transform: translateY(-6px) scale(1.03);
+    background: var(--tile-bg-hover);
+    box-shadow: 0 0 32px rgba(154, 77, 255, 0.35);
+}
+
+/* ------------------------------------------------------------
+   Icons + Hover Text Swap
+   ------------------------------------------------------------ */
+
+.hex-tile i {
+    font-size: 42px;
+    opacity: 1;
+    transition: opacity 0.25s;
+}
+
+.hex-tile .label {
+    position: absolute;
+    bottom: 14px;
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+/* Hover → hide icon, show label */
+.hex-tile:hover i {
+    opacity: 0;
+}
+
+.hex-tile:hover .label {
+    opacity: 1;
+}
+
+/* ------------------------------------------------------------
+   Simple Fade Animation
+   ------------------------------------------------------------ */
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}

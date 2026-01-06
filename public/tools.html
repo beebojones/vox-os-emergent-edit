@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/theme.js"></script>
+    <title>Vox Tools</title>
+
+    <!-- Tier 2 Chrome -->
+    <link rel="stylesheet" href="/os/chrome.css">
+    <link rel="stylesheet" href="/os/layout.css">
+    <link rel="stylesheet" href="/css/vox-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: var(--bg-main);
+            font-family: system-ui, sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-y: auto;
+            display: block;
+        }
+
+        #tools-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 18px;
+            padding: 110px 20px 20px; /* headroom for user pill */
+        }
+
+        .panel {
+            border: 1px solid transparent;
+            border-radius: 18px;
+            padding: 20px;
+            overflow: auto;
+            background:
+              linear-gradient(145deg, rgba(5, 5, 12, 0.95), rgba(10, 10, 22, 0.98)) padding-box,
+              linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 240% 240%;
+            box-shadow: 0 0 36px rgba(150,110,255,0.25), 0 0 18px rgba(0,246,255,0.1);
+            animation: voxBorderShift 18s linear infinite, floatIn 0.4s ease-out;
+        }
+
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .panel-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            text-shadow: 0 0 20px rgba(180,130,255,0.8);
+        }
+
+        .json-box {
+            white-space: pre-wrap;
+            font-family: monospace;
+            background: rgba(0,0,0,0.22);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.28);
+            overflow: auto;
+            max-height: 70%;
+            font-size: 15px;
+        }
+
+        .button-row {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 18px;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background:
+              linear-gradient(145deg, rgba(5,5,12,0.9), rgba(15,15,28,0.96)) padding-box,
+              linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            backdrop-filter: blur(10px);
+            transition: 0.25s;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 18px rgba(170,120,255,0.5), 0 0 14px rgba(0,246,255,0.35);
+        }
+    </style>
+
+</head>
+<body>
+
+    <div id="tools-layout">
+
+        <!-- MEMORY VIEWER -->
+        <div class="panel">
+            <div class="panel-title">Memory Viewer</div>
+            <div id="memories" class="json-box">Loading…</div>
+
+            <div class="button-row">
+                <button class="btn" onclick="refreshMemories()">Refresh</button>
+                <button class="btn" onclick="downloadMemories()">Export JSON</button>
+            </div>
+        </div>
+
+        <!-- PERSONA SETTINGS -->
+        <div class="panel">
+            <div class="panel-title">Persona Settings</div>
+            <div id="persona-box" class="json-box">
+                {
+                    "tone": "friendly",
+                    "precision": "high",
+                    "persona_version": "alpha"
+                }
+            </div>
+        </div>
+
+        <!-- EMBEDDINGS VIEWER -->
+        <div class="panel">
+            <div class="panel-title">Embeddings Viewer</div>
+            <div class="json-box">
+                This panel will visualize embedding vectors and similarity scores.
+                <br><br>
+                Future feature: heatmaps, similarity graphs, cluster display.
+            </div>
+        </div>
+
+        <!-- LOGS -->
+        <div class="panel">
+            <div class="panel-title">System Logs</div>
+            <div id="logs" class="json-box">Logs will appear here.</div>
+        </div>
+
+    </div>
+
+    <script src="/os/glow_engine.js"></script>
+    <script src="/js/user.js"></script>
+
+    <script>
+        async function refreshMemories() {
+            try {
+                const res = await fetch("/api/memories");
+                const data = await res.json();
+                document.getElementById("memories").textContent = JSON.stringify(data, null, 2);
+            } catch {
+                document.getElementById("memories").textContent = "Error loading memories.";
+            }
+        }
+
+        function downloadMemories() {
+            const text = document.getElementById("memories").textContent;
+            const blob = new Blob([text], { type: "application/json" });
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "vox_memories.json";
+            a.click();
+
+            URL.revokeObjectURL(url);
+        }
+
+        refreshMemories();
+    </script>
+
+</body>
+</html>

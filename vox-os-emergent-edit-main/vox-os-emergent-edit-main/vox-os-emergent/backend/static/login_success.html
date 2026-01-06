@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vox Console</title>
+
+  <style>
+    body {
+      background: #0e0e11;
+      color: #e6e6eb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background: #18181f;
+      padding: 2rem 3rem;
+      border-radius: 14px;
+      box-shadow: 0 0 40px rgba(120, 80, 255, 0.35);
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #b8a7ff;
+    }
+
+    p {
+      opacity: 0.85;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Vox Console</h1>
+    <p id="status">You are logged in successfully.</p>
+    <p>This is where Vox wakes up.</p>
+  </div>
+
+  <!-- JavaScript goes HERE, not in <style> -->
+  <script>
+    fetch("/api/me", { credentials: "include" })
+      .then(response => {
+        if (!response.ok) throw new Error("Not authenticated");
+        return response.json();
+      })
+      .then(data => {
+        if (data.authenticated) {
+          document.getElementById("status").innerText =
+          `Welcome back, ${data.name}.`;
+        }
+      })
+      .catch(() => {
+        document.getElementById("status").innerText =
+          "Vox does not recognize you.";
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/theme.js"></script>
+    <title>Logout</title>
+
+    <link rel="stylesheet" href="/css/vox-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            font-family: system-ui, sans-serif;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .logout-box {
+            width: 90%;
+            max-width: 550px;
+            padding: 40px 50px;
+            border-radius: 20px;
+            border: 1px solid transparent;
+            text-align: center;
+            background: linear-gradient(145deg, rgba(5,5,12,.95), rgba(10,10,22,.98)) padding-box,
+                        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 240% 240%;
+            box-shadow: 0 0 50px rgba(150,110,255,0.25), 0 0 20px rgba(0,246,255,0.10);
+            animation: voxBorderShift 18s linear infinite, softEnter 0.4s ease-out;
+        }
+
+        @keyframes softEnter {
+            from { opacity: 0; transform: translateY(14px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .title {
+            font-size: 38px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            text-shadow: 0 0 30px rgba(170,120,255,0.8);
+        }
+
+        .text {
+            font-size: 20px;
+            opacity: 0.92;
+            margin-bottom: 30px;
+        }
+
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+            backdrop-filter: blur(12px);
+            background: linear-gradient(145deg, rgba(5,5,12,.9), rgba(15,15,28,.96)) padding-box,
+                        linear-gradient(120deg, var(--cyan), var(--magenta), var(--purple)) border-box;
+            background-size: 100% 100%, 220% 220%;
+            animation: voxBorderShift 14s linear infinite;
+            transition: 0.25s;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 22px rgba(170,120,255,0.55), 0 0 16px rgba(0,246,255,0.35);
+        }
+
+        .btn-danger {
+            background: rgba(255,120,120,0.32);
+            border: 2px solid rgba(255,120,120,0.55);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255,120,120,0.45);
+            box-shadow: 0 0 25px rgba(255,120,120,0.75);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="logout-box">
+
+        <div class="title">Log Out?</div>
+
+        <div class="text">
+            Are you sure you want to log out of Vox Assistant?
+            <br>
+            You can always log back in later.
+        </div>
+
+        <div class="btn-row">
+            <button class="btn-danger btn" onclick="performLogout()">Log Out</button>
+            <button class="btn" onclick="location.href='memory.html'">Cancel</button>
+        </div>
+
+    </div>
+
+
+    <script>
+        async function performLogout() {
+            try {
+                await fetch("/auth/logout", { method: "POST" });
+                location.href = "/login.html";
+            } catch {
+                alert("Logout failed. Check server logs.");
+            }
+        }
+        // Auto-logout when page opens
+        performLogout();
+    </script>
+
+</body>
+</html>

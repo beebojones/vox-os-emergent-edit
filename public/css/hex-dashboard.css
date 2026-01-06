@@ -1,0 +1,134 @@
+/* ============================================
+   Vox OS – Hex Dashboard
+   Style Guide: Matches memory.css glow + feel
+   ============================================ */
+
+/* Global Variables pulled from Memory Console */
+:root {
+  --vox-bg: #0a0a0f;
+  --vox-tile-bg: #111;
+  --vox-accent: #ff2f6f;
+  --vox-glow-1: rgba(255, 0, 85, 0.8);
+  --vox-glow-2: rgba(0, 140, 255, 0.8);
+  --vox-border: #8882;
+  --vox-text: #f2f2f2;
+  --vox-hover-text: #fff;
+}
+
+/* Page background */
+body {
+  background: var(--vox-bg);
+  color: var(--vox-text);
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Layout container */
+.hex-grid {
+  width: 90%;
+  max-width: 1400px;
+  margin: 60px auto 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 32px;
+  justify-items: center;
+}
+
+/* Core hexagon shape */
+.hex {
+  width: 160px;
+  height: 138.56px; /* Perfect hex proportion (width * 0.866) */
+  background: var(--vox-tile-bg);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+  clip-path: polygon(
+    25% 0%,
+    75% 0%,
+    100% 50%,
+    75% 100%,
+    25% 100%,
+    0% 50%
+  );
+  border: 1px solid var(--vox-border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Glow effect copied from memory.css */
+.hex::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+  padding: 2px;
+  background: linear-gradient(130deg, var(--vox-glow-1), var(--vox-glow-2));
+  -webkit-mask: 
+     linear-gradient(#000 0 0) content-box, 
+     linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Hover glow */
+.hex:hover::before {
+  opacity: 1;
+}
+
+.hex:hover {
+  transform: scale(1.07);
+}
+
+/* Icon styling */
+.hex-icon {
+  width: 64px;
+  height: 64px;
+  opacity: 0.85;
+  transition: opacity 0.25s;
+}
+
+.hex:hover .hex-icon {
+  opacity: 0;
+}
+
+/* Hover text (hidden until hover) */
+.hex-label {
+  position: absolute;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--vox-hover-text);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.hex:hover .hex-label {
+  opacity: 1;
+}
+
+/* Perfect alignment for every row */
+.hex-row {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+@media (max-width: 600px) {
+  .hex {
+    width: 130px;
+    height: 112.58px;
+  }
+
+  .hex-icon {
+    width: 50px;
+    height: 50px;
+  }
+}
