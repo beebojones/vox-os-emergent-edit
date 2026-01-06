@@ -60,7 +60,7 @@ app.use("/", requireAuth, memoryRoutes);
 
 
 // -----------------------------------------------------------
-// HOME ROUTE (dashboard) — PROTECTED
+// HOME ROUTE (dashboard) - PROTECTED
 // -----------------------------------------------------------
 app.get(["/", "/index.html"], requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));

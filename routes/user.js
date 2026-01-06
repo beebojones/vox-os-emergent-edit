@@ -1,4 +1,4 @@
-// user.js — Global header controller for Vox OS
+// user.js - Global header controller for Vox OS
 document.addEventListener("DOMContentLoaded", async () => {
     const pill = document.getElementById("vox-user-pill");
     const dropdown = document.getElementById("vox-dropdown");

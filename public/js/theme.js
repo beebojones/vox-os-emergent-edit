@@ -1,5 +1,5 @@
 // ============================================
-// Vox OS – Simple Theme Engine (Light + Dark)
+// Vox OS - Simple Theme Engine (Light + Dark)
 // Dark mode is the default
 // ============================================
 

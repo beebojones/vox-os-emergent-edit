@@ -1,4 +1,4 @@
-/* user.js — Global header loader + user state */
+/* user.js - Global header loader + user state */
 
 async function loadHeader() {
     try {

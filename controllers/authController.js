@@ -196,7 +196,7 @@ export async function verifyPin(req, res) {
       return res.status(400).json({ error: "Incorrect PIN." });
     }
 
-    // PIN correct — issue JWT
+    // PIN correct - issue JWT
     sendToken(res, { id: tempId });
 
     // Clear temp cookie

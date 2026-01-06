@@ -1,5 +1,5 @@
 // =============================================
-// Vox OS – Persistent System Header
+// Vox OS - Persistent System Header
 // Top-left: Vox OS
 // Top-right: Avatar + Username + Dropdown
 // Adds body top padding automatically

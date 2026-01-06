@@ -1,5 +1,5 @@
 // ============================================
-// Vox OS – Hex Dashboard Logic
+// Vox OS - Hex Dashboard Logic
 // Matches memory console simplicity + behavior
 // ============================================
 

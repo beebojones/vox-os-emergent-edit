@@ -1,5 +1,5 @@
 // ============================================
-// Vox OS – Settings Page Logic
+// Vox OS - Settings Page Logic
 // Light/Dark Mode Toggle
 // ============================================
 

@@ -1,5 +1,5 @@
 // ============================================
-// Vox OS – Avatar Upload + Persistence
+// Vox OS - Avatar Upload + Persistence
 // ============================================
 
 const avatarInput = document.getElementById("avatarUpload");

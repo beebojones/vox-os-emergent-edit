@@ -1,0 +1,108 @@
+/* App.css - Additional app-specific styles */
+
+/* Ensure the app container doesn't interfere with layout */
+.App {
+  min-height: 100vh;
+}
+
+/* Smooth transitions for interactive elements */
+button, input, a {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 246, 255, 0.3);
+  border-top-color: #00f6ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 0.5rem;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00f6ff;
+  animation: typing 1.4s ease-in-out infinite;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-8px); opacity: 1; }
+}
+
+/* Fade in animation */
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Slide in from right */
+.slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Pulse animation for notifications */
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Emergent visual overrides (high specificity, non-destructive) */
+body .console-card {
+  background: rgba(5, 5, 16, 0.96) !important;
+  border: 1px solid rgba(0, 246, 255, 0.4) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 0 10px rgba(0, 246, 255, 0.12),
+              0 0 30px rgba(0, 246, 255, 0.06),
+              0 0 60px rgba(255, 0, 212, 0.04) !important;
+}
+
+body .console-button {
+  background: rgba(10, 10, 20, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body .console-input {
+  background: rgba(5, 5, 12, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body .chat-message.user {
+  background: linear-gradient(135deg, rgba(0, 246, 255, 0.15), rgba(154, 77, 255, 0.1)) !important;
+  border: 1px solid rgba(0, 246, 255, 0.3) !important;
+}
+
+body .chat-message.assistant {
+  background: rgba(10, 10, 20, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
